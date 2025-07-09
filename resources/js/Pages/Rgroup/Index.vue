@@ -9,10 +9,14 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import  NavLink  from '@/Components/NavLink.vue';
+
+
+
 //recibimos los datos del controlador
 const props = defineProps({
     rgroupchk: { type: Array },
+    grppf: { type: Array },
 });
 
 
@@ -88,6 +92,8 @@ const openModalForm = (op, r) => {
     }
 }
 
+
+//operaciones con el modal de formulario
 const closeModalForm = () => {
     showModalForm.value = false;
     form.reset();
@@ -103,6 +109,7 @@ const openModalDel = (r) => {
 const closeModalDel = () => {
     showModalDel.value = false;
 }
+
 
 </script>
 
@@ -172,7 +179,8 @@ const closeModalDel = () => {
                             </td>
 
                             <td class=" py-3 text-sm">
-                                <Link :href="route('ruserg.index')" class="flex items-center gap-2">
+                                <NavLink :href="route('ruserg.show',r.groupname)">
+                                <PrimaryButton class="flex items-center gap-2" aria-label="Ver detalles">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-6">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -180,7 +188,8 @@ const closeModalDel = () => {
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
-                                </Link>
+                                </PrimaryButton>
+                                </NavLink>
                             </td>
                             <td class=" py-3 ">
                                 <WarningButton @click="openModalForm(2, r)">

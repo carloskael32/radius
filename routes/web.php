@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
 
     //Radusergroup
     Route::resource('ruserg', RadusergroupController::class);
+    /* Route::get('/ruserg/{id}',[RadusergroupController::class, 'index'])->name('ruserg.index'); */
 
 });
 

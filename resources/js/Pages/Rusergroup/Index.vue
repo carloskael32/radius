@@ -5,17 +5,30 @@ import { Head } from '@inertiajs/vue3';
 import { ref } from 'vue'
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
-
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
-    usrpp: {
-        type: Array,
-        
-    }
+    usrprf: { type: Array },
+    usrpp: { type: Array },
+    grppf: { type: String },
 });
+
+// el vaor del perfil 
+//const perfil = ref(props.grppf);
+const perfil = props.grppf;
+
 
 //para seleccionar usuarios
 const selectedUsers = ref([])
+
+
+// enviar datos seleccionados hacie el controlador
+const enviarSeleccionados = () => {
+    const usuarios = selectedUsers.value.map(u => u.username);
+    router.post(route('ruserg.store'), { usuarios, perfil });
+    selectedUsers.value = []; // Limpiar la selección después de enviar
+    
+}
 
 </script>
 
@@ -25,7 +38,10 @@ const selectedUsers = ref([])
 
     <AuthenticatedLayout>
         <template #header>
-            Grupos de usuarios
+            <span>
+                Usuarios del perfil - {{ grppf }}
+            </span>
+
         </template>
 
         <!-- Multi select arriba de la tabla -->
@@ -44,26 +60,11 @@ const selectedUsers = ref([])
             </div>
         </div>
 
+        <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded" @click="enviarSeleccionados">
+            Registrar seleccionados
+        </button>
 
-
-
-        <div class="mb-4 inline-flex w-full overflow-hidden rounded-lg bg-white shadow-md">
-            <div class="flex w-12 items-center justify-center bg-blue-500">
-                <svg class="h-6 w-6 fill-current text-white" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M20 3.33331C10.8 3.33331 3.33337 10.8 3.33337 20C3.33337 29.2 10.8 36.6666 20 36.6666C29.2 36.6666 36.6667 29.2 36.6667 20C36.6667 10.8 29.2 3.33331 20 3.33331ZM21.6667 28.3333H18.3334V25H21.6667V28.3333ZM21.6667 21.6666H18.3334V11.6666H21.6667V21.6666Z">
-                    </path>
-                </svg>
-            </div>
-
-            <div class="-mx-3 px-4 py-2">
-                <div class="mx-3">
-                    <span class="font-semibold text-blue-500">Info</span>
-                    <p class="text-sm text-gray-600">Sample table page</p>
-                </div>
-            </div>
-        </div>
-
+        <!-- CUERPO -->
         <table class="w-full whitespace-no-wrap">
             <thead>
                 <tr class="border-b bg-gray-50 text-left text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -78,7 +79,7 @@ const selectedUsers = ref([])
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="u, i in usrpp" :key="u.id" class="text-gray-700">
+                <tr v-for="u, i in usrprf" :key="u.id" class="text-gray-700">
                     <td class="border-b border-gray-200 bg-white px-5 py-5 text-sm">
                         <p class="text-gray-900 whitespace-no-wrap">{{ i + 1 }}</p>
                     </td>
