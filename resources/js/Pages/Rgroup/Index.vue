@@ -9,7 +9,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import  NavLink  from '@/Components/NavLink.vue';
+import NavLink from '@/Components/NavLink.vue';
 
 
 
@@ -17,7 +17,10 @@ import  NavLink  from '@/Components/NavLink.vue';
 const props = defineProps({
     rgroupchk: { type: Array },
     grppf: { type: Array },
+    error: { type: String, default: '' }
 });
+
+
 
 
 //Sirven para manejar el estado de los 
@@ -39,6 +42,10 @@ const save = () => {
         form.post(route('rgroup.store'), {
             onSuccess: () => {
                 ok('Perfil registrado correctamente');
+                closeModalForm();
+            },
+            onError: () => {
+                error('Error: El grupo/perfil ya existe');
                 closeModalForm();
             }
         })
@@ -67,10 +74,19 @@ const msj = ref('');
 const ok = (m) => {
     form.reset();
     msj.value = m;
-    ClassMsj.value = 'block';
+    ClassMsj.value = 'block bg-green-500';
     setTimeout(() => {
         ClassMsj.value = 'hidden';
     }, 5000);
+}
+const error = (m) => {
+    form.reset();
+    msj.value = m;
+    ClassMsj.value = 'block bg-yellow-300';
+    setTimeout(() => {
+        ClassMsj.value = 'hidden';
+    }, 5000);
+    
 }
 
 //CONTROLADOR DE MODAL DE FORMULARIO
@@ -134,9 +150,11 @@ const closeModalDel = () => {
         </div>
 
 
+        
+        <!-- MENSAJE DE ADVERTENCIA DE REGISTRO DUPLICADO Y -->
         <!-- MENSAJE DE CONFIRMACION DE REGISTRO -->
-        <div class="inline-flex overflow-hidden mb-4 w-full bg-white rounded-lg shadow-md" :class="ClassMsj">
-            <div class="flex justify-center items-center w-12 bg-green-500">
+        <div class="inline-flex overflow-hidden mb-4 w-full  rounded-lg shadow-md" :class="ClassMsj">
+            <div class="flex justify-center items-center w-12 ">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -150,6 +168,7 @@ const closeModalDel = () => {
                 </div>
             </div>
         </div>
+
 
         <!--  cuerpo -->
 
@@ -179,16 +198,16 @@ const closeModalDel = () => {
                             </td>
 
                             <td class=" py-3 text-sm">
-                                <NavLink :href="route('ruserg.show',r.groupname)">
-                                <PrimaryButton class="flex items-center gap-2" aria-label="Ver detalles">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                                    </svg>
-                                </PrimaryButton>
+                                <NavLink :href="route('ruserg.show', r.groupname)">
+                                    <PrimaryButton class="flex items-center gap-2" aria-label="Ver detalles">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                            stroke-width="1.5" stroke="currentColor" class="size-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                                        </svg>
+                                    </PrimaryButton>
                                 </NavLink>
                             </td>
                             <td class=" py-3 ">

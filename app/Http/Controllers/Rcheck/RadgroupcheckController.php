@@ -41,16 +41,25 @@ class RadgroupcheckController extends Controller
             'value' => 'required|string|max:30',
         ]);
 
+        //Verificar que no haya duplicaod
+        $exists = Radgroupcheck::where('groupname', $validate['groupname'])->exists();
 
-
-        Radgroupcheck::create([
-            'groupname' => $validate['groupname'],
-            'attribute' => 'Rate-Limit',
-            'op' => '=',
-            'value' => $validate['value'],
-        ]);
-
-        return redirect()->route('rgroup.index');
+        if ($exists) {
+            return back()->withErrors([
+                'error' => 'El correo ya está en uso',
+            ]);
+        } else {
+            Radgroupcheck::create([
+                'groupname' => $validate['groupname'],
+                'attribute' => 'Rate-Limit',
+                'op' => '=',
+                'value' => $validate['value'],
+            ]);
+            $rgroupchk = Radgroupcheck::select('id', 'groupname', 'value')->get();
+            return inertia::render('Rgroup/Index', [
+                'rgroupchk' => $rgroupchk,
+            ]);
+        }
     }
 
     /**
@@ -99,5 +108,5 @@ class RadgroupcheckController extends Controller
         $rgroup = Radgroupcheck::find($id);
         $rgroup->delete();
         return redirect()->route('rgroup.index');
-    }   
+    }
 }
