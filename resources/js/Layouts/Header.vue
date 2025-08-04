@@ -6,9 +6,11 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 <template>
     <header class="flex items-center justify-between border-b-4  border-blue-950 bg-white px-6 py-4">
         <div class="flex items-center">
-            <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu" class="text-gray-500 focus:outline-none lg:hidden">
+            <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu"
+                class="text-gray-500 focus:outline-none lg:hidden">
                 <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
                 </svg>
             </button>
         </div>
@@ -16,7 +18,14 @@ import DropdownLink from '@/Components/DropdownLink.vue';
         <div class="flex items-center">
             <dropdown>
                 <template #trigger>
-                    <button @click="dropdownOpen = ! dropdownOpen" class="relative block overflow-hidden">
+
+                    <button @click="dropdownOpen = !dropdownOpen" class="flex relative block overflow-hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+
                         {{ $page.props.auth.user.name }}
                     </button>
                 </template>

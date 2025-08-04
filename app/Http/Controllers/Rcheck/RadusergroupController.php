@@ -110,6 +110,8 @@ class RadusergroupController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $delusr = Radusergroup::find($id);
+        $delusr->delete();
+        return redirect()->route('ruserg.index');
     }
 }

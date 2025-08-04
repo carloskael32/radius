@@ -10,7 +10,7 @@ import Navigation from '@/Layouts/Navigation.vue';
         <div class="flex flex-1 flex-col overflow-hidden">
             <Header />
 
-            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-200">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-white">
                 <div class="container mx-auto px-2 py-8">
                     <h3 class="mb-4 text-3xl font-medium text-black">
                         <slot name="header" />
