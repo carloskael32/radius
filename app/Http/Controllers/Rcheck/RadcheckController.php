@@ -87,7 +87,7 @@ class RadcheckController extends Controller
      */
     public function update(Request $request, string $id)
     {
-
+/*  DESCONECTAR A USUARIO AL MOMENTO DE ACTUALIZAR SUS DATOS
         $radcheck = Radcheck::findOrFail($id);
         $username = $radcheck->username;
 
@@ -119,7 +119,7 @@ class RadcheckController extends Controller
                 logger()->info('Usuario desconectado: ' . $user, ['output' => $output]);
             }
         }
-
+ */
 
 
         // Validación de los datos del formulario
@@ -144,7 +144,10 @@ class RadcheckController extends Controller
      */
     public function destroy(string $id)
     {
-        $radcheck = Radcheck::findOrFail($id);
+
+
+    /* PARA DESCONECTAR A UN USUARIO PPPOE DE FORMA BRUTA */
+        /* $radcheck = Radcheck::findOrFail($id);
         $username = $radcheck->username;
 
         //borrado de usuario con datos de Radacct       
@@ -175,7 +178,9 @@ class RadcheckController extends Controller
                 logger()->info('Usuario desconectado: ' . $user, ['output' => $output]);
             }
         }
-        $radcheck->delete();
+        $radcheck->delete(); */
+        $uspp = Radcheck::find($id);
+        $uspp->delete();
         return redirect()->route('radcheck.index');
     }
 }

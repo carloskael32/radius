@@ -4,7 +4,7 @@ import DropdownLink from '@/Components/DropdownLink.vue';
 </script>
 
 <template>
-    <header class="flex items-center justify-between border-b-4  border-blue-950 bg-white px-6 py-4">
+    <header class="flex items-center justify-between border-b-2 border-gray-950 bg-white px-6 py-4">
         <div class="flex items-center">
             <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu"
                 class="text-gray-500 focus:outline-none lg:hidden">

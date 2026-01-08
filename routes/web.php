@@ -11,6 +11,7 @@ use App\Http\Controllers\Nas\NasController;
 use App\Http\Controllers\Rdacct\RadacctController;
 use App\Http\Controllers\Rcheck\RadgroupcheckController;
 use App\Http\Controllers\Rcheck\RadusergroupController;
+use App\Http\Controllers\MikroTik\MikrotikController;
 use Inertia\Inertia;
 
 /*
@@ -67,6 +68,10 @@ Route::middleware('auth')->group(function () {
     //Radusergroup
     Route::resource('ruserg', RadusergroupController::class);
     /* Route::get('/ruserg/{id}',[RadusergroupController::class, 'index'])->name('ruserg.index'); */
+
+    //Mikrotik
+    Route::get('/pppoe/sesiones', [MikrotikController::class, 'sessions']);
+    
 
 });
 
