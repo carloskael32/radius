@@ -71,7 +71,15 @@ class ClientController extends Controller
      */
     public function show(Client $client)
     {
-        //
+        $clientes = $client;
+
+        $clientes->fecha_creacion = $clientes->created_at->format('d/m/Y H:i');
+
+        //return response()->json($clientes);
+
+        return inertia::render('Client/Show', [
+            'clientes' => $clientes,
+        ]);
     }
 
     /**
@@ -88,7 +96,7 @@ class ClientController extends Controller
     public function update(Request $request, string $id)
     {
         $validate = $request->validate([
-            'username' => 'required|string|max:64|unique:clients,username',
+            'username' => 'required|string|max:64',
             'nombre_completo' => 'required|string|max:100',
             'email' => 'nullable|email|max:100',
             'telefono' => 'nullable|string|max:20',

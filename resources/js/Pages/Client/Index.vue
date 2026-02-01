@@ -5,12 +5,49 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 
+
+//datatable primevue
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
+//para el filter
+const FilterMatchMode = {
+    CONTAINS: 'contains',
+};
 
 const props = defineProps({
     clients: { type: Object },
     errors: { type: Object, default: () => ({}) }
 });
+
+
+//para las columnas del datatable
+const columns = [{ data: "id" }, { data: "username" }, { data: "nombre_completo" }, { data: "email" }, { data: "telefono" }, { data: "direccion" }, { data: "estado" }, { data: "observaciones" }];
+
+//para el boton de filtrado de datos
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS } // CORREGIDO
+});
+
+//para exportar la informacion
+// Función para exportar a CSV
+const dt = ref();
+const exportCSV = () => {
+    if (dt.value) {
+        dt.value.exportCSV({
+            selectionOnly: false, // Exportar todos los datos
+            fileName: 'usuarios.csv'
+        });
+    }
+};
+
+
 
 // Añade una ref para manejar errores específicos para validaciones de entrada
 const validationErrors = ref({});
@@ -179,7 +216,7 @@ const hasError = (field) => {
                                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z"
                                 clip-rule="evenodd" />
                         </svg>
-                        Agregar Usuario
+                        Agregar Cliente
                     </PrimaryButton>
                 </div>
             </div>
@@ -206,71 +243,116 @@ const hasError = (field) => {
             <!-- CUERPO -->
             <div class="w-full overflow-hidden ">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-600">
-                        <thead class="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider text-center">
-                            <tr>
-                                <th class="px-4 py-3">#</th>
-                                <th class="px-4 py-3">Nombre de usuario</th>
-                                <th class="px-4 py-3">nombre completo</th>
-                                <th class="px-4 py-3">correo</th>
-                                <th class="px-4 py-3">telefono</th>
-                                <th class="px-4 py-3">direccion</th>
-                                <th class="px-4 py-3">estado</th>
-                                <th class="px-4 py-3">observaciones</th>
+                    <DataTable :value="clients" v-model:filters="filters" ref="dt" selectionMode="single"
+                        :globalFilterFields="['username', 'nombre_completo', 'email', 'telefono', 'direccion', 'estado', 'observaciones']"
+                        paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+                        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+                        <template #header>
+                            <!-- Filtro de búsqueda -->
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                <div class="w-full md:w-auto">
+                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters['global'].value" placeholder="Buscar usuario..."
+                                            class="w-full pl-8 rounded-lg" />
+                                    </IconField>
+                                </div>
 
-                                <th colspan="2" class="px-4 py-3 text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-100">
-                            <tr v-for="c, i in clients" :key="c.id" class="text-gray-700 hover:bg-gray-50 transition">
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ (i + 1) }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.username }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.nombre_completo }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.email }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.telefono }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.direccion }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.estado }}
-                                </td>
-                                <td class="px-4 py-3 text-sm border-b border-gray-500">
-                                    {{ c.observaciones }}
-                                </td>
+                                <!-- Botones de exportación -->
+                                <div class="flex gap-2">
 
-                                <td class="px-2 py-3 text-sm text-center">
-                                    <button @click="openModalForm(2, c)"
-                                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
+                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
+                                </div>
+                            </div>
+                        </template>
+                        <!--    <Column field="id" sortable header="id"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column> -->
+                        <Column field="username" sortable header="username"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="nombre_completo" sortable header="Nombre completo"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <!-- <Column field="email" sortable header="correo"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column> -->
+                        <Column field="telefono" sortable header="telefono"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="direccion" sortable header="direccion"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="estado" sortable header="estado"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300 text-center">
+                            <template #body="{ data }">
+                                <span v-if="data.estado === 'activo'"
+                                    class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
+                                    {{ data.estado }}
+                                </span>
+                                <span v-else class="bg-red-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
+                                    {{ data.estado }}
+                                </span>
+                            </template>
+                        </Column>
+                      <!--   <Column field="observaciones" sortable header="observaciones"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column> -->
+
+                        <Column header="acciones" #body="slotProps" 
+                            header-class="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider flex justify-center py-5"
+                            body-class="border border-gray-300">
+
+                            <div class="flex gap-2">
+                                                       
+                                <Link :href="route('client.show', slotProps.data )">
+                                    <button
+                                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-purple-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                            class="size-5 text-purple-600">
+                                            <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                                            <path fill-rule="evenodd"
+                                                d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </button>
-                                </td>
-                                <td class="px-2 py-3 text-sm text-center">
-                                    <button @click="openModalDel(c)"
-                                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </Link>
+                                
+                                <button @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-blue-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+                                </button>
+
+                                <button @click="openModalDel(slotProps.data)"
+                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-200">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-red-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </Column>
+
+
+                    </DataTable>
                 </div>
             </div>
         </div>
@@ -320,7 +402,7 @@ const hasError = (field) => {
                             <input type="text" id="username" v-model="form.username"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
                                 placeholder="user1" required />
-                                 <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
+                            <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('username') }}
                             </p>
                         </div>

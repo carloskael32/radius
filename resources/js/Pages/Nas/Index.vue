@@ -6,11 +6,46 @@ import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
+//datatable primevue
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
+import Button from 'primevue/button';
+
+
+//para el filter
+const FilterMatchMode = {
+    CONTAINS: 'contains',
+};
+
 
 const props = defineProps({
     nas: { type: Object },
     total: { type: Array },
 });
+
+//para mostrar los datos en cada columna del datatable
+const columns = [{ data: "id" }, { data: "nasname" }, { data: "shortname" }, { data: "type" }, { data: "ports" }, { data: "secret" }, { data: "status" }, { data: "description" }];
+
+//para el boton de filtrado de datos
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS } // CORREGIDO
+});
+
+//para exportar la informacion
+// Función para exportar a CSV
+const dt = ref();
+const exportCSV = () => {
+    if (dt.value) {
+        dt.value.exportCSV({
+            selectionOnly: false, // Exportar todos los datos
+            fileName: 'usuarios.csv'
+        });
+    }
+};
+
 
 
 const form = useForm({
@@ -50,7 +85,7 @@ const save = () => {
             onSuccess: () => {
                 ok('Router registrado');
                 closeModalForm();
-                window.location.reload();
+
             },
         });
     } else {
@@ -58,7 +93,7 @@ const save = () => {
             onSuccess: () => {
                 ok('Router actualizado')
                 closeModalForm();
-                window.location.reload();
+
             },
         });
     }
@@ -70,7 +105,7 @@ const deleteNas = () => {
         onSuccess: () => {
             ok('NAS eliminado');
             closeModalDel();
-            window.location.reload();
+
         },
     });
 }
@@ -183,92 +218,100 @@ const closeModalDel = () => {
             <!-- CUERPO -->
             <div class="w-full overflow-hidden ">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                    <table class=" min-w-full divide-y divide-gray-200 text-sm text-left text-gray-600">
-                        <thead class="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider text-center">
-                            <tr>
-                                <th class="px-4 py-3 ">#</th>
-                                <th class="px-4 py-3 ">NAS / HOST</th>
-                                <th class="px-4 py-3 ">Nombre Corto</th>
-                                <th class="px-4 py-3 ">Tipo</th>
-                                <th class="px-4 py-3 "># Puertos</th>
-                                <th class="px-4 py-3 ">Clave</th>
-                                <th class="px-4 py-3">Descripcion</th>
-                                <th class="px-4 py-3"> Estado</th>
+                    <DataTable :value="nas" v-model:filters="filters" ref="dt" selectionMode="single"
+                        :globalFilterFields="['nasname', 'shortname', 'type', 'ports', 'secret', 'status', 'description']"
+                        paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
+                        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+                        <template #header>
+                            <!-- Filtro de búsqueda -->
+                            <div
+                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                <div class="w-full md:w-auto">
+                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                        <InputIcon>
+                                            <i class="pi pi-search" />
+                                        </InputIcon>
+                                        <InputText v-model="filters['global'].value" placeholder="Buscar nas..."
+                                            class="w-full pl-8 rounded-lg" />
+                                    </IconField>
+                                </div>
 
-                                <th class="px-4 py-3">user</th>
-                                <th class="px-4 py-3">password</th>
-                                <th colspan="2" class="px-4 py-3 text-center">Acciones</th>
+                                <!-- Botones de exportación -->
+                                <div class="flex gap-2">
+                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
+                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
+                                </div>
+                            </div>
+                        </template>
+                        <!--    <Column field="id" sortable header="id"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column> -->
+                        <Column field="nasname" sortable header="IP/host"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="shortname" sortable header="Nombre corto"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="type" sortable header="tipo"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="ports" sortable header="puertos"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="secret" sortable header="clave"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="status" sortable header="estado"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300 text-center">
+                            <template #body="{ data }">
+                                <span v-if="data.status === 'active'"
+                                    class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
+                                    {{data.status}}
+                                </span>
+                                <span v-else class="bg-red-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
+                                    {{data.status}}
+                                </span>
+                            </template>
 
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-100 text-md">
-                            <tr v-for="n, i in nas" :key="n.id" class="text-gray-700 hover:bg-gray-50 transition">
-                                <td class="px-4 py-3 border-b border-gray-500 ">
-                                    {{ (i + 1) }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500">
-                                    {{ n.nasname }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500">
-                                    {{ n.shortname }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500 lowercase">
-                                    <span
-                                        class=" bg-fuchsia-300 text-fuchsia-900 inline-block px-2  rounded-xl font-semibold">{{
-                                            n.type }}</span>
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500">
-                                    {{ n.ports }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500">
-                                    {{ n.secret }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500 max-w-0">
-                                    {{ n.description }}
-                                </td>
-                                <td class="px-4 py-3 border-b border-gray-500">
-                                    <span v-if="n.status == 'active'"
-                                        class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
-                                        {{ n.status }}
-                                    </span>
-                                    <span v-else
-                                        class="bg-red-300 text-red-900 inline-block  px-3 rounded-xl font-semibold">
-                                        {{ n.status }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3  border-b border-gray-500">
-                                    {{ n.user }}
-                                </td>
-                                <td class="px-4 py-3  border-b border-gray-500 max-w-0 truncate">
-                                    {{ n.pass }}
-                                </td>
+                        </Column>
+                        <Column field="description" sortable header="observaciones"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+
+                        <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
+                            <div class="flex gap-2">
+                                <button @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+                                </button>
+
+                                <button @click="openModalDel(slotProps.data)"
+                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-50">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </Column>
 
 
-                                <td class="px-2 py-3 text-center">
-                                    <button @click="openModalForm(2, n)"
-                                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                                        </svg>
-                                    </button>
-                                </td>
-                                <td class="px-2 py-3 text-center">
-                                    <button @click="openModalDel(n)"
-                                        class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-50">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                            stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                        </svg>
-                                    </button>
-                                </td>
-                            </tr>
-
-
-                        </tbody>
-                    </table>
+                    </DataTable>
                 </div>
 
             </div>
@@ -522,7 +565,7 @@ const closeModalDel = () => {
                             </p>
                             <p class="mt-2 text-base font-semibold text-gray-900">
                                 {{ eform.nasname }} <span class="text-gray-500 font-medium">({{ eform.shortname
-                                }})</span>
+                                    }})</span>
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.
@@ -547,46 +590,3 @@ const closeModalDel = () => {
 
     </AuthenticatedLayout>
 </template>
-
-<style>
-/* ESTILO DE DATATABLE */
-div.top {
-    display: flex;
-    justify-content: space-between;
-    /* separa a izquierda y derecha */
-    align-items: center;
-    /* centra verticalmente */
-    margin-bottom: 10px;
-    /* espacio debajo */
-}
-
-div.dataTables_length {
-    flex: 1;
-    text-align: left;
-}
-
-div.dataTables_filter {
-    flex: 1;
-    text-align: right;
-}
-
-div.bottom {
-    display: flex;
-    justify-content: space-between;
-    /* separa izquierda/derecha */
-    align-items: center;
-    /* centra verticalmente */
-    margin-top: 10px;
-    /* espacio arriba */
-}
-
-div.dataTables_info {
-    flex: 1;
-    text-align: left;
-}
-
-div.dataTables_paginate {
-    flex: 1;
-    text-align: right;
-}
-</style>

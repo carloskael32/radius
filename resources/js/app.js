@@ -7,9 +7,15 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
 //datatable primevue
-import Aura from '@primevue/themes/aura'
+//import Aura from '@primevue/themes/aura'
+import Aura from '@primevue/themes/aura'; // Tema por defecto (nuevo)
+import Lara from '@primevue/themes/lara'; // Material-like
+import Material from '@primevue/themes/material'; // Google Material
+
 
 import PrimeVue from 'primevue/config';
+
+
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Toolbar from 'primevue/toolbar';
@@ -40,8 +46,16 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(PrimeVue, {
-                theme: {
-                    preset: Aura
+               theme: {
+                    preset: Lara,
+                    options: {
+                        prefix: 'p', // Prefijo para las clases
+                        darkModeSelector: 'system', // O cambia a 'system'/'media'/'class' para modo oscuro
+                        cssLayer: {
+                            name: 'primevue',
+                            order: 'tailwind-base, primevue, tailwind-utilities'
+                        }
+                    }
                 }
             })
             .component('Datatable', DataTable)
@@ -51,6 +65,7 @@ createInertiaApp({
             .component('IconField', IconField)
             .component('InputIcon', InputIcon)
             .component('Button', Button)
+            
             .mount(el);
 
     },

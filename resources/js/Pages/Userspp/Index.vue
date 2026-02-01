@@ -34,6 +34,7 @@ const FilterMatchMode = {
       DATE_AFTER: 'dateAfter' */
 };
 
+//para mostrar los datos en cada columna del datatable
 const columns = [{ data: "id" }, { data: "username" }, { data: "value" }];
 
 //para el boton de filtrado de datos
@@ -55,7 +56,6 @@ const exportCSV = () => {
 
 const props = defineProps({
     radchecks: { type: Array },
-    //success: { type: String },
 });
 
 const form = useForm({
@@ -197,12 +197,15 @@ const deleteUser = () => {
 
 
             <!-- CUERPO -->
-            <div class="w-full overflow-hidden">
-                <div class="min-w-full divide-y divide-gray-200 text-sm text-left text-gray-600">
+               <div class="w-full overflow-hidden ">
+                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
-                    <DataTable :value="radchecks" v-model:filters="filters" ref="dt" showGridlines paginator :rows="5"
-                        selectionMode="single" :rowsPerPageOptions="[5, 10, 20, 50]"
-                        :globalFilterFields="['username', 'value']" filterDisplay="menu">
+                    <DataTable :value="radchecks" v-model:filters="filters" ref="dt" selectionMode="single"
+                        :globalFilterFields="['username', 'value']" paginator :rows="5"
+                        :rowsPerPageOptions="[5, 10, 20, 50]"
+                        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+
                         <template #header>
                             <!-- Filtro de búsqueda -->
                             <div
@@ -213,23 +216,36 @@ const deleteUser = () => {
                                             <i class="pi pi-search" />
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Buscar usuario..."
-                                            class="w-full" />
+                                            class="w-full pl-8 rounded-lg" />
                                     </IconField>
                                 </div>
 
                                 <!-- Botones de exportación -->
                                 <div class="flex gap-2">
-
-                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" severity="help"
-                                         raised class="text-sm" />
+                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
+                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
                                 </div>
                             </div>
                         </template>
 
-                        <Column field="id" sortable header="id"></Column>
-                        <Column field="username" sortable header="nombre"></Column>
-                        <Column field="value" sortable header="pass"></Column>
-                        <Column header="acciones" #body="slotProps">
+                        <!--      <Column header="#" style="width: 5%;">
+                            <template #body="slotProps">
+                                {{ slotProps.index + 1 }}
+                            </template>
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column> -->
+
+                        <Column field="username" sortable header="nombre"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column field="value" sortable header="pass"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+                        <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
                             <div class="flex gap-2">
                                 <button @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
@@ -250,6 +266,7 @@ const deleteUser = () => {
                                 </button>
                             </div>
                         </Column>
+
                     </DataTable>
                 </div>
             </div>
@@ -347,48 +364,3 @@ const deleteUser = () => {
         </Modal>
     </AuthenticatedLayout>
 </template>
-
-
-
-<style>
-/* ESTILO DE DATATABLE */
-div.top {
-    display: flex;
-    justify-content: space-between;
-    /* separa a izquierda y derecha */
-    align-items: center;
-    /* centra verticalmente */
-    margin-bottom: 10px;
-    /* espacio debajo */
-}
-
-div.dataTables_length {
-    flex: 1;
-    text-align: left;
-}
-
-div.dataTables_filter {
-    flex: 1;
-    text-align: right;
-}
-
-div.bottom {
-    display: flex;
-    justify-content: space-between;
-    /* separa izquierda/derecha */
-    align-items: center;
-    /* centra verticalmente */
-    margin-top: 10px;
-    /* espacio arriba */
-}
-
-div.dataTables_info {
-    flex: 1;
-    text-align: left;
-}
-
-div.dataTables_paginate {
-    flex: 1;
-    text-align: right;
-}
-</style>

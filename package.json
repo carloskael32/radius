@@ -19,11 +19,16 @@
         "vue": "^3.4.0"
     },
     "dependencies": {
+        "@primeuix/themes": "^2.0.3",
+        "@primevue/themes": "^4.5.4",
         "datatables.net-buttons": "^3.2.6",
         "datatables.net-buttons-dt": "^3.2.6",
         "datatables.net-vue3": "^3.0.4",
         "jszip": "^3.10.1",
         "pdfmake": "^0.3.3",
+        "primeflex": "^4.0.0",
+        "primeicons": "^7.0.0",
+        "primevue": "^4.5.4",
         "vue-multiselect": "^3.2.0"
     }
 }
