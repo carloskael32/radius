@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
     //Radgroupcheck
     Route::resource('rgroup', RadgroupcheckController::class);
+    Route::post('rgroup/{groupId}/assign-clients', [RadgroupcheckController::class, 'assignClients'])->name('rgroup.assignClients');
+    Route::post('rgroup/{id}/delClients',[RadgroupcheckController::class, 'delClients'])->name('rgroup.delClients');
 
     //Radusergroup
     Route::resource('ruserg', RadusergroupController::class);

@@ -5,6 +5,8 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 
 //datatable primevue
 import DataTable from 'primevue/datatable';
@@ -22,7 +24,7 @@ const FilterMatchMode = {
 
 
 const props = defineProps({
-    nas: { type: Object },
+    nas: { type: Array },
     total: { type: Array },
 });
 
@@ -37,6 +39,8 @@ const filters = ref({
 //para exportar la informacion
 // Función para exportar a CSV
 const dt = ref();
+const toast = useToast();
+
 const exportCSV = () => {
     if (dt.value) {
         dt.value.exportCSV({
@@ -83,15 +87,14 @@ const save = () => {
     if (operation.value == 1) {
         form.post(route('nas.store'), {
             onSuccess: () => {
-                ok('Router registrado');
+                ok('Nas registrado correctamente');
                 closeModalForm();
-
             },
         });
     } else {
         form.put(route('nas.update', eform.value.id), {
             onSuccess: () => {
-                ok('Router actualizado')
+                ok('Nas actualizado correctamente')
                 closeModalForm();
 
             },
@@ -103,7 +106,7 @@ const save = () => {
 const deleteNas = () => {
     form.delete(route('nas.destroy', eform.value.id), {
         onSuccess: () => {
-            ok('NAS eliminado');
+            ok('NAS eliminado correctamente');
             closeModalDel();
 
         },
@@ -112,16 +115,9 @@ const deleteNas = () => {
 
 
 //MENSAJES DE CONFIRMACION
-const ClassMsj = ref('hidden');
-const msj = ref('');
-
 const ok = (m) => {
     form.reset();
-    msj.value = m;
-    ClassMsj.value = 'block';
-    setTimeout(() => {
-        ClassMsj.value = 'hidden';
-    }, 5000);
+    toast.add({ severity: 'success', summary: 'Éxito', detail: m, life: 3000 });
 }
 
 
@@ -174,6 +170,7 @@ const closeModalDel = () => {
 <template>
 
     <Head title="Nas" />
+    <Toast />
 
     <AuthenticatedLayout>
 
@@ -197,23 +194,6 @@ const closeModalDel = () => {
             </div>
 
 
-
-            <!-- MENSAJE DE CONFIRMACION DE REGISTRO -->
-            <div :class="ClassMsj" class="mb-4">
-                <div class="rounded-lg bg-green-50 border border-green-100 p-3 flex items-start gap-3">
-                    <div class="flex-shrink-0 mt-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="h-6 w-6 text-green-600">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-green-800">Success</p>
-                        <p class="text-sm text-green-700">{{ msj }}</p>
-                    </div>
-                </div>
-            </div>
 
             <!-- CUERPO -->
             <div class="w-full overflow-hidden ">

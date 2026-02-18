@@ -23,6 +23,9 @@ import InputText from 'primevue/inputtext';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import Button from 'primevue/button';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
+
 
 
 import 'primeicons/primeicons.css'; // Icons
@@ -56,8 +59,16 @@ createInertiaApp({
                             order: 'tailwind-base, primevue, tailwind-utilities'
                         }
                     }
+                },
+                zIndex: {
+                    modal: 1100,        // z-index para modales
+                    overlay: 1000,      // z-index para overlays
+                    dropdown: 1000,     // z-index para dropdowns
+                    tooltip: 1100,      // z-index para tooltips
+                    toast: 1200         // z-index para toast (por encima de todo)
                 }
             })
+            .use(ToastService)
             .component('Datatable', DataTable)
             .component('Column', Column)
             .component('Toolbar', Toolbar)
@@ -65,6 +76,7 @@ createInertiaApp({
             .component('IconField', IconField)
             .component('InputIcon', InputIcon)
             .component('Button', Button)
+            .component('Toast', Toast)
             
             .mount(el);
 

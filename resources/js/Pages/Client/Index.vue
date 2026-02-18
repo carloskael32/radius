@@ -6,7 +6,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { Link } from '@inertiajs/vue3';
-
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
 
 //datatable primevue
 import DataTable from 'primevue/datatable';
@@ -38,6 +39,8 @@ const filters = ref({
 //para exportar la informacion
 // Función para exportar a CSV
 const dt = ref();
+const toast = useToast();
+
 const exportCSV = () => {
     if (dt.value) {
         dt.value.exportCSV({
@@ -78,8 +81,6 @@ const eform = ref({
 })
 //const mn = defineProps(['success']);
 
-const ClassMsj = ref('hidden');
-const msj = ref('');
 const operation = ref(1);
 
 // envio de datos al controlador insert update
@@ -113,11 +114,7 @@ const save = () => {
 }
 const ok = (m) => {
     form.reset();
-    msj.value = m;
-    ClassMsj.value = 'block';
-    setTimeout(() => {
-        ClassMsj.value = 'hidden';
-    }, 5000);
+    toast.add({ severity: 'success', summary: 'Éxito', detail: m, life: 3000 });
 }
 
 //controlador de modal de formulario
@@ -200,6 +197,7 @@ const hasError = (field) => {
 <template>
 
     <Head title="User PPPoE" />
+    <Toast />
 
     <AuthenticatedLayout>
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
@@ -218,24 +216,6 @@ const hasError = (field) => {
                         </svg>
                         Agregar Cliente
                     </PrimaryButton>
-                </div>
-            </div>
-
-
-            <!-- MENSAJE DE CONFIRMACION DE REGISTRO -->
-            <div :class="ClassMsj" class="mb-4">
-                <div class="rounded-lg bg-green-50 border border-green-100 p-3 flex items-start gap-3">
-                    <div class="flex-shrink-0 mt-0.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="h-6 w-6 text-green-600">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-green-800">Success</p>
-                        <p class="text-sm text-green-700">{{ msj }}</p>
-                    </div>
                 </div>
             </div>
 

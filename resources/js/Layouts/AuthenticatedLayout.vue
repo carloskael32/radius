@@ -4,6 +4,7 @@ import Navigation from '@/Layouts/Navigation.vue';
 </script>
 
 <template>
+    <Toast />
     <div class="flex h-screen bg-red font-roboto">
         <Navigation />
 
@@ -22,3 +23,15 @@ import Navigation from '@/Layouts/Navigation.vue';
         </div>
     </div>
 </template>
+<style>
+.p-paginator {
+    @apply flex justify-center gap-2 mt-2;
+}
+
+.p-paginator-first,
+.p-paginator-prev,
+.p-paginator-next,
+.p-paginator-last {
+    @apply px-3 py-1 rounded-full bg-gray-100 text-black hover:bg-gray-400 disabled:opacity-50;
+}
+</style>

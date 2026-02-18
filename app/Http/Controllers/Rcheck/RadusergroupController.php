@@ -58,12 +58,12 @@ class RadusergroupController extends Controller
      */
     public function show(string $groupname)
     {
-
+        //devuelve el nombre dle grupo y sus clientes
         $grppf = $groupname;
         $usrprf = Radusergroup::select('id', 'username')->where('groupname', $grppf)->get();
 
-        //$usrpp = DB::select('select username from radcheck where username not in (select username from radusergroup)');
 
+        //devuelve usuarios que no esten en ningun grupo de radusergroup
         $usrpp = DB::table('radcheck')
             ->whereNotIn('username', function ($query) {
                 $query->select('username')
@@ -72,13 +72,13 @@ class RadusergroupController extends Controller
             ->get();
 
 
-     /*    return response()->json([
+        /* return response()->json([
             'grppf' => $grppf,
             'usrpp' => $usrpp,
             'usrprf' => $usrprf,
-            'usuarios' => $usuarios,
-        ]);
- */
+            //'usuarios' => $usuarios,
+        ]);  */
+ 
 
         return inertia::render('Rusergroup/Index', [
             'grppf' => $grppf,
