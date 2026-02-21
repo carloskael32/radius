@@ -23,13 +23,14 @@ const FilterMatchMode = {
 };
 
 const props = defineProps({
-    clients: { type: Object },
+    clients: { type: Array },
+    grupos: { type: Array },
     errors: { type: Object, default: () => ({}) }
 });
 
 
 //para las columnas del datatable
-const columns = [{ data: "id" }, { data: "username" }, { data: "nombre_completo" }, { data: "email" }, { data: "telefono" }, { data: "direccion" }, { data: "estado" }, { data: "observaciones" }];
+const columns = [{ data: "id" }, { data: "username" }, { data: "nombre_completo" }, { data: "email" }, { data: "telefono" }, { data: "direccion" }, { data: "estado" }, { data: "observaciones" }, { data: "plan" }];
 
 //para el boton de filtrado de datos
 const filters = ref({
@@ -63,12 +64,13 @@ const form = useForm({
     direccion: '',
     estado: '',
     observaciones: '',
+    plan: '',
     password_radius: '',
 
 });
 
 const eform = ref({
-
+    id: '',
     username: '',
     nombre_completo: '',
     email: '',
@@ -76,7 +78,8 @@ const eform = ref({
     direccion: '',
     estado: '',
     observaciones: '',
-    //password_radius: '',
+    plan: '',
+    password_radius: '',
 
 })
 //const mn = defineProps(['success']);
@@ -139,6 +142,7 @@ const openModalForm = (op, c) => {
         form.telefono = c.telefono;
         form.observaciones = c.observaciones;
         form.estado = c.estado;
+        form.plan = c.plan;
 
         eform.value.id = c.id;
     }
@@ -287,18 +291,33 @@ const hasError = (field) => {
                                 </span>
                             </template>
                         </Column>
-                      <!--   <Column field="observaciones" sortable header="observaciones"
+                        <!--   <Column field="observaciones" sortable header="observaciones"
                             headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column> -->
+                        <Column field="plan" sortable header="plan"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                            <template #body="{ data }">
+                                <span v-if="data.plan"
+                                    class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
+                                    {{ data.plan }}
+                                </span>
+                                <span v-else="data.plan == null"
+                                    class="bg-yellow-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
 
-                        <Column header="acciones" #body="slotProps" 
+                                    ninguno
+                                </span>
+                            </template>
+                        </Column>
+
+                        <Column header="acciones" #body="slotProps"
                             header-class="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider flex justify-center py-5"
                             body-class="border border-gray-300">
 
                             <div class="flex gap-2">
-                                                       
-                                <Link :href="route('client.show', slotProps.data )">
+
+                                <Link :href="route('client.show', slotProps.data)">
                                     <button
                                         class="inline-flex items-center justify-center p-2 rounded-md hover:bg-purple-200">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -310,7 +329,7 @@ const hasError = (field) => {
                                         </svg>
                                     </button>
                                 </Link>
-                                
+
                                 <button @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -365,7 +384,7 @@ const hasError = (field) => {
                 <form @submit.prevent="save">
 
 
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-3 gap-2 pb-4">
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre de
                                 usuario</label>
@@ -385,6 +404,30 @@ const hasError = (field) => {
                             <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('username') }}
                             </p>
+                        </div>
+                        <div>
+                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Plan de
+                                Servicio</label>
+                            <div class="relative">
+                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                        class="size-5">
+                                        <path
+                                            d="M16.555 5.412a8.028 8.028 0 0 0-3.503-2.81 14.899 14.899 0 0 1 1.663 4.472 8.547 8.547 0 0 0 1.84-1.662ZM13.326 7.825a13.43 13.43 0 0 0-2.413-5.773 8.087 8.087 0 0 0-1.826 0 13.43 13.43 0 0 0-2.413 5.773A8.473 8.473 0 0 0 10 8.5c1.18 0 2.304-.24 3.326-.675ZM6.514 9.376A9.98 9.98 0 0 0 10 10c1.226 0 2.4-.22 3.486-.624a13.54 13.54 0 0 1-.351 3.759A13.54 13.54 0 0 1 10 13.5c-1.079 0-2.128-.127-3.134-.366a13.538 13.538 0 0 1-.352-3.758ZM5.285 7.074a14.9 14.9 0 0 1 1.663-4.471 8.028 8.028 0 0 0-3.503 2.81c.529.638 1.149 1.199 1.84 1.66ZM17.334 6.798a7.973 7.973 0 0 1 .614 4.115 13.47 13.47 0 0 1-3.178 1.72 15.093 15.093 0 0 0 .174-3.939 10.043 10.043 0 0 0 2.39-1.896ZM2.666 6.798a10.042 10.042 0 0 0 2.39 1.896 15.196 15.196 0 0 0 .174 3.94 13.472 13.472 0 0 1-3.178-1.72 7.973 7.973 0 0 1 .615-4.115ZM10 15c.898 0 1.778-.079 2.633-.23a13.473 13.473 0 0 1-1.72 3.178 8.099 8.099 0 0 1-1.826 0 13.47 13.47 0 0 1-1.72-3.178c.855.151 1.735.23 2.633.23ZM14.357 14.357a14.912 14.912 0 0 1-1.305 3.04 8.027 8.027 0 0 0 4.345-4.345c-.953.542-1.971.981-3.04 1.305ZM6.948 17.397a8.027 8.027 0 0 1-4.345-4.345c.953.542 1.971.981 3.04 1.305a14.912 14.912 0 0 0 1.305 3.04Z" />
+                                    </svg>
+                                </div>
+                            </div>
+                           <!--  <input type="text" id="plan" v-model="form.plan"
+                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="premiun" /> -->
+
+                            <select v-model="form.plan" class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md" required>
+                                <option value="">Selecciona</option>
+                                <option v-for="g in grupos" key="g.id" :value="g.groupname">{{ g.groupname }}</option>
+                            </select>
+                        <!--     <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('plan') }}
+                            </p> -->
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Clave de
@@ -492,6 +535,7 @@ const hasError = (field) => {
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
                                 placeholder="77712312" required />
                         </div>
+
                     </div>
                     <div class="pb-4">
                         <label for="visitors"

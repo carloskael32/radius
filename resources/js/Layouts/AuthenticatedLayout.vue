@@ -5,15 +5,15 @@ import Navigation from '@/Layouts/Navigation.vue';
 
 <template>
     <Toast />
-    <div class="flex h-screen bg-red font-roboto">
+    <div class="flex h-screen bg-white font-roboto">
         <Navigation />
 
         <div class="flex flex-1 flex-col overflow-hidden">
             <Header />
 
-            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100">
-                <div class="container mx-auto px-6 py-6">
-                    <h3 class="text-3xl font-medium text-black ">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
+                <div class="container mx-auto px-6 py-8">
+                    <h3 class="text-4xl font-bold text-gray-900 mb-6">
                         <slot name="header" />
                     </h3>
 
@@ -23,6 +23,7 @@ import Navigation from '@/Layouts/Navigation.vue';
         </div>
     </div>
 </template>
+
 <style>
 .p-paginator {
     @apply flex justify-center gap-2 mt-2;
@@ -32,6 +33,6 @@ import Navigation from '@/Layouts/Navigation.vue';
 .p-paginator-prev,
 .p-paginator-next,
 .p-paginator-last {
-    @apply px-3 py-1 rounded-full bg-gray-100 text-black hover:bg-gray-400 disabled:opacity-50;
+    @apply px-3 py-1 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 transition;
 }
 </style>

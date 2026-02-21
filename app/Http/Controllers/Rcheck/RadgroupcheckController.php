@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers\Rcheck;
+
 use App\Http\Controllers\Controller;
+use App\Models\Client\Client;
 use Illuminate\Http\Request;
 use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radusergroup;
@@ -77,7 +79,9 @@ class RadgroupcheckController extends Controller
      */
     public function show(string $groupname)
     {
-        
+
+
+
 
         //devuelve el nombre de  clientes del grupo selecionado
         $usrcongrupo = Radusergroup::select('id', 'username')->where('groupname', $groupname)
@@ -91,6 +95,8 @@ class RadgroupcheckController extends Controller
                     ->from('radusergroup');
             })
             ->get();
+
+
         //return response()->json($usrsingrupo);
 
 
@@ -128,6 +134,10 @@ class RadgroupcheckController extends Controller
                     'groupname' => $rgroup->groupname,
                     'priority' => 1,
                 ]);
+                Client::where('username', $username)
+                    ->update([
+                        'plan' => $rgroup->groupname,
+                    ]);
             }
         }
 
@@ -135,7 +145,6 @@ class RadgroupcheckController extends Controller
             'message' => 'Clientes asignados correctamente',
             'success' => true
         ]);
-        
     }
 
     //PARA ELIMINAR LOS CIENTES DE LOS GRUPOS DE SERVICIO
@@ -143,6 +152,8 @@ class RadgroupcheckController extends Controller
     {
         $rgroup = Radusergroup::find($id);
         $rgroup->delete();
+        Client::where('username', $rgroup->username)
+            ->update(['plan' => null]);
         return response()->json([
             'message' => 'Clientes eliminado correctamente',
             'success' => true
@@ -173,7 +184,7 @@ class RadgroupcheckController extends Controller
 
         //actualizar el grupo de servicio de los clientes
         Radusergroup::where('groupname', $rgroup->groupname)
-        ->update(['groupname' => $validate['groupname']]);
+            ->update(['groupname' => $validate['groupname']]);
 
         $rgroup->update([
             'groupname' => $validate['groupname'],
@@ -193,7 +204,7 @@ class RadgroupcheckController extends Controller
         $rgroup = Radgroupcheck::find($id);
 
         $delClient = Radusergroup::where('groupname', $rgroup->groupname)->delete();
- 
+
         $rgroup->delete();
         return redirect()->route('rgroup.index');
     }

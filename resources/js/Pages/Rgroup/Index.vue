@@ -184,19 +184,19 @@ const closeModalAdd = () => {
     showModalAdd.value = false;
     selectedClients.value = [];
     selectedClientsNoGroup.value = [];
-    //router.get(route('rgroup.index'));
+    router.reload({ only: ['rgroupchk']});
 }
 
 // Función para recargar datos del modal sin cerrarlo
 const refreshModalData = () => {
-    modalData.value.loading = true;
+    //modalData.value.loading = true;
     axios.get(route('rgroup.show', modalData.value.groupName))
         .then(response => {
             modalData.value.clients = response.data.clients || [];
             modalData.value.clsngr = response.data.clsngr || [];
             selectedClients.value = [];
             selectedClientsNoGroup.value = [];
-            modalData.value.loading = false;
+            //modalData.value.loading = false;
         })
         .catch(error => {
             console.error('Error al recargar datos:', error);
@@ -222,7 +222,7 @@ const saveClientsToGroup = () => {
         .then(response => {
             ok('Clientes asignados correctamente');
             refreshModalData();
-            closeModalAdd();
+            //closeModalAdd();
             
         })
         .catch(error => {
@@ -335,7 +335,7 @@ const DelteClient = () => {
                     </div>
 
                     <div class="grid grid-cols-2 p-4">
-                        <p class="flex justify-start">
+                        <div class="flex justify-start">
 
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                 class="size-5">
@@ -343,7 +343,7 @@ const DelteClient = () => {
                                     d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z" />
                             </svg>
                         <p class="pl-2">Clientes</p>
-                        </p>
+                        </div>
 
                         <p class="flex justify-end">{{ r.total_usuarios }}</p>
                     </div>
@@ -505,7 +505,7 @@ const DelteClient = () => {
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
             <div class="p-5">
                 <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900"><u>Confirmar eliminación</u></h2>
+                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
                     <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -661,7 +661,7 @@ const DelteClient = () => {
 
                 <!-- BOTONES DE ACCIÓN -->
                 <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
-                    <SecondaryButton class="w-full" @click="closeModalAdd">Cancelar</SecondaryButton>
+                    <SecondaryButton class="w-full" @click="closeModalAdd">Cerrar</SecondaryButton>
                     <PrimaryButton class="w-full" :disabled="modalData.loading" @click="saveClientsToGroup">Guardar
                         Clientes Seleccionados</PrimaryButton>
                 </div>

@@ -2,6 +2,8 @@
 
 namespace Database\Factories\Client;
 
+use App\Models\Client\Client;
+use App\Models\Rcheck\Radcheck;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,7 +26,7 @@ class ClientFactory extends Factory
             'email' => $this->faker->unique()->safeEmail(),
             'telefono' => $this->faker->phoneNumber(),
             'direccion' => $this->faker->address(),
-            //'plan' => $this->faker->randomElement(['Básico', 'Premium', 'Empresarial']),
+            'plan' => $this->faker->randomElement([' ']),
             //'velocidad_subida' => $this->faker->randomFloat(2, 10, 100),
             //'velocidad_bajada' => $this->faker->randomFloat(2, 50, 500),
             //'tipo_conexion' => $this->faker->randomElement(['Fibra', 'ADSL', 'Wireless']),
@@ -35,5 +37,16 @@ class ClientFactory extends Factory
             'estado' => $this->faker->randomElement(['activo', 'inactivo']),
             'observaciones' => $this->faker->sentence(),
         ];
+    }
+    public function configure()
+    {
+        return $this->afterCreating(function (Client $client) {
+            Radcheck::factory()->create([
+                'username' => $client->username,  // Usa el mismo username del cliente
+                'attribute' => 'Cleartext-Password',
+                'op' => ':=',
+                'value' => $this->faker->password(),
+            ]);
+        });
     }
 }

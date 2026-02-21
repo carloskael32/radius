@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Client;
 use App\Http\Controllers\Controller;
 use App\Models\Client\Client;
 use App\Models\Rcheck\Radcheck;
+use App\Models\Rcheck\Radgroupcheck;
+use App\Models\Rcheck\Radusergroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -17,10 +19,13 @@ class ClientController extends Controller
      */
     public function index()
     {
-        //$clients = Client::all();
+
         $clients = Client::orderBy('id', 'desc')->get();
+        $rgrchk = Radgroupcheck::orderBy('id','desc')->get();
+
         return Inertia::render('Client/Index', [
             'clients' => $clients,
+            'grupos' => $rgrchk,
         ]);
     }
 
@@ -43,21 +48,29 @@ class ClientController extends Controller
                 'password_radius' => 'required|string|min:6',
                 'estado' => 'required|in:activo,inactivo',
                 'observaciones' => 'nullable|string',
+                'plan'=>'required|string',
             ]);
 
 
             Client::create($validate);
 
             Radcheck::create([
-                'username' => $request->username,
+                'username' => $validate['username'],
                 'attribute' => 'Cleartext-Password',
                 'op' => ':=',
-                'value' => $request->password_radius,
+                'value' => $validate['password_radius'],
             ]);
 
+            Radusergroup::create([
+                'username' => $validate['username'],
+                'groupname' => $validate['plan'],
+                'priority' => '1',
+
+            ]);
+
+            //para refrescar las tablas en freeradius
             exec('sudo systemctl kill -s USR1 freeradius.service');
             return redirect()->route('client.index');
-            //->with('success', 'Cliente creado exitosamente con credenciales RADIUS.');
         } catch (ValidationException $e) {
             throw $e;
         }
@@ -104,22 +117,33 @@ class ClientController extends Controller
             'password_radius' => 'required|string|min:6',
             'estado' => 'required|in:activo,inactivo',
             'observaciones' => 'nullable|string',
+            'plan'=>'nullable|string',
         ]);
 
 
         $client = Client::find($id);
         $rad = Radcheck::where('username', $client->username)->first();
+        $radusrg = Radusergroup::where('username', $client->username)->first();
 
         $client->update($validate);
-
-
-
         if ($rad) {
             $rad->update([
                 'username' => $validate['username'],
                 'attribute' => 'Cleartext-Password',
                 'op' => ':=',
                 'value' => $validate['password_radius'],
+            ]);
+        }
+        if ($radusrg) {
+            $radusrg->update([
+                'username' => $validate['username'],
+                'groupname' => $validate['plan'],
+            ]);
+        }else{
+              Radusergroup::create([
+                'username' => $validate['username'],
+                'groupname' => $validate['plan'],
+                'priority' => '1',
             ]);
         }
 
@@ -134,6 +158,7 @@ class ClientController extends Controller
 
         $client = Client::find($id);
         Radcheck::where('username', $client->username)->delete();
+        Radusergroup::where('username', $client->username)->delete();
         $client->delete();
 
         exec('sudo systemctl kill -s USR1 freeradius.service');

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Client\Client;
+use App\Models\Rcheck\Radcheck;
 //use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,6 +14,6 @@ class ClientSeeder extends Seeder
      */
     public function run(): void
     {
-        Client::factory(10)->create();
+        Client::factory(50)->create();
     }
 }

@@ -8,7 +8,7 @@ use Illuminate\Testing\Fluent\Concerns\Has;
 
 class Radcheck extends Model
 {
-    //use HasFactory;
+    use HasFactory;
     public $timestamps = false;
     protected $table= 'radcheck';
     protected $fillable =[
