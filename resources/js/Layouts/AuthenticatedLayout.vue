@@ -12,8 +12,8 @@ import Navigation from '@/Layouts/Navigation.vue';
             <Header />
 
             <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
-                <div class="container mx-auto px-6 py-8">
-                    <h3 class="text-4xl font-bold text-gray-900 mb-6">
+                <div class="container mx-auto px-6 py-4">
+                    <h3 class="text-4xl font-bold text-gray-900">
                         <slot name="header" />
                     </h3>
 

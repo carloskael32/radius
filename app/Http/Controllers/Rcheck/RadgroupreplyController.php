@@ -3,30 +3,33 @@
 namespace App\Http\Controllers\Rcheck;
 
 use App\Http\Controllers\Controller;
-use App\Models\Client\Client;
 use Illuminate\Http\Request;
-use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radusergroup;
 use Illuminate\Support\Facades\DB;
+use App\Models\Client\Client;
+use App\Models\Rcheck\Radgroupcheck;
+use App\Models\Rcheck\Radgroupreply;
 use Inertia\Inertia;
 
-class RadgroupcheckController extends Controller
+class RadgroupreplyController extends Controller
 {
-
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
-
-        $usuariosPorGrupo = DB::table('radgroupcheck')
-            ->join('radusergroup', 'radgroupcheck.groupname', '=', 'radusergroup.groupname')
-            ->select('radgroupcheck.groupname', DB::raw('COUNT(radusergroup.username) as total_usuarios'))
-            ->groupBy('radgroupcheck.groupname')
+        $usuariosPorGrupo = DB::table('radgroupreply')
+            ->join('radusergroup', 'radgroupreply.groupname', '=', 'radusergroup.groupname')
+            ->select('radgroupreply.groupname', DB::raw('COUNT(radusergroup.username) as total_usuarios'))
+            ->groupBy('radgroupreply.groupname')
             ->get()
             ->keyBy('groupname'); // Convertir a array asociativo clave-valor
 
-        $rgroupchk = Radgroupcheck::select('id', 'groupname', 'value')->get();
+        //$rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
+        $rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
 
         // Combinar los datos
-        $datosCombinados = $rgroupchk->map(function ($item) use ($usuariosPorGrupo) {
+        $datosCombinados = $rgreply->map(function ($item) use ($usuariosPorGrupo) {
             return [
                 'id' => $item->id,
                 'groupname' => $item->groupname,
@@ -35,8 +38,8 @@ class RadgroupcheckController extends Controller
             ];
         });
 
-        return inertia::render('Rgroup/Index', [
-            'rgroupchk' => $datosCombinados
+        return inertia::render('Rgreply/Index', [
+            'rgreply' => $datosCombinados
         ]);
     }
 
@@ -63,15 +66,24 @@ class RadgroupcheckController extends Controller
 
         //return response()->json($validate);
 
-        Radgroupcheck::create([
+        Radgroupreply::create([
             'groupname' => $validate['groupname'],
             'attribute' => 'Mikrotik-Rate-Limit',
-            'op' => '=',
+            'op' => ':=',
             'value' => $validate['valued'] . $validate['navd'] . '/' . $validate['valueu'] . $validate['navu'],
 
         ]);
 
-        return redirect()->route('rgroup.index');
+        //crea el grupo en radgroupcheck 
+        Radgroupcheck::create([
+            'groupname' => $validate['groupname'],
+            'attribute' => 'Auth-Type',
+            'op' => ':=',
+            'value' => 'Accept',
+
+        ]);
+
+        return redirect()->route('rgreply.index');
     }
 
     /**
@@ -92,9 +104,7 @@ class RadgroupcheckController extends Controller
             })
             ->get();
 
-
         //return response()->json($usrsingrupo);
-
 
         return response()->json([
             'clients' => $usrcongrupo,
@@ -111,9 +121,9 @@ class RadgroupcheckController extends Controller
         ]);
 
         // Obtener el nombre del grupo
-        $rgroup = Radgroupcheck::find($groupId);
+        $rgreply = Radgroupreply::find($groupId);
 
-        if (!$rgroup) {
+        if (!$rgreply) {
             return response()->json(['error' => 'Grupo no encontrado'], 404);
         }
 
@@ -121,18 +131,18 @@ class RadgroupcheckController extends Controller
         foreach ($validated['clients'] as $username) {
             // Verificar si ya existe la asignación
             $existe = Radusergroup::where('username', $username)
-                ->where('groupname', $rgroup->groupname)
+                ->where('groupname', $rgreply->groupname)
                 ->first();
 
             if (!$existe) {
                 Radusergroup::create([
                     'username' => $username,
-                    'groupname' => $rgroup->groupname,
+                    'groupname' => $rgreply->groupname,
                     'priority' => 1,
                 ]);
                 Client::where('username', $username)
                     ->update([
-                        'plan' => $rgroup->groupname,
+                        'plan' => $rgreply->groupname,
                     ]);
             }
         }
@@ -148,8 +158,10 @@ class RadgroupcheckController extends Controller
     {
         $rgroup = Radusergroup::find($id);
         $rgroup->delete();
+
         Client::where('username', $rgroup->username)
             ->update(['plan' => null]);
+
         return response()->json([
             'message' => 'Clientes eliminado correctamente',
             'success' => true
@@ -176,20 +188,26 @@ class RadgroupcheckController extends Controller
             'navu' => 'required|string|max:5',
         ]);
 
-        $rgroup = Radgroupcheck::find($id);
+        $rgreply = Radgroupreply::find($id);
 
         //actualizar el grupo de servicio de los clientes
-        Radusergroup::where('groupname', $rgroup->groupname)
+        Radusergroup::where('groupname', $rgreply->groupname)
             ->update(['groupname' => $validate['groupname']]);
 
-        $rgroup->update([
+        //actualiza el nombre de grupo en radgroupcheck
+        Radgroupcheck::where('groupname', $rgreply->groupname)
+            ->update(['groupname' => $validate['groupname']]);
+
+
+        $rgreply->update([
             'groupname' => $validate['groupname'],
             /*  'attribute' => 'Mikrotik-Rate-Limit',
             'op' => '=', */
             'value' => $validate['valued'] . $validate['navd'] . '/' . $validate['valueu'] . $validate['navu'],
         ]);
 
-        return redirect()->route('rgroup.index');
+
+        return redirect()->route('rgreply.index');
     }
 
     /**
@@ -197,11 +215,15 @@ class RadgroupcheckController extends Controller
      */
     public function destroy(string $id)
     {
-        $rgroup = Radgroupcheck::find($id);
+        $rgreply = Radgroupreply::find($id);
 
-        Radusergroup::where('groupname', $rgroup->groupname)->delete();
+        //Borra a todos los clientes del grupo 
+        Radusergroup::where('groupname', $rgreply->groupname)->delete();
 
-        $rgroup->delete();
-        return redirect()->route('rgroup.index');
+        //Borra el grupo de radGroupCheck
+        Radgroupcheck::where('groupname', $rgreply->groupname)->delete();
+
+        $rgreply->delete();
+        return redirect()->route('rgreply.index');
     }
 }

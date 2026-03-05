@@ -42,14 +42,14 @@ const eform = ref({
 //ENVIO DE DATOS AL CONTROLADOR
 const save = () => {
     if (operation.value == 1) {
-        form.post(route('rgroup.store'), {
+        form.post(route('rgreply.store'), {
             onSuccess: () => {
                 ok('Perfil registrado correctamente');
                 closeModalForm();
             },
         })
     } else {
-        form.put(route('rgroup.update', eform.value.id), {
+        form.put(route('rgreply.update', eform.value.id), {
             onSuccess: () => {
                 ok('Perfil actualizado correctamente');
                 closeModalForm();
@@ -59,7 +59,7 @@ const save = () => {
 };
 //Eliminacion de GRUPOS DE SERVICIO
 const deletrgroup = () => {
-    form.delete(route('rgroup.destroy', eform.value.id), {
+    form.delete(route('rgreply.destroy', eform.value.id), {
         onSuccess: () => {
             ok('Perfil eliminado correctamente');
             closeModalDel();
@@ -162,7 +162,7 @@ const openModalAddUsr = (r) => {
     modalData.value.groupName = r.groupname;
 
     // Enviar datos al controlador
-    axios.get(route('rgroup.show', r.groupname))
+    axios.get(route('rgreply.show', r.groupname))
         .then(response => {
             modalData.value.clients = response.data.clients || [];
             modalData.value.clsngr = response.data.clsngr || [];
@@ -190,7 +190,7 @@ const closeModalAdd = () => {
 // Función para recargar datos del modal sin cerrarlo
 const refreshModalData = () => {
     //modalData.value.loading = true;
-    axios.get(route('rgroup.show', modalData.value.groupName))
+    axios.get(route('rgreply.show', modalData.value.groupName))
         .then(response => {
             modalData.value.clients = response.data.clients || [];
             modalData.value.clsngr = response.data.clsngr || [];
@@ -216,7 +216,7 @@ const saveClientsToGroup = () => {
     }
 
     // Enviar datos al controlador
-    axios.post(route('rgroup.assignClients', modalData.value.groupId), {
+    axios.post(route('rgreply.assignClients', modalData.value.groupId), {
         clients: selectedUserIds
     })
         .then(response => {
@@ -248,7 +248,7 @@ const openModalDelClient = (client) => {
 // eliminar los clientes de los grupos
 const DelteClient = () => {
 
-    axios.post(route('rgroup.delClients', Clform.value.id))
+    axios.post(route('rgreply.delClients', Clform.value.id))
         .then(response => {
             ok('Cliente Eliminado');
             showModalDelClient.value = false;

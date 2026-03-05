@@ -4,10 +4,11 @@ import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { Link } from '@inertiajs/vue3';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import axios from 'axios';
 
 //datatable primevue
 import DataTable from 'primevue/datatable';
@@ -16,6 +17,7 @@ import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
+
 
 //para el filter
 const FilterMatchMode = {
@@ -29,9 +31,9 @@ const props = defineProps({
 });
 
 
-//para las columnas del datatable
-const columns = [{ data: "id" }, { data: "username" }, { data: "nombre_completo" }, { data: "email" }, { data: "telefono" }, { data: "direccion" }, { data: "estado" }, { data: "observaciones" }, { data: "plan" }];
-
+//para las columnas del datatable de forma manual
+/* const columns = [{ data: "id" }, { data: "username" }, { data: "nombre_completo" }, { data: "email" }, { data: "telefono" }, { data: "direccion" }, { data: "estado" }, { data: "observaciones" }, { data: "plan" }];
+ */
 //para el boton de filtrado de datos
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS } // CORREGIDO
@@ -50,6 +52,8 @@ const exportCSV = () => {
         });
     }
 };
+
+
 
 
 
@@ -132,10 +136,17 @@ const openModalForm = (op, c) => {
     if (op == 1) {
         title.value = 'Nuevo cliente';
     } else {
+        // Enviar datos al controlador
+        axios.post(route('client.showRcheck', c.id))
+            .then(response => {
+                form.password_radius = response.data.pass;
+            })
+            .catch(error => {
+                console.error('Error al buscar cliente:', error);
+            });
         title.value = 'Actualizar cliente';
-
         form.username = c.username;
-        form.password_radius = c.password_radius;
+        //form.password_radius = c.password_radius;
         form.nombre_completo = c.nombre_completo;
         form.email = c.email;
         form.direccion = c.direccion;
@@ -195,6 +206,42 @@ const hasError = (field) => {
     return validationErrors.value[field] ? true : false;
 }
 
+// estados por fila para switches
+const rowStates = ref({});
+
+const initRowStates = () => {
+    rowStates.value = {};
+    if (props.clients && Array.isArray(props.clients)) {
+        props.clients.forEach(c => {
+            rowStates.value[c.id] = c.estado === 'activo';
+        });
+    }
+};
+
+//para iniciar nuevamente la funcion intRowStates cuando se actualice el props clientes
+watch(() => props.clients, () => {
+    initRowStates();
+}, { immediate: true, deep: true });
+
+
+const toggleEstado = (client, checked) => {
+    // Optimista: actualizar UI primero
+    rowStates.value[client.id] = checked;
+    const newEstado = checked ? 'activo' : 'inactivo';
+
+    axios.post(route('client.toggle', client.id), { estado: newEstado })
+        .then(() => {
+            client.estado = newEstado;
+            toast.add({ severity: 'success', summary: 'Éxito', detail: 'Estado actualizado', life: 3000 });
+        })
+        .catch((error) => {
+            // Revertir cambio en caso de error
+            rowStates.value[client.id] = !checked;
+            console.error('Error al actualizar estado:', error);
+            toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar estado', life: 3000 });
+        });
+};
+
 </script>
 
 
@@ -224,11 +271,15 @@ const hasError = (field) => {
             </div>
 
 
+
+
+
+
             <!-- CUERPO -->
             <div class="w-full overflow-hidden ">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <DataTable :value="clients" v-model:filters="filters" ref="dt" selectionMode="single"
-                        :globalFilterFields="['username', 'nombre_completo', 'email', 'telefono', 'direccion', 'estado', 'observaciones']"
+                        :globalFilterFields="['username', 'nombre_completo', 'email', 'telefono', 'direccion', 'estado', 'plan']"
                         paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                         currentPageReportTemplate="{first} a {last} de {totalRecords}">
@@ -241,7 +292,7 @@ const hasError = (field) => {
                                         <InputIcon>
                                             <i class="pi pi-search" />
                                         </InputIcon>
-                                        <InputText v-model="filters['global'].value" placeholder="Buscar usuario..."
+                                        <InputText v-model="filters['global'].value" placeholder="Buscar cliente..."
                                             class="w-full pl-8 rounded-lg" />
                                     </IconField>
                                 </div>
@@ -259,11 +310,11 @@ const hasError = (field) => {
                             bodyClass="border border-gray-300">
                         </Column> -->
                         <Column field="username" sortable header="username"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="nombre_completo" sortable header="Nombre completo"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <!-- <Column field="email" sortable header="correo"
@@ -271,24 +322,31 @@ const hasError = (field) => {
                             bodyClass="border border-gray-300">
                         </Column> -->
                         <Column field="telefono" sortable header="telefono"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="direccion" sortable header="direccion"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="estado" sortable header="estado"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
-                                <span v-if="data.estado === 'activo'"
-                                    class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
-                                    {{ data.estado }}
-                                </span>
-                                <span v-else class="bg-red-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
-                                    {{ data.estado }}
-                                </span>
+                                <div class="flex items-center justify-center gap-3">
+                                    <label class="flex items-center cursor-pointer">
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" :checked="rowStates[data.id]"
+                                                @change="(e) => toggleEstado(data, e.target.checked)" />
+                                            <div class="block w-12 h-6 rounded-full"
+                                                :class="rowStates[data.id] ? 'bg-green-500' : 'bg-red-500'">
+                                            </div>
+                                            <div class="absolute left-1 top-1 w-4 h-4 rounded-full transition"
+                                                :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'"></div>
+                                        </div>
+                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo' }}</span>
+                                    </label>
+                                </div>
                             </template>
                         </Column>
                         <!--   <Column field="observaciones" sortable header="observaciones"
@@ -296,24 +354,24 @@ const hasError = (field) => {
                             bodyClass="border border-gray-300">
                         </Column> -->
                         <Column field="plan" sortable header="plan"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                             <template #body="{ data }">
                                 <span v-if="data.plan"
-                                    class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
+                                    class="bg-green-400 text-green-900 inline-block px-3 rounded-sm font-semibold">
                                     {{ data.plan }}
                                 </span>
-                                <span v-else="data.plan == null"
+                                <span v-else
                                     class="bg-yellow-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
-
                                     ninguno
                                 </span>
                             </template>
                         </Column>
 
                         <Column header="acciones" #body="slotProps"
-                            header-class="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider flex justify-center py-5"
-                            body-class="border border-gray-300">
+                         
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
 
                             <div class="flex gap-2">
 
@@ -329,7 +387,7 @@ const hasError = (field) => {
                                         </svg>
                                     </button>
                                 </Link>
-
+                                <!-- BOTON PARA EDITAR REGISTRO -->
                                 <button @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -338,7 +396,7 @@ const hasError = (field) => {
                                             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                     </svg>
                                 </button>
-
+                                <!-- BOTON PARA ELIMINAR REGISTRO -->
                                 <button @click="openModalDel(slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -400,7 +458,10 @@ const hasError = (field) => {
                             </div>
                             <input type="text" id="username" v-model="form.username"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="user1" required />
+                                placeholder="user1" autofocus />
+
+
+
                             <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('username') }}
                             </p>
@@ -417,15 +478,16 @@ const hasError = (field) => {
                                     </svg>
                                 </div>
                             </div>
-                           <!--  <input type="text" id="plan" v-model="form.plan"
+                            <!--  <input type="text" id="plan" v-model="form.plan"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
                                 placeholder="premiun" /> -->
 
-                            <select v-model="form.plan" class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md" required>
+                            <select v-model="form.plan"
+                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md">
                                 <option value="">Selecciona</option>
                                 <option v-for="g in grupos" key="g.id" :value="g.groupname">{{ g.groupname }}</option>
                             </select>
-                        <!--     <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
+                            <!--     <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('plan') }}
                             </p> -->
                         </div>
@@ -443,7 +505,7 @@ const hasError = (field) => {
                             </div>
                             <input type="text" v-model="form.password_radius"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="•••••" required />
+                                placeholder="246810" required />
                             <p v-if="hasError('password_radius')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('password_radius') }}
                             </p>
@@ -544,9 +606,6 @@ const hasError = (field) => {
                             class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
                             placeholder="alguna observacion ?" required></textarea>
                     </div>
-
-
-
 
 
                     <h2 class="pb-1">Estado</h2>

@@ -13,6 +13,8 @@ use App\Http\Controllers\Rdacct\RadacctController;
 use App\Http\Controllers\Rcheck\RadgroupcheckController;
 use App\Http\Controllers\Rcheck\RadusergroupController;
 use App\Http\Controllers\MikroTik\MikrotikController;
+use App\Http\Controllers\Rcheck\RadgroupreplyController;
+use App\Models\Rcheck\Radgroupreply;
 use Inertia\Inertia;
 
 /*
@@ -65,17 +67,23 @@ Route::middleware('auth')->group(function () {
 
     //Radgroupcheck
     Route::resource('rgroup', RadgroupcheckController::class);
-    Route::post('rgroup/{groupId}/assign-clients', [RadgroupcheckController::class, 'assignClients'])->name('rgroup.assignClients');
-    Route::post('rgroup/{id}/delClients',[RadgroupcheckController::class, 'delClients'])->name('rgroup.delClients');
+   /*  Route::post('rgroup/{groupId}/assign-clients', [RadgroupcheckController::class, 'assignClients'])->name('rgroup.assignClients');
+    Route::post('rgroup/{id}/delClients',[RadgroupcheckController::class, 'delClients'])->name('rgroup.delClients'); */
 
     //Radusergroup
     Route::resource('ruserg', RadusergroupController::class);
     /* Route::get('/ruserg/{id}',[RadusergroupController::class, 'index'])->name('ruserg.index'); */
 
+    //RadgroupReply
+    Route::resource('rgreply', RadgroupreplyController::class);
+    Route::post('rgreply/{groupId}/assign-clients',[RadgroupreplyController::class, 'assignClients'])->name('rgreply.assignClients');
+    Route::post('rgreply/{id}/delClients',[RadgroupreplyController::class, 'delClients'])->name('rgreply.delClients');
   
 
     //Clientes
     Route::resource('client', ClientController::class);
+    Route::post('client/{id}/showRcheck',[ClientController::class, 'showRcheck'])->name('client.showRcheck');
+    Route::post('client/{id}/toggle',[ClientController::class, 'toggle'])->name('client.toggle');
 
 
 

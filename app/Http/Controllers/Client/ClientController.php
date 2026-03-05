@@ -7,6 +7,7 @@ use App\Models\Client\Client;
 use App\Models\Rcheck\Radcheck;
 use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radusergroup;
+use App\Models\Rcheck\Radgroupreply;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -21,11 +22,14 @@ class ClientController extends Controller
     {
 
         $clients = Client::orderBy('id', 'desc')->get();
-        $rgrchk = Radgroupcheck::orderBy('id','desc')->get();
+
+        //$rgreply = Radgroupreply::orderBy('id', 'desc')->get();
+
+        $rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
 
         return Inertia::render('Client/Index', [
             'clients' => $clients,
-            'grupos' => $rgrchk,
+            'grupos' => $rgreply,
         ]);
     }
 
@@ -46,9 +50,9 @@ class ClientController extends Controller
                 'telefono' => 'nullable|string|max:20',
                 'direccion' => 'nullable|string',
                 'password_radius' => 'required|string|min:6',
-                'estado' => 'required|in:activo,inactivo',
+                'estado' => 'nullable|in:activo,inactivo',
                 'observaciones' => 'nullable|string',
-                'plan'=>'required|string',
+                'plan' => 'nullable|string',
             ]);
 
 
@@ -61,15 +65,37 @@ class ClientController extends Controller
                 'value' => $validate['password_radius'],
             ]);
 
-            Radusergroup::create([
-                'username' => $validate['username'],
-                'groupname' => $validate['plan'],
-                'priority' => '1',
 
-            ]);
+            //actualizar el grupo de servicio de los clientes
+            if ($validate['estado'] == 'inactivo') {
+
+                Radusergroup::create([
+                    'username' => $validate['username'],
+                    'groupname' => 'inactivo',
+                    'priority' => '1',
+
+                ]);
+
+
+                /*    Radusergroup::where('username', $validate['username'])
+                    ->update(['groupname' => 'inactivo']); */
+            } else {
+                /*   Radusergroup::where('username', $validate['username'])
+                    ->update(['groupname' => $validate['plan']]);
+ */
+                Radusergroup::create([
+                    'username' => $validate['username'],
+                    'groupname' => $validate['plan'],
+                    'priority' => '1',
+
+                ]);
+            }
+
+
+
 
             //para refrescar las tablas en freeradius
-            exec('sudo systemctl kill -s USR1 freeradius.service');
+            //exec('sudo systemctl kill -s USR1 freeradius.service');
             return redirect()->route('client.index');
         } catch (ValidationException $e) {
             throw $e;
@@ -95,6 +121,71 @@ class ClientController extends Controller
         ]);
     }
 
+
+    public function showRcheck(string $id)
+    {
+
+        $client = Client::find($id);
+        if (!$client) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        $rcheck = Radcheck::where('username', $client->username)->first();
+        if (!$rcheck) {
+            return response()->json(['error' => 'Radcheck no encontrado'], 404);
+        }
+
+        return response()->json([
+            'pass' => $rcheck->value,
+        ]);
+    }
+
+
+    /**
+     * Toggle cliente estado (activo/inactivo) via AJAX
+     */
+    public function toggle(Request $request, string $id)
+    {
+        $validate = $request->validate([
+            'estado' => 'required|in:activo,inactivo',
+        ]);
+
+        $client = Client::find($id);
+        if (!$client) {
+            return response()->json(['error' => 'Cliente no encontrado'], 404);
+        }
+
+        $newEstado = $validate['estado'];
+
+        $client->estado = $newEstado;
+        $client->save();
+
+        // actualizar o crear Radusergroup según el estado y plan
+        $radusrg = Radusergroup::where('username', $client->username)->first();
+        $groupname = $newEstado === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
+
+        if ($radusrg) {
+            $radusrg->update(['groupname' => $groupname]);
+        } else {
+            Radusergroup::create([
+                'username' => $client->username,
+                'groupname' => $groupname,
+                'priority' => '1',
+            ]);
+        }
+
+        // refrescar freeradius
+        /*   try {
+            exec('sudo systemctl kill -s USR1 freeradius.service');
+        } catch (\Throwable $e) {
+            // no bloquear si falla el reload; loguear en futuro si es necesario
+        } */
+
+        return response()->json(['estado' => $client->estado]);
+    }
+
+
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -115,9 +206,9 @@ class ClientController extends Controller
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string',
             'password_radius' => 'required|string|min:6',
-            'estado' => 'required|in:activo,inactivo',
+            'estado' => 'nullable|in:activo,inactivo',
             'observaciones' => 'nullable|string',
-            'plan'=>'nullable|string',
+            'plan' => 'nullable|string',
         ]);
 
 
@@ -126,26 +217,26 @@ class ClientController extends Controller
         $radusrg = Radusergroup::where('username', $client->username)->first();
 
         $client->update($validate);
-        if ($rad) {
-            $rad->update([
-                'username' => $validate['username'],
-                'attribute' => 'Cleartext-Password',
-                'op' => ':=',
-                'value' => $validate['password_radius'],
-            ]);
-        }
-        if ($radusrg) {
-            $radusrg->update([
-                'username' => $validate['username'],
-                'groupname' => $validate['plan'],
-            ]);
-        }else{
-              Radusergroup::create([
-                'username' => $validate['username'],
-                'groupname' => $validate['plan'],
+
+        $rad->update([
+            'username' => $validate['username'],
+            'attribute' => 'Cleartext-Password',
+            'op' => ':=',
+            'value' => $validate['password_radius'],
+        ]);
+
+          $groupname = $validate['estado'] === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
+
+         if ($radusrg) {
+            $radusrg->update(['groupname' => $groupname]);
+        } else {
+            Radusergroup::create([
+                'username' => $client->username,
+                'groupname' => $groupname,
                 'priority' => '1',
             ]);
-        }
+        } 
+   
 
         return redirect()->route('client.index');
     }
@@ -161,7 +252,7 @@ class ClientController extends Controller
         Radusergroup::where('username', $client->username)->delete();
         $client->delete();
 
-        exec('sudo systemctl kill -s USR1 freeradius.service');
+        //exec('sudo systemctl kill -s USR1 freeradius.service');
 
 
         return redirect()->route('client.index');
