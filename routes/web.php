@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Client\ClientController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
@@ -14,7 +15,8 @@ use App\Http\Controllers\Rcheck\RadgroupcheckController;
 use App\Http\Controllers\Rcheck\RadusergroupController;
 use App\Http\Controllers\MikroTik\MikrotikController;
 use App\Http\Controllers\Rcheck\RadgroupreplyController;
-use App\Models\Rcheck\Radgroupreply;
+use App\Http\Controllers\Report\ReportController;
+use App\Http\Controllers\RolController;
 use Inertia\Inertia;
 
 /*
@@ -42,19 +44,23 @@ Route::get('/', function () {
 });
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/about', fn () => Inertia::render('About'))->name('about');
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::resource('users', UserController::class)->except(['index', 'show']);
+    Route::patch('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    //Dashboard
+    
 
     //radcheck
     Route::resource('radcheck', RadcheckController::class);
@@ -85,7 +91,12 @@ Route::middleware('auth')->group(function () {
     Route::post('client/{id}/showRcheck',[ClientController::class, 'showRcheck'])->name('client.showRcheck');
     Route::post('client/{id}/toggle',[ClientController::class, 'toggle'])->name('client.toggle');
 
+    //ROles 
+    Route::resource('rol', RolController::class);
+    
 
+    //Reportes
+    Route::resource('report', ReportController::class);
 
 
       //Mikrotik

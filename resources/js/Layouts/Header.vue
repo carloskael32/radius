@@ -25,13 +25,13 @@ import DropdownLink from '@/Components/DropdownLink.vue';
                     <button class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
                         <!-- User Avatar Circle -->
                         <div class="relative flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 font-semibold text-sm">
-                            {{ $page.props.auth.user.name.charAt(0).toUpperCase() }}
+                            {{ $page.props.auth.user.username.charAt(0).toUpperCase() }}
                         </div>
 
                         <!-- User Info -->
                         <div class="hidden text-left sm:block">
                             <p class="text-sm font-medium text-gray-100 truncate">
-                                {{ $page.props.auth.user.name }}
+                                {{ $page.props.auth.user.username }}
                             </p>
                             <p class="text-xs text-gray-300 truncate">
                                 {{ $page.props.auth.user.email || 'Administrator' }}
@@ -50,17 +50,19 @@ import DropdownLink from '@/Components/DropdownLink.vue';
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L9 5.414V18a1 1 0 102 0V5.414l6.293 6.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
-                        Profile
+                        Perfil
                     </dropdown-link>
 
                     <div class="border-t border-gray-200"></div>
 
-                    <dropdown-link class="text-gray-700 hover:bg-gray-50" :href="route('logout')" method="post" as="button">
+                     <dropdown-link :href="route('logout')" method="post" class="text-gray-700 hover:bg-gray-50">
                         <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
                         </svg>
-                        Log out
+                        Cerrar Sesion
                     </dropdown-link>
+
+              
                 </template>
             </dropdown>
         </div>

@@ -20,9 +20,10 @@ class RadcheckController extends Controller
         /* $currentTime = Carbon::now();
         dd($currentTime);  */
 
-        $radchecks = Radcheck::select('id', 'username', 'value')->get();
+        /* $radchecks = Radcheck::select('id', 'username', 'value')->get(); */
         return Inertia::render('Userspp/Index', [
-            'radchecks' => $radchecks,
+            'radchecks' => Radcheck::select('id','username','value')->get()
+            
             //  'success' => session('success'), // Pasar el mensaje flash a la vista
         ]);
     }

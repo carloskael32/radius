@@ -6,6 +6,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 
+
+
+
+
 //datatable primevue
 //import Aura from '@primevue/themes/aura'
 import Aura from '@primevue/themes/aura'; // Tema por defecto (nuevo)
@@ -25,6 +29,7 @@ import InputIcon from 'primevue/inputicon';
 import Button from 'primevue/button';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+import Chart from 'primevue/chart';
 
 
 
@@ -77,6 +82,7 @@ createInertiaApp({
             .component('InputIcon', InputIcon)
             .component('Button', Button)
             .component('Toast', Toast)
+            .component('Chart', Chart)
             
             .mount(el);
 

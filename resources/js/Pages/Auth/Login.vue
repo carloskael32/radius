@@ -16,23 +16,36 @@ defineProps({
 });
 
 const form = useForm({
-    email: '',
+    username: '',
     password: '',
     remember: false
 });
 
 const errorMessage = ref('');
+const errorType = ref(''); // 'blocked', 'invalid', 'throttle'
 
 const submit = () => {
     errorMessage.value = '';
+    errorType.value = '';
+    
     form.post(route('login'), {
         onSuccess: () => {
             errorMessage.value = '';
         },
         onError: (errors) => {
-            if (errors.email || errors.password) {
-                errorMessage.value = 'Correo o contraseña incorrectos. Intenta de nuevo.';
-                //alert('❌ ' + errorMessage.value);
+            if (errors.username) {
+                const message = errors.username;
+                
+                // Detectar tipo de error
+                if (message.includes('bloqueada') || message.includes('bloqueado')) {
+                    errorType.value = 'blocked';
+                } else if (message.includes('demasiadas') || message.includes('throttle')) {
+                    errorType.value = 'throttle';
+                } else {
+                    errorType.value = 'invalid';
+                }
+                
+                errorMessage.value = message;
             }
         },
         onFinish: () => form.reset('password'),
@@ -55,12 +68,53 @@ const submit = () => {
         </div>
 
         <!-- Error Message -->
-        <div v-if="errorMessage" class="mb-6 rounded-lg bg-red-50 p-4 border border-red-200">
+        <div v-if="errorMessage" :class="[
+            'mb-6 rounded-lg p-4 border',
+            errorType === 'blocked' 
+                ? 'bg-red-50 border-red-200' 
+                : errorType === 'throttle' 
+                    ? 'bg-amber-50 border-amber-200' 
+                    : 'bg-red-50 border-red-200'
+        ]">
             <div class="flex items-start gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                <!-- Icono según tipo de error -->
+                <svg v-if="errorType === 'blocked'" xmlns="http://www.w3.org/2000/svg" 
+                    class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
                 </svg>
-                <p class="text-sm text-red-700 font-medium">{{ errorMessage }}</p>
+                <svg v-else-if="errorType === 'throttle'" xmlns="http://www.w3.org/2000/svg" 
+                    class="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                </svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5"
+                    viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clip-rule="evenodd" />
+                </svg>
+                
+                <!-- Mensaje -->
+                <div>
+                    <p v-if="errorType === 'blocked'" class="text-sm font-medium text-red-900">
+                        ⛔ Cuenta Bloqueada
+                    </p>
+                    <p v-else-if="errorType === 'throttle'" class="text-sm font-medium text-amber-900">
+                        ⏱️ Demasiados Intentos
+                    </p>
+                    <p v-else class="text-sm font-medium text-red-900">
+                        ⚠️ Error de Autenticación
+                    </p>
+                    <p :class="[
+                        'text-sm mt-1',
+                        errorType === 'blocked' 
+                            ? 'text-red-700' 
+                            : errorType === 'throttle' 
+                                ? 'text-amber-700' 
+                                : 'text-red-700'
+                    ]">
+                        {{ errorMessage }}
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -69,20 +123,20 @@ const submit = () => {
 
             <!-- Email Input -->
             <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Correo Electrónico</label>
+                <label for="username" class="block text-sm font-medium text-gray-700 mb-2">Nombre de usuario</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-gray-400">
-                            <path d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
-                            <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="h-5 w-5 text-gray-400">
+                            <path
+                                d="M3 4a2 2 0 0 0-2 2v1.161l8.441 4.221a1.25 1.25 0 0 0 1.118 0L19 7.162V6a2 2 0 0 0-2-2H3Z" />
+                            <path
+                                d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
                         </svg>
                     </div>
-                    <input type="email" id="email"
+                    <input type="text" id="username" autocomplete="username"
                         class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:border-transparent transition-all shadow-sm hover:border-gray-400"
-                        placeholder="tu@correo.com"
-                        v-model="form.email"
-                        required
-                        autofocus />
+                        placeholder="usuario1" v-model="form.username" required autofocus />
                 </div>
             </div>
 
@@ -91,27 +145,31 @@ const submit = () => {
                 <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5 text-gray-400">
-                            <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z" clip-rule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="h-5 w-5 text-gray-400">
+                            <path fill-rule="evenodd"
+                                d="M10 1a4.5 4.5 0 0 0-4.5 4.5V9H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-.5V5.5A4.5 4.5 0 0 0 10 1Zm3 8V5.5a3 3 0 1 0-6 0V9h6Z"
+                                clip-rule="evenodd" />
                         </svg>
                     </div>
-                    <input type="password" id="password"
+                    <input type="password" id="password" autocomplete="current-password"
                         class="w-full pl-11 pr-4 py-2.5 border border-gray-300 rounded-lg bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:border-transparent transition-all shadow-sm hover:border-gray-400"
-                        placeholder="••••••••"
-                        v-model="form.password"
-                        required />
+                        placeholder="••••••••" v-model="form.password" required />
                 </div>
             </div>
 
             <!-- Submit Button -->
             <div class="pt-2">
-                <button type="submit"
-                    :disabled="form.processing"
+                <button type="submit" :disabled="form.processing"
                     class="w-full py-2.5 px-4 bg-gradient-to-r from-gray-700 to-gray-800 text-white font-medium rounded-lg hover:from-gray-800 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed">
                     <span v-if="form.processing" class="inline-block">
-                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                     </span>
                     <span v-if="form.processing">Iniciando sesión...</span>
@@ -122,7 +180,8 @@ const submit = () => {
 
         <!-- Footer Links -->
         <div v-if="canResetPassword" class="mt-6 text-center">
-            <Link :href="route('password.request')" class="text-sm text-gray-600 hover:text-gray-900 font-medium transition">
+            <Link :href="route('password.request')"
+                class="text-sm text-gray-600 hover:text-gray-900 font-medium transition">
                 ¿Olvidaste tu contraseña?
             </Link>
         </div>

@@ -59,7 +59,18 @@ let showingTwoLevelMenu = ref(false)
                             </path>
                         </svg>
                     </template>
-                    Users
+                    Usuarios
+                </nav-link>
+                <nav-link :href="route('rol.index')" :active="route().current('rol.index')" class="mb-2">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+                        </svg>
+
+                    </template>
+                    Roles
                 </nav-link>
             </div>
 
@@ -69,8 +80,8 @@ let showingTwoLevelMenu = ref(false)
 
                 <nav-link :href="route('nas.index')" :active="route().current('nas.index')" class="mb-2">
                     <template #icon>
-                        <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round"
-                            stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                             <path
                                 d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z">
                             </path>
@@ -84,7 +95,7 @@ let showingTwoLevelMenu = ref(false)
             <div class="mt-6">
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">PPPoE Management</p>
 
-                <nav-link :href="route('radcheck.index')" :active="route().current('radcheck.index')" class="mb-2">
+            <!--     <nav-link :href="route('radcheck.index')" :active="route().current('radcheck.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -93,7 +104,7 @@ let showingTwoLevelMenu = ref(false)
                         </svg>
                     </template>
                     Usuario PPPoE
-                </nav-link>
+                </nav-link> -->
 
                 <nav-link :href="route('client.index')" :active="route().current('client.*')" class="mb-2">
                     <template #icon>
@@ -109,12 +120,24 @@ let showingTwoLevelMenu = ref(false)
                 <nav-link :href="route('rgreply.index')" :active="route().current('rgreply.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="w-5 h-5">
+                            stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round"
                                 d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                         </svg>
                     </template>
-                    Grupos/Planes
+                    Planes de Servicio
+                </nav-link>
+
+                <nav-link :href="route('report.index')" :active="route().current('report.index')" class="mb-2">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+                        </svg>
+
+                    </template>
+                    Reportes
                 </nav-link>
 
                 <nav-link :href="route('radacct.index')" :active="route().current('radacct.index')" class="mb-2">
@@ -130,7 +153,7 @@ let showingTwoLevelMenu = ref(false)
             </div>
 
             <!-- Collapsible Section -->
-            <div class="mt-6">
+         <!--    <div class="mt-6">
                 <button @click="showingTwoLevelMenu = !showingTwoLevelMenu"
                     class="w-full flex items-center gap-3 py-2 px-3 text-slate-200 rounded-lg transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-gray-500">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -140,20 +163,24 @@ let showingTwoLevelMenu = ref(false)
                         </path>
                     </svg>
                     <span class="text-sm font-medium">More Options</span>
-                    <svg :class="showingTwoLevelMenu ? 'rotate-180' : ''" class="w-4 h-4 ml-auto transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    <svg :class="showingTwoLevelMenu ? 'rotate-180' : ''" class="w-4 h-4 ml-auto transition-transform"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
                 </button>
 
-                <transition enter-to-class="transition-all duration-300 ease-in-out opacity-100 max-h-96" enter-from-class="max-h-0 opacity-0 overflow-hidden"
-                    leave-from-class="opacity-100 max-h-96" leave-to-class="max-h-0 opacity-0 overflow-hidden" class="overflow-hidden">
-                    <ul v-show="showingTwoLevelMenu" class="mt-2 ml-3 space-y-2 text-sm font-medium text-slate-300 border-l-2 border-slate-600 pl-4">
+                <transition enter-to-class="transition-all duration-300 ease-in-out opacity-100 max-h-96"
+                    enter-from-class="max-h-0 opacity-0 overflow-hidden" leave-from-class="opacity-100 max-h-96"
+                    leave-to-class="max-h-0 opacity-0 overflow-hidden" class="overflow-hidden">
+                    <ul v-show="showingTwoLevelMenu"
+                        class="mt-2 ml-3 space-y-2 text-sm font-medium text-slate-300 border-l-2 border-slate-600 pl-4">
                         <li class="py-1">
                             <Link class="hover:text-gray-300 transition" :href="route('dashboard')">Child menu</Link>
                         </li>
                     </ul>
                 </transition>
-            </div>
+            </div> -->
         </nav>
     </div>
 </template>
