@@ -18,14 +18,10 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 //para el filter
 const FilterMatchMode = {
-
     CONTAINS: 'contains',
-
 };
 
-//para mostrar los datos en cada columna del datatable
-/* const columns = [{ data: "id" }, { data: "username" }, { data: "value" }];
- */
+
 //para el boton de filtrado de datos
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS } // CORREGIDO
@@ -142,7 +138,7 @@ const deleteUser = () => {
 
 <template>
 
-    <Head title="User PPPoE" />
+    <Head title="Roles" />
     <Toast />
 
     <AuthenticatedLayout>
@@ -150,8 +146,8 @@ const deleteUser = () => {
             <div class="flex items-start justify-between pb-4">
                 <div>
                     <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Roles</h1>
-                    <p class="text-sm text-gray-500">Manage users: <span class="font-medium text-gray-700">{{
-                        Object.keys(roles).length }}</span> roles</p>
+                    <p class="text-sm text-gray-500">Numero de Roles: <span class="font-medium text-gray-700">{{
+                        Object.keys(roles).length }}</span></p>
                 </div>
                 <div class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
@@ -200,19 +196,19 @@ const deleteUser = () => {
 
 
                         <Column field="nombre_rol" sortable header="nombre de rol"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="descripcion" sortable header="descripcion"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="nivel_permiso" sortable header="nivel de permiso"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
 
                             <!-- BOTONES PARA EDITAR Y BORRAR -->
                             <div class="flex gap-2">

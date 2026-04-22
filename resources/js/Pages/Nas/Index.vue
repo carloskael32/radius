@@ -229,27 +229,27 @@ const closeModalDel = () => {
                             bodyClass="border border-gray-300">
                         </Column> -->
                         <Column field="nasname" sortable header="IP/host"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="shortname" sortable header="Nombre corto"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="type" sortable header="tipo"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="ports" sortable header="puertos"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="secret" sortable header="clave"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="status" sortable header="estado"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
                                 <span v-if="data.status === 'active'"
@@ -263,12 +263,12 @@ const closeModalDel = () => {
 
                         </Column>
                         <Column field="description" sortable header="observaciones"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
 
                         <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
                             <div class="flex gap-2">
                                 <button @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">

@@ -1,10 +1,11 @@
 <script setup>
 import Header from '@/Layouts/Header.vue';
 import Navigation from '@/Layouts/Navigation.vue';
+import Toast from 'primevue/toast';
 </script>
 
 <template>
-    <Toast />
+    <Toast/>
     <div class="flex h-screen bg-white font-roboto">
         <Navigation />
 

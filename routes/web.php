@@ -17,6 +17,7 @@ use App\Http\Controllers\MikroTik\MikrotikController;
 use App\Http\Controllers\Rcheck\RadgroupreplyController;
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\RolController;
+use App\Http\Controllers\AuditLog\AuditLogController;
 use Inertia\Inertia;
 
 /*
@@ -97,11 +98,24 @@ Route::middleware('auth')->group(function () {
 
     //Reportes
     Route::resource('report', ReportController::class);
+    Route::get('/reports/user-bandwidth-stats', [ReportController::class, 'getUserBandwidthStats'])->name('reports.userBandwidthStats');
+    Route::get('/reports/user-connection-history', [ReportController::class, 'getUserConnectionHistory'])->name('reports.userConnectionHistory');
+    Route::get('/reports/new-clients-this-week', [ReportController::class, 'getNewClientsThisWeek'])->name('reports.newClientsThisWeek');
+    Route::get('/reports/inactive-clients', [ReportController::class, 'getInactiveClients'])->name('reports.inactiveClients');
+    Route::get('/reports/clients-without-plan', [ReportController::class, 'getClientsWithoutPlan'])->name('reports.clientsWithoutPlan');
+    Route::get('/reports/failed-auth-attempts', [ReportController::class, 'getFailedAuthAttempts'])->name('reports.failedAuthAttempts');
+    Route::get('/reports/simultaneous-sessions', [ReportController::class, 'getSimultaneousSessions'])->name('reports.simultaneousSessions');
+    Route::get('/reports/disconnection-stats', [ReportController::class, 'getDisconnectionStats'])->name('reports.disconnectionStats');
+    Route::get('/reports/nas-by-user', [ReportController::class, 'getNasStatsByUser'])->name('reports.nasByUser');
+    Route::get('/reports/export-excel', [ReportController::class, 'exportToExcel'])->name('reports.exportExcel');
+    Route::get('/reports/export-pdf', [ReportController::class, 'exportToPdf'])->name('reports.exportPdf');
 
 
       //Mikrotik
     Route::get('/pppoe/sesiones', [MikrotikController::class, 'sessions']);
     
+    //Audit Logs
+    Route::resource('auditlog', AuditLogController::class);
 
 });
 

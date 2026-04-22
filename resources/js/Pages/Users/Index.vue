@@ -296,7 +296,7 @@ const toggleEstado = (user, checked) => {
                         </Column>
                         <Column field="rol.nombre_rol" sortable header="rol"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
                                 <span v-if="data.rol"
                                     class="bg-blue-400 text-blue-900 inline-block px-3 rounded-sm font-semibold">
