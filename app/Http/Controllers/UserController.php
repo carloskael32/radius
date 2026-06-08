@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Roles;
+use Spatie\Permission\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,10 +12,9 @@ class UserController extends Controller
 {
     public function index()
     {
-
         return Inertia::render('Users/Index', [
-            'users' => User::with('rol')->paginate(),
-            'roles' => Roles::all()
+            'users' => User::with('roles')->paginate(),
+            'roles' => Role::all()
         ]);
     }
 
@@ -29,10 +28,10 @@ class UserController extends Controller
             'telefono' => 'required|Integer',
             'direccion' => 'required|string|max:255',
             'password' => 'required|string|min:8',
-            'id_rol' => 'required|exists:roles,id',
+            'rol' => 'required', // Validamos que se envíe el nombre o ID del rol
         ]);
 
-        User::create([
+        $user = User::create([
             'username' => $request->username,
             'email' => $request->email,
             'nombres' => $request->nombres,
@@ -40,9 +39,10 @@ class UserController extends Controller
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
             'password' => Hash::make($request->password),
-            'id_rol' => $request->id_rol,
-            'activo' => $request->activo ?? true,
+            'estado' => $request->estado ?? 'activo',
         ]);
+
+        $user->assignRole($request->rol);
 
         return redirect()->route('users.index');
     }
@@ -56,7 +56,8 @@ class UserController extends Controller
             'apellidos' => 'required|string|max:255',
             'telefono' => 'nullable|Integer',
             'direccion' => 'nullable|string|max:255',
-            'id_rol' => 'required|exists:roles,id',
+            'rol' => 'required',
+            'password' => 'nullable|string|min:8',
         ]);
 
         $user->update([
@@ -66,9 +67,12 @@ class UserController extends Controller
             'apellidos' => $request->apellidos,
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,
-            'id_rol' => $request->id_rol,
-            'activo' => $request->activo ?? true,
+            'password' => Hash::make($request->password),
+            'estado' => $request->estado ?? 'activo',
+            
         ]);
+
+        $user->syncRoles($request->rol);
 
         return redirect()->route('users.index');
     }
@@ -82,10 +86,10 @@ class UserController extends Controller
     public function toggle(Request $request, User $user)
     {
         $request->validate([
-            'activo' => 'required|boolean',
+            'estado' => 'required|in:activo,inactivo',
         ]);
 
-        $user->update(['activo' => $request->activo]);
+        $user->update(['estado' => $request->estado]);
 
         return response()->json(['success' => true]);
     }

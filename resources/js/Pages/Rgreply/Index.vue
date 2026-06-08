@@ -5,7 +5,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { useToast } from "primevue/usetoast";
 
@@ -16,7 +17,7 @@ const props = defineProps({
 
 });
 
- 
+
 
 //Sirven para manejar el estado de los 
 // campos del formulario en Vue usando inertia
@@ -167,7 +168,7 @@ const openModalAddUsr = (r) => {
             modalData.value.clients = response.data.clients || [];
             modalData.value.clsngr = response.data.clsngr || [];
             modalData.value.loading = false;
-            
+
         })
         .catch(error => {
             console.error('Error al cargar datos del grupo:', error);
@@ -184,7 +185,7 @@ const closeModalAdd = () => {
     showModalAdd.value = false;
     selectedClients.value = [];
     selectedClientsNoGroup.value = [];
-    router.reload({ only: ['rgreply']});
+    router.reload({ only: ['rgreply'] });
 }
 
 // Función para recargar datos del modal sin cerrarlo
@@ -223,7 +224,7 @@ const saveClientsToGroup = () => {
             ok('Clientes asignados correctamente');
             refreshModalData();
             //closeModalAdd();
-            
+
         })
         .catch(error => {
             console.error('Error al asignar clientes:', error);
@@ -260,6 +261,24 @@ const DelteClient = () => {
         });
 }
 
+//seccion de permisos
+const page = usePage();
+
+const canAdd = computed(() =>
+    page.props.auth.user.permissions.includes('crear planes de servicio')
+);
+const canDelete = computed(() =>
+    page.props.auth.user.permissions.includes('eliminar planes de servicio')
+);
+const canEdit = computed(() =>
+    page.props.auth.user.permissions.includes('modificar planes de servicio')
+);
+const canGest = computed(() =>
+    page.props.auth.user.permissions.includes('gestion de clientes en planes de servicio')
+);
+
+
+
 </script>
 
 <template>
@@ -276,7 +295,7 @@ const DelteClient = () => {
                     <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Planes</h1>
                     <p class="text-md text-gray-500">Configura los planes de servicio para tus clientes</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
@@ -330,7 +349,7 @@ const DelteClient = () => {
 
                             Upload
                             <br>
-                            <!-- {{ r.value.split('/')[1].replace(/\D/g, '') }} --> {{ r.value.split('/')[1]}}
+                            <!-- {{ r.value.split('/')[1].replace(/\D/g, '') }} --> {{ r.value.split('/')[1] }}
                         </div>
                     </div>
 
@@ -342,13 +361,13 @@ const DelteClient = () => {
                                 <path
                                     d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z" />
                             </svg>
-                        <p class="pl-2">Clientes</p>
+                            <p class="pl-2">Clientes</p>
                         </div>
 
                         <p class="flex justify-end">{{ r.total_usuarios }}</p>
                     </div>
 
-                    <button @click="openModalAddUsr(r)"
+                    <button v-if="canGest" @click="openModalAddUsr(r)"
                         class="inline-flex w-full items-center justify-center p-1 rounded-md text-white bg-blue-600 hover:bg-blue-400 active:bg-blue-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -363,29 +382,29 @@ const DelteClient = () => {
 
 
                     <hr class="w-full h-0.5  bg-gray-400 mt-2 mb-2">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <button @click="openModalForm(2, r)"
-                                class="inline-flex w-full items-center justify-center p-2 rounded-md hover:bg-blue-100 active:bg-blue-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                                </svg>
-                                <p class="pl-1 text-blue-600">Editar</p>
-                            </button>
-                        </div>
-                        <div>
-                            <button @click="openModalDel(r)"
-                                class="inline-flex w-full items-center justify-center p-2 rounded-md hover:bg-red-100 active:bg-red-200">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                    stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
-                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
-                                </svg>
-                                <p class="pl-1 text-red-600">Eliminar</p>
-                            </button>
-                        </div>
+                    <div v-if="canEdit || canDelete" class="grid grid-cols-2 gap-4">
+
+                        <button v-if="canEdit" @click="openModalForm(2, r)"
+                            class="inline-flex w-full items-center justify-center p-2 rounded-md hover:bg-blue-100 active:bg-blue-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5 text-blue-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>
+                            <p class="pl-1 text-blue-600">Editar</p>
+                        </button>
+
+
+                        <button v-if="canDelete" @click="openModalDel(r)"
+                            class="inline-flex w-full items-center justify-center p-2 rounded-md hover:bg-red-100 active:bg-red-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5 text-red-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                            <p class="pl-1 text-red-600">Eliminar</p>
+                        </button>
+
                     </div>
                 </div>
             </div>
@@ -555,7 +574,7 @@ const DelteClient = () => {
                     <div>
                         <h2 class="text-lg font-medium text-gray-900">Gestionar Clientes</h2>
                         <p class="text-sm text-gray-500">Plan: <span class="font-semibold">{{ modalData.groupName
-                        }}</span></p>
+                                }}</span></p>
                     </div>
                     <button @click="closeModalAdd"
                         class="rounded-md text-white bg-red-600 hover:bg-red-400 active:bg-red-700">
@@ -590,7 +609,7 @@ const DelteClient = () => {
                                 <div class="text-sm font-medium text-gray-700 mb-1">
                                     Clientes registrados: <span class="text-blue-600 font-semibold">{{
                                         modalData.clients.length
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
                                     <div v-for="client in modalData.clients" :key="client.id"
@@ -621,7 +640,7 @@ const DelteClient = () => {
                                 <div class="text-sm font-medium text-gray-700 mb-1">
                                     Clientes sin grupo(plan): <span class="text-blue-600 font-semibold">{{
                                         modalData.clsngr.length
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
                                     <div v-for="csgrp in modalData.clsngr" :key="csgrp.id"
@@ -697,7 +716,7 @@ const DelteClient = () => {
                             <p class="mt-2 text-base font-semibold text-gray-900">
                                 {{ Clform.username }} <span class="text-gray-500 font-medium">({{ Clform.id ||
                                     'ninguno'
-                                }})</span>
+                                    }})</span>
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.

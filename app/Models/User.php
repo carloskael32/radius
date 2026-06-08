@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
@@ -15,7 +16,7 @@ class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
 
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles;
     use LogsActivity;
 
     /**
@@ -31,18 +32,9 @@ class User extends Authenticatable
         'telefono',
         'direccion',
         'password',
-        'id_rol',
-        'activo',
+        'estado',
         'ultimo_acceso',
     ];
-
-    //Relacion con ROLes
-    public function rol()
-    {
-        return $this->belongsTo(Roles::class, 'id_rol', 'id');
-    }
-
-
 
     /**
      * The attributes that should be hidden for serialization.
@@ -66,6 +58,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'estado' => 'string',
         ];
     }
 
@@ -84,8 +77,7 @@ class User extends Authenticatable
                 'telefono',
                 'direccion',
                 'password',
-                'id_rol',
-                'activo',
+                'estado',
                 'ultimo_acceso'
             ])
             ->logOnlyDirty();
@@ -98,30 +90,22 @@ class User extends Authenticatable
         $user = Auth::user();
         $userName = $user ? $user->username : 'Sistema';
 
-/* 
-        // 1. Convertimos la colección a un array de PHP puro
+        // 1. Limpieza de password en los logs
         $properties = $activity->properties->toArray();
 
-        // 2. Verificamos si existe la clave 'password' en los atributos
         if (isset($properties['attributes']['password'])) {
-            $properties['attributes']['password'] = '****** (Actualizada por seguridad)';
+            $properties['attributes']['password'] = '[OCULTO]';
         }
 
-        // 3. Verificamos si existe en los valores antiguos (en caso de updates)
         if (isset($properties['old']['password'])) {
-            $properties['old']['password'] = '******';
-        } */
-    
-         //creamos el encabezado con los datos 
-         $header =[
+            $properties['old']['password'] = '[OCULTO]';
+        }
+
+        $header = [
             'autor' => $userName,
             'username' => $this->username
-         ];
-        
-        // 2. Usamos merge() para añadir las propiedades que Spatie ya generó (attributes, old, etc.)
-      /*   $activity->properties = collect(['autor' => $userName][$properties['username']])
-            ->merge($properties); */
-            $activity->properties = collect($header)
-            ->merge($activity->properties);
+        ];
+
+        $activity->properties = collect($header)->merge($properties);
     }
 }

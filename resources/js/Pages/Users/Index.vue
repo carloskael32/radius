@@ -4,7 +4,8 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import axios from 'axios';
@@ -48,8 +49,7 @@ const exportCSV = () => {
     }
 };
 
-// Añade una ref para manejar errores específicos para validaciones de entrada
-const validationErrors = ref({});
+// Usaremos `form.errors` de Inertia para manejar errores
 
 const form = useForm({
     username: '',
@@ -59,20 +59,15 @@ const form = useForm({
     telefono: '',
     direccion: '',
     password: '',
-    id_rol: '',
-    activo: true,
+    rol: '',
+    estado: 'activo',
 });
 
 const eform = ref({
     id: '',
     username: '',
-    email: '',
     nombres: '',
     apellidos: '',
-    telefono: '',
-    direccion: '',
-    password: '',
-    activo: true,
 });
 
 const operation = ref(1);
@@ -85,7 +80,7 @@ const title = ref('');
 const openModalForm = (op, u) => {
     showModalForm.value = true;
     operation.value = op;
-    validationErrors.value = {}; // Limpiar errores al abrir modal
+    form.clearErrors(); // Limpiar errores al abrir modal
     if (op == 1) {
         title.value = 'Nuevo usuario';
     } else {
@@ -96,16 +91,16 @@ const openModalForm = (op, u) => {
         form.apellidos = u.apellidos;
         form.telefono = u.telefono;
         form.direccion = u.direccion;
-        form.id_rol = u.id_rol;
-        form.activo = u.activo;
-
+        form.rol = u.roles.length > 0 ? u.roles[0].name : '';
+        form.estado = u.estado;
+        form.password = '';
         eform.value.id = u.id;
     }
 }
 // envio de datos al controlador insert update
 const save = () => {
-    //Limpiar errores previos
-    validationErrors.value = {};
+    // Limpiar errores previos
+    form.clearErrors();
 
     if (operation.value == 1) {
         form.post(route('users.store'), {
@@ -113,9 +108,8 @@ const save = () => {
                 ok('Usuario guardado exitosamente'); // Mostrar mensaje de éxito
                 closeModalForm(); // Cerrar el modal y resetear el formulario
             },
-            onError: (errors) => {
-                // Captura errores de validacion
-                validationErrors.value = errors;
+            onError: () => {
+                // Los errores se exponen en `form.errors` automáticamente
             }
         });
     } else {
@@ -124,16 +118,14 @@ const save = () => {
                 ok('Usuario actualizado')
                 closeModalForm();
             },
-            onError: (errors) => {
-                // Capturar errores de validación
-                validationErrors.value = errors;
+            onError: () => {
+                // Los errores se exponen en `form.errors` automáticamente
             },
         });
     }
 }
 
 const ok = (m) => {
-    form.reset();
     toast.add({ severity: 'success', summary: 'Éxito', detail: m, life: 3000 });
 }
 
@@ -155,8 +147,8 @@ const openModalDel = (u) => {
 
 const closeModalDel = () => {
     showModalDel.value = false;
-    form.reset();
-    validationErrors.value = {}; // Limpiar errores al cerrar
+    //form.reset();
+    form.clearErrors(); // Limpiar errores al cerrar
 }
 
 //Eliminacion de datos
@@ -172,29 +164,27 @@ const deleteUser = () => {
 // para Validaciones de entrada
 //Funcion para limpiar errores cuando se cambia un campo
 const clearError = (field) => {
-    if (validationErrors.value[field]) {
-        delete validationErrors.value[field];
-    }
+    form.clearErrors(field);
 }
 
 // Función para obtener mensaje de error de un campo específico
 const getErrorMessage = (field) => {
-    return validationErrors.value[field] ? validationErrors.value[field] : '';
+    return form.errors[field] ? form.errors[field] : '';
 }
 
 // Función para verificar si un campo tiene error
 const hasError = (field) => {
-    return validationErrors.value[field] ? true : false;
+    return form.errors[field] ? true : false;
 }
 
-// estados por fila para switches
+// estados por fila para switches para cambiar de estado de activo e inactivo
 const rowStates = ref({});
 
 const initRowStates = () => {
     rowStates.value = {};
     if (props.users.data && Array.isArray(props.users.data)) {
         props.users.data.forEach(u => {
-            rowStates.value[u.id] = u.activo;
+            rowStates.value[u.id] = u.estado === 'activo';
         });
     }
 };
@@ -207,11 +197,11 @@ watch(() => props.users.data, () => {
 const toggleEstado = (user, checked) => {
     // Optimista: actualizar UI primero
     rowStates.value[user.id] = checked;
-    const newEstado = checked ? 1 : 0;
+    const newEstado = checked ? 'activo' : 'inactivo';
 
-    axios.patch(route('users.toggle', user.id), { activo: newEstado })
+    axios.patch(route('users.toggle', user.id), { estado: newEstado })
         .then(() => {
-            user.activo = newEstado;
+            user.estado = newEstado;
             toast.add({ severity: 'success', summary: 'Éxito', detail: 'Estado actualizado', life: 3000 });
         })
         .catch((error) => {
@@ -221,6 +211,22 @@ const toggleEstado = (user, checked) => {
             toast.add({ severity: 'error', summary: 'Error', detail: 'No se pudo actualizar estado', life: 3000 });
         });
 };
+
+
+//seccion de permisos
+const page = usePage();
+
+const canAdd = computed(() =>
+    page.props.auth.user.permissions.includes('crear usuarios')
+);
+const canDelete = computed(() =>
+    page.props.auth.user.permissions.includes('eliminar usuarios')
+);
+const canEdit = computed(() =>
+    page.props.auth.user.permissions.includes('modificar usuarios')
+);
+
+
 </script>
 
 <template>
@@ -234,9 +240,9 @@ const toggleEstado = (user, checked) => {
                 <div>
                     <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Usuarios</h1>
                     <p class="text-sm text-gray-500">Total: <span class="font-medium text-gray-700">{{ users.data.length
-                    }}</span> usuarios</p>
+                            }}</span> usuarios</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
@@ -252,7 +258,7 @@ const toggleEstado = (user, checked) => {
             <div class="w-full overflow-hidden ">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                     <DataTable :value="users.data" v-model:filters="filters" ref="dt" selectionMode="single"
-                        :globalFilterFields="['username', 'email', 'nombres', 'apellidos', 'rol.nombre_rol']" paginator
+                        :globalFilterFields="['username', 'email', 'nombres', 'apellidos', 'roles.name']" paginator
                         :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                         currentPageReportTemplate="{first} a {last} de {totalRecords}">
@@ -271,10 +277,9 @@ const toggleEstado = (user, checked) => {
                                 </div>
 
                                 <!-- Botones de exportación -->
-                                <div class="flex gap-2">
-                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
-                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
-                                </div>
+                                <button type="button" @click="exportCSV"
+                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
+                                    Excel</button>
                             </div>
                         </template>
 
@@ -294,21 +299,21 @@ const toggleEstado = (user, checked) => {
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <Column field="rol.nombre_rol" sortable header="rol"
+                        <Column field="roles" sortable header="rol"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
-                                <span v-if="data.rol"
-                                    class="bg-blue-400 text-blue-900 inline-block px-3 rounded-sm font-semibold">
-                                    {{ data.rol.nombre_rol }}
+                                <span v-for="role in data.roles" :key="role.id"
+                                    class="bg-blue-400 text-blue-900 inline-block px-3 rounded-sm font-semibold mr-1">
+                                    {{ role.name }}
                                 </span>
-                                <span v-else
+                                <!--      <span v-else
                                     class="bg-gray-300 text-gray-900 inline-block px-3 rounded-xl font-semibold">
                                     Sin rol
-                                </span>
+                                </span> -->
                             </template>
                         </Column>
-                        <Column field="activo" sortable header="estado"
+                        <Column field="estado" sortable header="estado"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
@@ -325,19 +330,19 @@ const toggleEstado = (user, checked) => {
                                             </div>
                                         </div>
                                         <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
-                                        }}</span>
+                                            }}</span>
                                     </label>
                                 </div>
                             </template>
                         </Column>
 
-                        <Column header="acciones" #body="slotProps"
+                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
-                            <div class="flex gap-2">
+                            <div class="flex gap-2 items-center justify-center ">
                                 <!-- BOTON PARA EDITAR REGISTRO -->
-                                <button @click="openModalForm(2, slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-200">
+                                <button v-if="canEdit" @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-blue-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5 text-blue-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -345,8 +350,8 @@ const toggleEstado = (user, checked) => {
                                     </svg>
                                 </button>
                                 <!-- BOTON PARA ELIMINAR REGISTRO -->
-                                <button @click="openModalDel(slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-200">
+                                <button v-if="canDelete" @click="openModalDel(slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-red-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5 text-red-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -378,15 +383,11 @@ const toggleEstado = (user, checked) => {
                                         <path
                                             d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
                                     </svg>
-
                                 </div>
                             </div>
                             <input type="text" id="username" v-model="form.username" autocomplete="username"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
                                 placeholder="user1" />
-
-
-
                             <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('username') }}
                             </p>
@@ -510,15 +511,16 @@ const toggleEstado = (user, checked) => {
                         </div>
 
                         <div>
-                            <label for="id_rol" class="block text-sm font-medium text-gray-700">Rol</label>
-                            <select v-model="form.id_rol" @change="clearError('id_rol')"
-                                :class="{ 'border-red-500': hasError('id_rol') }" id="id_rol"
+                            <label for="rol" class="block text-sm font-medium text-gray-700">Rol</label>
+                            <select v-model="form.rol" @change="clearError('rol')"
+                                :class="{ 'border-red-500': hasError('rol') }" id="rol"
                                 class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
                                 <option value="">Seleccionar rol</option>
-                                <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.nombre_rol }}
+                                <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}
                                 </option>
                             </select>
-                            <span v-if="hasError('id_rol')" class="text-red-500 text-sm">{{ getErrorMessage('id_rol') }}</span>
+                            <span v-if="hasError('rol')" class="text-red-500 text-sm">{{ getErrorMessage('rol')
+                                }}</span>
                         </div>
 
                         <div>
@@ -579,7 +581,7 @@ const toggleEstado = (user, checked) => {
                                 Está por eliminar el siguiente usuario:
                             </p>
                             <p class="mt-2 text-base font-semibold text-gray-900">
-                               {{ eform.username }} - {{ eform.nombres }} {{ eform.apellidos }}
+                                {{ eform.username }} - {{ eform.nombres }} {{ eform.apellidos }}
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.

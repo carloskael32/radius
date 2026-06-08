@@ -4,7 +4,8 @@ import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
@@ -66,7 +67,7 @@ const form = useForm({
     email: '',
     telefono: '',
     direccion: '',
-    estado: '',
+    estado: 'activo',
     observaciones: '',
     plan: '',
     password_radius: '',
@@ -242,6 +243,26 @@ const toggleEstado = (client, checked) => {
         });
 };
 
+//seccion de permisos
+const page = usePage();
+
+const canView = computed(() =>
+    page.props.auth.user.permissions.includes('ver clientes')
+);
+const canAdd = computed(() =>
+    page.props.auth.user.permissions.includes('crear clientes')
+);
+const canDelete = computed(() =>
+    page.props.auth.user.permissions.includes('eliminar clientes')
+);
+const canEdit = computed(() =>
+    page.props.auth.user.permissions.includes('modificar clientes')
+);
+
+
+
+
+
 </script>
 
 
@@ -258,7 +279,7 @@ const toggleEstado = (client, checked) => {
                     <p class="text-sm text-gray-500">Manage users: <span class="font-medium text-gray-700">{{
                         Object.keys(clients).length }}</span> usuarios</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
@@ -297,18 +318,13 @@ const toggleEstado = (client, checked) => {
                                     </IconField>
                                 </div>
 
-                                <!-- Botones de exportación -->
-                                <div class="flex gap-2">
-
-                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
-                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
-                                </div>
+                                <!-- Botones de exportación excel -->
+                                <button type="button" @click="exportCSV"
+                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
+                                    Excel</button>
                             </div>
                         </template>
-                        <!--    <Column field="id" sortable header="id"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
-                        </Column> -->
+                   
                         <Column field="username" sortable header="username"
                             headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
@@ -317,10 +333,10 @@ const toggleEstado = (client, checked) => {
                             headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <!-- <Column field="email" sortable header="correo"
+                        <Column field="email" sortable header="correo"
                             headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
-                        </Column> -->
+                        </Column>
                         <Column field="telefono" sortable header="telefono"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
@@ -342,17 +358,15 @@ const toggleEstado = (client, checked) => {
                                                 :class="rowStates[data.id] ? 'bg-green-500' : 'bg-red-500'">
                                             </div>
                                             <div class="absolute left-1 top-1 w-4 h-4 rounded-full transition"
-                                                :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'"></div>
+                                                :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'">
+                                            </div>
                                         </div>
-                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo' }}</span>
+                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
+                                            }}</span>
                                     </label>
                                 </div>
                             </template>
-                        </Column>
-                        <!--   <Column field="observaciones" sortable header="observaciones"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
-                        </Column> -->
+                        </Column>                       
                         <Column field="plan" sortable header="plan"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
@@ -367,15 +381,18 @@ const toggleEstado = (client, checked) => {
                                 </span>
                             </template>
                         </Column>
-
-                        <Column header="acciones" #body="slotProps"
-                         
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                         <Column field="observaciones" sortable header="observaciones"
+                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
+                        </Column> 
 
-                            <div class="flex gap-2">
+                        <Column v-if="canEdit || canDelete " header="acciones" #body="slotProps"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300 text-center">
 
-                                <Link :href="route('client.show', slotProps.data)">
+                            <div class="flex gap-2 items-center justify-center">
+                                <!-- BOTON PARA VER MAS DETALLES DEL CLIENTE-->
+                                 <!-- <Link v-if="canView" :href="route('client.show', slotProps.data)">
                                     <button
                                         class="inline-flex items-center justify-center p-2 rounded-md hover:bg-purple-200">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -386,10 +403,10 @@ const toggleEstado = (client, checked) => {
                                                 clip-rule="evenodd" />
                                         </svg>
                                     </button>
-                                </Link>
+                                </Link> -->
                                 <!-- BOTON PARA EDITAR REGISTRO -->
-                                <button @click="openModalForm(2, slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-200">
+                                <button v-if="canEdit" @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-blue-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5 text-blue-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -397,8 +414,8 @@ const toggleEstado = (client, checked) => {
                                     </svg>
                                 </button>
                                 <!-- BOTON PARA ELIMINAR REGISTRO -->
-                                <button @click="openModalDel(slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-200">
+                                <button v-if="canDelete" @click="openModalDel(slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-red-200">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="size-5 text-red-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -608,7 +625,8 @@ const toggleEstado = (client, checked) => {
                     </div>
 
 
-                    <h2 class="pb-1">Estado</h2>
+                        <!-- RADIO BUTTON PARA EL ESTADO DEL CLIENTE -->
+                    <!-- <h2 class="pb-1">Estado</h2>
                     <div class="grid grid-cols-6 pb-8 ">
 
                         <div>
@@ -625,7 +643,7 @@ const toggleEstado = (client, checked) => {
                                 class="select-none ms-2 text-sm font-medium text-heading">Inactivo</label>
                         </div>
 
-                    </div>
+                    </div> -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>

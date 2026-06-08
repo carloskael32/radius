@@ -1,9 +1,39 @@
 <script setup>
 import NavLink from '@/Components/NavLink.vue';
-import { Link } from '@inertiajs/vue3';
 import { ref } from 'vue'
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
 
 let showingTwoLevelMenu = ref(false)
+
+
+
+//seccion de permisos
+// Creamos helpers reactivos para verificar permisos
+
+const page = usePage();
+
+// Helper para verificar permisos específicos
+const hasPermission = (permission) => {
+    const permissions = Array.from(page.props.auth.user?.permissions || []);
+    return permissions.includes(permission);
+};
+
+// Validaciones individuales por sección
+const canViewUsers = computed(() => hasPermission('ver usuarios'));
+const canViewRoles = computed(() => hasPermission('ver roles'));
+const canViewNas = computed(() => hasPermission('ver nas'));
+const canViewClients = computed(() => hasPermission('ver clientes'));
+const canViewPlans = computed(() => hasPermission('ver planes de servicio'));
+const canViewReports = computed(() => hasPermission('ver reportes'));
+const canViewAuditLog = computed(() => hasPermission('ver auditoria'));
+
+const isAdmin = computed(() =>
+    page.props.auth.user.roles.includes('Administrador')
+);
+
+
 </script>
 
 <template>
@@ -50,7 +80,7 @@ let showingTwoLevelMenu = ref(false)
                     Dashboard
                 </nav-link>
 
-                <nav-link :href="route('users.index')" :active="route().current('users.index')" class="mb-2">
+                <nav-link v-if="canViewUsers" :href="route('users.index')" :active="route().current('users.index')" class="mb-2">
                     <template #icon>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
@@ -61,7 +91,7 @@ let showingTwoLevelMenu = ref(false)
                     </template>
                     Usuarios
                 </nav-link>
-                <nav-link :href="route('rol.index')" :active="route().current('rol.index')" class="mb-2">
+                <nav-link v-if="canViewRoles" :href="route('rol.index')" :active="route().current('rol.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -78,7 +108,7 @@ let showingTwoLevelMenu = ref(false)
             <div class="mt-6">
                 <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">Network</p>
 
-                <nav-link :href="route('nas.index')" :active="route().current('nas.index')" class="mb-2">
+                <nav-link v-if="canViewNas" :href="route('nas.index')" :active="route().current('nas.index')" class="mb-2">
                     <template #icon>
                         <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
                             stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -106,7 +136,7 @@ let showingTwoLevelMenu = ref(false)
                     Usuario PPPoE
                 </nav-link> -->
 
-                <nav-link :href="route('client.index')" :active="route().current('client.*')" class="mb-2">
+                <nav-link v-if="canViewClients" :href="route('client.index')" :active="route().current('client.*')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -117,7 +147,7 @@ let showingTwoLevelMenu = ref(false)
                     Clientes PPPoE
                 </nav-link>
 
-                <nav-link :href="route('rgreply.index')" :active="route().current('rgreply.index')" class="mb-2">
+                <nav-link v-if="canViewPlans" :href="route('rgreply.index')" :active="route().current('rgreply.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
@@ -128,7 +158,7 @@ let showingTwoLevelMenu = ref(false)
                     Planes de Servicio
                 </nav-link>
 
-                <nav-link :href="route('report.index')" :active="route().current('report.index')" class="mb-2">
+                <nav-link v-if="canViewReports" :href="route('report.index')" :active="route().current('report.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
@@ -140,7 +170,7 @@ let showingTwoLevelMenu = ref(false)
                     Reportes
                 </nav-link>
 
-                <nav-link :href="route('auditlog.index')" :active="route().current('auditlog.index')" class="mb-2">
+                <nav-link v-if="canViewAuditLog" :href="route('auditlog.index')" :active="route().current('auditlog.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">

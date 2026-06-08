@@ -53,7 +53,7 @@ class LoginRequest extends FormRequest
         }
 
         // Verificar si la cuenta está activa
-        if (!$user->activo) {
+        if ($user->estado !== 'activo') {
             RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'username' => 'Tu cuenta está bloqueada. Contacta al administrador.',

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Roles;
+
+use App\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,11 +17,14 @@ class RolController extends Controller
      */
     public function index()
     {
-         return Inertia::render('Rol/Index', [           
-            'roles' => Roles::all()
+        return Inertia::render('Rol/Index', [
+            'roles' => Role::with('permissions')->get(),
+            'permisos' => Permission::all(),
         ]);
 
-      /*   $nas = Nas::all();
+        //return response()->json([ 'roles' => Role::all()]);
+
+        /*   $nas = Nas::all();
         $total = Nas::count();
         return inertia::render('Nas/Index', compact('nas', 'total')); */
     }
@@ -36,9 +42,23 @@ class RolController extends Controller
      */
     public function store(Request $request)
     {
-        Roles::create(
-            $request->all()
-        );
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles',
+            'description' => 'required|max:255',
+            'permisosSelect' => 'required|array|min:1',
+            //'permisosSelect.*' => 'string'
+        ]);
+
+        $rol = Role::create([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        // Usar la relación de Spatie
+        $rol->syncPermissions($request['permisosSelect']);
+
+
+        return redirect()->route('rol.index');
     }
 
     /**
@@ -62,7 +82,23 @@ class RolController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Roles::findOrfail($id)->update($request->all());
+        $request->validate([
+            'name' => 'required|string|max:255|unique:roles,name,' . $id,
+            'description' => 'required|max:255',
+            'permisosSelect' => 'required|array|min:1',
+            //'permisosSelect.*' => 'string'
+        ]);
+
+        $rol = Role::find($id);
+
+        $rol->update([
+            'name' => $request->name,
+            'description' => $request->description,
+        ]);
+
+        $rol->syncPermissions($request['permisosSelect']);
+
+        return redirect()->route('rol.index');
     }
 
     /**
@@ -70,6 +106,17 @@ class RolController extends Controller
      */
     public function destroy(string $id)
     {
-        Roles::find($id)->delete();
+        // Roles que no se pueden eliminar
+        $rolesProtegidos = ['Administrador', 'Operador', 'Usuario de Consulta'];
+        
+        $rol = Role::find($id);
+        
+        // Validar que el rol no sea uno de los protegidos
+        if (in_array($rol->name, $rolesProtegidos)) {
+            return redirect()->route('rol.index')->with('error', 'No se puede eliminar este rol protegido.');
+        }
+        
+        $rol->delete();
+        return redirect()->route('rol.index');
     }
 }

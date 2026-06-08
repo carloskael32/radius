@@ -33,7 +33,7 @@ return new class extends Migration
             ->onDelete('set null');
 
             // Columnas de estado de control
-            $table->boolean('activo');
+            $table->enum('estado', ['activo', 'inactivo'])->default('activo');
             $table->dateTime('ultimo_acceso')->nullable();
 
 

@@ -52,7 +52,7 @@ class ClientController extends Controller
                 'password_radius' => 'required|string|min:6',
                 'estado' => 'nullable|in:activo,inactivo',
                 'observaciones' => 'nullable|string',
-                'plan' => 'nullable|string',
+                'plan' => 'required|string',
             ]);
 
 
@@ -198,7 +198,8 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
+    {       
+      
         $validate = $request->validate([
             'username' => 'required|string|max:64',
             'nombre_completo' => 'required|string|max:100',
@@ -208,7 +209,7 @@ class ClientController extends Controller
             'password_radius' => 'required|string|min:6',
             'estado' => 'nullable|in:activo,inactivo',
             'observaciones' => 'nullable|string',
-            'plan' => 'nullable|string',
+            'plan' => 'required|string',
         ]);
 
 
@@ -225,9 +226,10 @@ class ClientController extends Controller
             'value' => $validate['password_radius'],
         ]);
 
-          $groupname = $validate['estado'] === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
+        $groupname = $validate['estado'] === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
 
-         if ($radusrg) {
+
+        if ($radusrg) {
             $radusrg->update(['groupname' => $groupname]);
         } else {
             Radusergroup::create([
@@ -235,8 +237,8 @@ class ClientController extends Controller
                 'groupname' => $groupname,
                 'priority' => '1',
             ]);
-        } 
-   
+        }
+
 
         return redirect()->route('client.index');
     }

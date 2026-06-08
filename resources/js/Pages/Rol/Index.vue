@@ -4,7 +4,8 @@ import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { usePage } from '@inertiajs/vue3';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 
@@ -41,28 +42,36 @@ const exportCSV = () => {
     }
 };
 
+//resepcion de datos desde el controlador RolController
 const props = defineProps({
     roles: { type: Array, default: () => [] },
+    permisos: { type: Array, default: () => [] },
 });
 
+//Variables para gestionar seleciones de permisos
+const selectPermisos = ref([]);
 
+
+
+// para manejar el estado de los campos del formulario en Vue usando inertia
 const form = useForm({
-    nombre_rol: '',
-    descripcion: '',
-    nivel_permiso: ''
+    name: '',
+    description: '',
+    permisosSelect: '',
+
 });
 
 const eform = ref({
     id: '',
-    nombre_rol: '',
-    descripcion: '',
-    nivel_permiso: ''
+    name: '',
+    description: '',
+
 })
 //const mn = defineProps(['success']);
 
 const operation = ref(1);
 
-//controlador de modal de formulario
+//controlador de modal de formulario para crear o editar
 const showModalForm = ref(false);
 const showModalDel = ref(false);
 const title = ref('');
@@ -72,26 +81,39 @@ const openModalForm = (op, r) => {
     operation.value = op;
     if (op == 1) {
         title.value = 'Nuevo Rol';
+        form.reset();
+        selectPermisos.value = [];
     } else {
         title.value = 'Actualizar Rol';
-        form.nombre_rol = r.nombre_rol;
-        form.descripcion = r.descripcion;
-        form.nivel_permiso = r.nivel_permiso;
+        form.name = r.name;
+        form.description = r.description;
         eform.value.id = r.id;
+        // Cargar los permisos del rol en los checkboxes
+        selectPermisos.value = r.permissions.map(p => p.id);
     }
 }
 
 // envio de datos al controlador insert update
 const save = () => {
+    //para enviar los permisos seleccionados
+    const selectPermiIds = [...selectPermisos.value];
+    if (selectPermiIds.length === 0) {
+        //error('Debes seleccionar al menos un permiso');
+        toast.add({ severity: 'error', summary: 'Debes seleccionar al menos un permiso', life: 3000 });
+        closeModalForm();
+        return;
+    }
+
     if (operation.value == 1) {
+        form.permisosSelect = selectPermiIds;
         form.post(route('rol.store'), {
             onSuccess: () => {
                 ok('Rol guardado exitosamente'); // Mostrar mensaje de éxito
                 closeModalForm(); // Cerrar el modal y resetear el formulario
-
             },
         });
     } else {
+        form.permisosSelect = selectPermiIds;
         form.put(route('rol.update', eform.value.id), {
             onSuccess: () => {
                 ok('Rol actualizado')
@@ -111,17 +133,20 @@ const ok = (m) => {
 const closeModalForm = () => {
     showModalForm.value = false;
     form.reset();
+    selectPermisos.value = [];
 }
 //controlador de modal para eliminar
 const openModalDel = (r) => {
     showModalDel.value = true;
     eform.value.id = r.id;
-    eform.value.nombre_rol = r.nombre_rol;
+    eform.value.name = r.name;
 
 }
 const closeModalDel = () => {
     showModalDel.value = false;
 }
+
+// funcion para eliminar registros
 const deleteUser = () => {
     form.delete(route('rol.destroy', eform.value.id), {
         onSuccess: () => {
@@ -133,6 +158,88 @@ const deleteUser = () => {
     });
 
 }
+// para Validaciones de entrada
+// Mapeo de nombres de campos a etiquetas legibles
+const fieldLabels = {
+    name: 'Nombre de rol',
+    description: 'Descripción',
+    permisosSelect: 'Permisos',
+};
+
+//Funcion para limpiar errores cuando se cambia un campo
+const clearError = (field) => {
+    form.clearErrors(field);
+}
+//funcion para obtener mensaje de error de un input
+const getErrorMessage = (field) => {
+    if (!form.errors[field]) return '';
+    let message = form.errors[field];
+    // Reemplazar el nombre del campo por la etiqueta legible
+    const fieldLabel = fieldLabels[field] || field;
+    message = message.replace(field, fieldLabel);
+    return message;
+}
+//Funcion para validar si un campo tiene un error
+const hasError = (field) => {
+    return !!form.errors[field];
+}
+
+
+
+
+
+// pestañas para filtrar permisos 
+const activeTab = ref('todos');
+
+// Función genérica para filtrar permisos por keyword
+const filterPermissionsByKeyword = (list, keyword) => {
+    if (keyword === 'todos') return list; // Mostrar todos
+    return list.filter(p => p.name.toLowerCase().includes(keyword.toLowerCase()));
+};
+
+// Configuración de pestañas con keywords de filtro
+const pestana = [
+    { id: 'todos', label: 'Todos', icon: '🔧', keyword: 'todos' },
+    { id: 'usuarios', label: 'Usuarios', icon: '🪪', keyword: 'usuarios' },
+    { id: 'roles', label: 'Roles', icon: '🔐', keyword: 'roles' },
+    { id: 'nas', label: 'Mikrotik - NAS', icon: '📡', keyword: 'nas' },
+    { id: 'clientes', label: 'Clientes', icon: '👥', keyword: 'clientes' },
+    { id: 'plan_servicio', label: 'Planes de Servicio', icon: '📋', keyword: 'plan' },
+    { id: 'reportes', label: 'Reportes', icon: '🗃️', keyword: 'reportes' },
+    { id: 'auditoria', label: 'Auditoria', icon: '🖥️', keyword: 'auditoria' },
+];
+
+// Computed para obtener permisos filtrados por pestaña activa
+const filteredPermissions = computed(() => {
+    const activeTabData = pestana.find(p => p.id === activeTab.value);
+    if (!activeTabData) return [];
+    return filterPermissionsByKeyword(props.permisos, activeTabData.keyword);
+});
+
+//seccion de permisos
+const page = usePage();
+
+const canAdd = computed(() =>
+    page.props.auth.user.permissions.includes('crear roles')
+);
+const canDelete = computed(() =>
+    page.props.auth.user.permissions.includes('eliminar roles')
+);
+
+// Roles protegidos que no se pueden eliminar
+const rolesProtegidos = ['Administrador', 'Operador', 'Usuario de Consulta'];
+
+// Función para verificar si un rol puede ser eliminado
+const canDeleteRole = (rolName) => {
+    return !rolesProtegidos.includes(rolName);
+};
+const canEdit = computed(() =>
+    page.props.auth.user.permissions.includes('modificar roles')
+);
+
+
+
+
 </script>
 
 
@@ -149,7 +256,7 @@ const deleteUser = () => {
                     <p class="text-sm text-gray-500">Numero de Roles: <span class="font-medium text-gray-700">{{
                         Object.keys(roles).length }}</span></p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
@@ -167,7 +274,7 @@ const deleteUser = () => {
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
                     <DataTable :value="roles" v-model:filters="filters" ref="dt" selectionMode="single"
-                        :globalFilterFields="['nombre_rol', 'value']" paginator :rows="5"
+                        :globalFilterFields="['name', 'description']" paginator :rows="5"
                         :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                         currentPageReportTemplate="{first} a {last} de {totalRecords}">
@@ -187,48 +294,66 @@ const deleteUser = () => {
                                 </div>
 
                                 <!-- Botones de exportación -->
-                                <div class="flex gap-2">
-                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
-                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
-                                </div>
+                                <button type="button" @click="exportCSV"
+                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
+                                    Excel</button>
                             </div>
                         </template>
 
 
-                        <Column field="nombre_rol" sortable header="nombre de rol"
+                        <Column field="name" sortable header="nombre de rol"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <Column field="descripcion" sortable header="descripcion"
+                        <Column field="description" sortable header="descripcion"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <Column field="nivel_permiso" sortable header="nivel de permiso"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
-                        </Column>
-                        <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
+
+                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
+                            bodyClass="border border-gray-300"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
 
                             <!-- BOTONES PARA EDITAR Y BORRAR -->
-                            <div class="flex gap-2">
-                                <button @click="openModalForm(2, slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
+                            <div class="flex gap-2 items-center justify-center ">
+                                <!-- BOTON DE EDITAR -->
+                                <button v-if="canEdit && canDeleteRole(slotProps.data.name)"
+                                    @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-blue-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
                                     </svg>
                                 </button>
-
-                                <button @click="openModalDel(slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-50">
+                                <div v-else-if="rolesProtegidos.includes(slotProps.data.name)"
+                                    class="inline-flex p-2 rounded-md opacity-40 cursor-not-allowed"
+                                    title="Este rol no se puede modificar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-gray-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                                    </svg>
+                                </div>
+                                <!-- BOTON DE ELIMINAR -->
+                                <button v-if="canDelete && canDeleteRole(slotProps.data.name)"
+                                    @click="openModalDel(slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-red-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                     </svg>
                                 </button>
+                                <div v-else-if="rolesProtegidos.includes(slotProps.data.name)"
+                                    class="inline-flex p-2 rounded-md opacity-40 cursor-not-allowed"
+                                    title="Este rol no se puede eliminar">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-gray-400">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                    </svg>
+                                </div>
                             </div>
                         </Column>
 
@@ -242,7 +367,7 @@ const deleteUser = () => {
 
 
         <!-- MODAL PARA FORMULARIO DE REGISTRO -->
-        <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
+        <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xxxl">
             <div class="p-5">
                 <div class="flex justify-between items-center pb-4">
                     <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
@@ -254,49 +379,96 @@ const deleteUser = () => {
                     </button>
                 </div>
                 <form @submit.prevent="save">
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid gap-4 pb-4">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">
+                            <label for="name" class="block mb-1.5 text-sm font-medium text-gray-900">Nombre de
                                 Rol</label>
-                            <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                                    </svg>
+                            <input type="text" id="name" v-model="form.name"
+                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="Operador 2" />
+                            <p v-if="hasError('name')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('name') }}
+                            </p>
+                        </div>
 
+                    </div>
+                    <div class="pb-4">
+                        <div>
+                            <label for="description"
+                                class="block mb-1.5 text-sm font-medium text-gray-900">Descripcion</label>
+                            <textarea id="description" v-model="form.description"
+                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                placeholder="descripcion del nuevo rol" />
+                            <p v-if="hasError('description')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('description') }}
+
+                            </p>
+                        </div>
+
+                    </div>
+
+                    <!-- botones para ver los permisos -->
+                    <div class="pb-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <button type="button" v-for="tab in pestana" :key="tab.id" @click="activeTab = tab.id" :class="[
+                            'p-2 rounded-lg border-2 transition-all text-center hover:shadow-md',
+                            activeTab === tab.id
+                                ? 'border-blue-500 bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300 bg-white'
+                        ]">
+                            <div class="text-2xl mb-2">{{ tab.icon }}</div>
+                            <p :class="[
+                                'font-medium text-xs',
+                                activeTab === tab.id ? 'text-blue-900' : 'text-gray-700'
+                            ]">
+                                {{ tab.label }}
+                            </p>
+                        </button>
+                    </div>
+
+                    <!-- SECCIONES DE PERMISOS (Generado dinámicamente) -->
+                    <div v-if="filteredPermissions.length > 0" class="space-y-4">
+                        <div class="bg-white p-6 rounded-lg shadow-lg" :class="{
+                            'border-gray-300': activeTab === 'todos',
+                            'border-gray-100': activeTab !== 'todos'
+                        }">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mb-6">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-900">
+                                        {{pestana.find(p => p.id === activeTab)?.label}}
+                                    </h2>
                                 </div>
                             </div>
 
-                            <select v-model="form.nivel_permiso"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md">
-                                <option value="">Selecciona</option>
-                                <option value="1">Administrador</option>
-                                <option value="2">Operador</option>
-                                <option value="3">Usuario de Consulta</option>
-                            </select>
-
+                            <!-- Listar permisos para asignarlos al rol -->
+                            <div class="space-y-3">
+                                <div class="text-sm font-medium text-gray-700 mb-1">
+                                    Total permisos: <span class="text-blue-600 font-semibold">{{
+                                        filteredPermissions.length
+                                        }}</span>
+                                </div>
+                                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                                    <div v-for="perm in filteredPermissions" :key="perm.id"
+                                        class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50">
+                                        <div class="flex items-center gap-3">
+                                            <input type="checkbox" :id="perm.id" :value="perm.id"
+                                                v-model="selectPermisos" class="rounded" />
+                                            <div>
+                                                <label class="font-medium text-gray-900 cursor-pointer">
+                                                    {{ perm.name }}
+                                                </label>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ perm.description || 'Sin descripción' }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="nombre_rol"
-                                class="block mb-1.5 text-sm font-medium text-gray-900">Nombre para mostrar</label>
-                            <input type="text" id="nombre_rol" v-model="form.nombre_rol"
-                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="nombre que se mostrara 'operador 2" required />
-                        </div>
-
                     </div>
-                    <div>
-                        <div>
-                            <label for="descripcion"
-                                class="block mb-1.5 text-sm font-medium text-gray-900">Descripcion</label>
-                            <textarea type="text" id="descripcion" v-model="form.descripcion"
-                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="descripcion'" required />
-                        </div>
 
-                    </div>
+
+
                     <div class="pt-4 grid grid-cols-2 gap-4">
                         <div>
                             <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
@@ -335,7 +507,7 @@ const deleteUser = () => {
                                 Está por eliminar el siguiente rol:
                             </p>
                             <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ eform.nombre_rol }}
+                                {{ eform.name }}
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.

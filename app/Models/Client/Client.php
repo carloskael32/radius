@@ -69,11 +69,15 @@ class Client extends Model
 
         //obtenemos el nombre de usuario autenticado
         $user = Auth::user();
-        $userName = $user ? $user->username : 'Sistema';
+        $userAd = $user ? $user->username : 'Sistema';
 
         // 1. Creamos una colección nueva con el nombre del usuario primero
         // 2. Usamos merge() para añadir las propiedades que Spatie ya generó (attributes, old, etc.)
-        $activity->properties = collect(['autor' => $userName])
+        $header = [
+            'autor' => $userAd,
+            'username' => $this->username
+        ];
+        $activity->properties = collect($header)
             ->merge($activity->properties);
     }
 }

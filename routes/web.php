@@ -40,6 +40,7 @@ use Inertia\Inertia;
     ]);
 });
  */
+
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
@@ -50,7 +51,15 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/about', fn () => Inertia::render('About'))->name('about');
+    Route::get('/about', fn() => Inertia::render('About'))->name('about');
+
+    //para poner permisis y roles directamente aqui
+    // Route::get('users', [UserController::class, 'index'])->middleware('permission:ver usuarios')->name('users.index');
+    // Route::middleware('role:Administrador')->group(function () {
+    //     Route::resource('users', UserController::class)->except(['index', 'show']);
+    //     Route::patch('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
+    // }); 
+
 
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::resource('users', UserController::class)->except(['index', 'show']);
@@ -61,40 +70,53 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //Dashboard
-    
 
-    //radcheck
+
+    // Solo admin puede gestionar Radcheck directamente
     Route::resource('radcheck', RadcheckController::class);
 
-    //NAS
+    //NAS para administrador y operador
     Route::resource('nas', NasController::class);
+
+    //para poner permisis y roles directamente aqui
+    // Route::middleware('permission:ver nas')->group(function () {
+    //     Route::get('nas', [NasController::class, 'index'])->name('nas.index');
+    //     Route::resource('nas', NasController::class)->middleware('role:Administrador')->except('index');
+    // });
 
     //Radacct
     Route::resource('radacct', RadacctController::class);
 
     //Radgroupcheck
     Route::resource('rgroup', RadgroupcheckController::class);
-   /*  Route::post('rgroup/{groupId}/assign-clients', [RadgroupcheckController::class, 'assignClients'])->name('rgroup.assignClients');
+    /*  Route::post('rgroup/{groupId}/assign-clients', [RadgroupcheckController::class, 'assignClients'])->name('rgroup.assignClients');
     Route::post('rgroup/{id}/delClients',[RadgroupcheckController::class, 'delClients'])->name('rgroup.delClients'); */
 
     //Radusergroup
     Route::resource('ruserg', RadusergroupController::class);
     /* Route::get('/ruserg/{id}',[RadusergroupController::class, 'index'])->name('ruserg.index'); */
 
-    //RadgroupReply
+    //RadgroupReply planes de servicio
     Route::resource('rgreply', RadgroupreplyController::class);
-    Route::post('rgreply/{groupId}/assign-clients',[RadgroupreplyController::class, 'assignClients'])->name('rgreply.assignClients');
-    Route::post('rgreply/{id}/delClients',[RadgroupreplyController::class, 'delClients'])->name('rgreply.delClients');
-  
+    Route::post('rgreply/{groupId}/assign-clients', [RadgroupreplyController::class, 'assignClients'])->name('rgreply.assignClients');
+    Route::post('rgreply/{id}/delClients', [RadgroupreplyController::class, 'delClients'])->name('rgreply.delClients');
+
 
     //Clientes
     Route::resource('client', ClientController::class);
-    Route::post('client/{id}/showRcheck',[ClientController::class, 'showRcheck'])->name('client.showRcheck');
-    Route::post('client/{id}/toggle',[ClientController::class, 'toggle'])->name('client.toggle');
+
+    //para poner permisis y roles directamente aqui
+    // Route::middleware('permission:ver clientes')->group(function () {
+    //     Route::get('client', [ClientController::class, 'index'])->name('client.index');
+    //     Route::resource('client', ClientController::class)->middleware('role:Administrador')->except('index');
+    // });
+    Route::post('client/{id}/showRcheck', [ClientController::class, 'showRcheck'])->name('client.showRcheck');
+    Route::post('client/{id}/toggle', [ClientController::class, 'toggle'])->name('client.toggle');
+
 
     //ROles 
     Route::resource('rol', RolController::class);
-    
+
 
     //Reportes
     Route::resource('report', ReportController::class);
@@ -111,12 +133,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports/export-pdf', [ReportController::class, 'exportToPdf'])->name('reports.exportPdf');
 
 
-      //Mikrotik
+    //Mikrotik
     Route::get('/pppoe/sesiones', [MikrotikController::class, 'sessions']);
-    
-    //Audit Logs
-    Route::resource('auditlog', AuditLogController::class);
 
+    //Audit Logs
+    Route::resource('auditlog', AuditLogController::class)->middleware('permission:ver auditoria');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

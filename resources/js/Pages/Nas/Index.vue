@@ -7,6 +7,8 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
+import { usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 //datatable primevue
 import DataTable from 'primevue/datatable';
@@ -164,6 +166,26 @@ const openModalDel = (n) => {
 const closeModalDel = () => {
     showModalDel.value = false;
 }
+
+
+//seccion de permisos
+
+const page = usePage();
+
+const canAdd = computed(() =>
+    page.props.auth.user.permissions.includes('crear nas')
+)
+
+const canDelete = computed(() =>
+    page.props.auth.user.permissions.includes('eliminar nas')
+);
+const canEdit = computed(() =>
+    page.props.auth.user.permissions.includes('modificar nas')
+)
+
+
+
+
 </script>
 
 
@@ -181,7 +203,7 @@ const closeModalDel = () => {
                     <p class="text-sm text-gray-500">Total: <span class="font-medium text-gray-700">{{ total }}</span>
                         NAS</p>
                 </div>
-                <div class="flex items-center gap-3">
+                <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
@@ -218,10 +240,9 @@ const closeModalDel = () => {
                                 </div>
 
                                 <!-- Botones de exportación -->
-                                <div class="flex gap-2">
-                                    <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
-                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
-                                </div>
+                                 <button type="button" @click="exportCSV"
+                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
+                                    Excel</button>
                             </div>
                         </template>
                         <!--    <Column field="id" sortable header="id"
@@ -254,10 +275,10 @@ const closeModalDel = () => {
                             <template #body="{ data }">
                                 <span v-if="data.status === 'active'"
                                     class="bg-green-300 text-green-900 inline-block px-3 rounded-xl font-semibold">
-                                    {{data.status}}
+                                    {{ data.status }}
                                 </span>
                                 <span v-else class="bg-red-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
-                                    {{data.status}}
+                                    {{ data.status }}
                                 </span>
                             </template>
 
@@ -267,11 +288,11 @@ const closeModalDel = () => {
                             bodyClass="border border-gray-300">
                         </Column>
 
-                        <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
+                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps" bodyClass="border border-gray-300"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
-                            <div class="flex gap-2">
-                                <button @click="openModalForm(2, slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
+                            <div class="flex gap-2 items-center justify-center">
+                                <button v-if="canEdit" @click="openModalForm(2, slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-blue-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-blue-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -279,8 +300,8 @@ const closeModalDel = () => {
                                     </svg>
                                 </button>
 
-                                <button @click="openModalDel(slotProps.data)"
-                                    class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-50">
+                                <button v-if="canDelete" @click="openModalDel(slotProps.data)"
+                                    class="inline-flex p-2 rounded-md hover:bg-red-50">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -545,7 +566,7 @@ const closeModalDel = () => {
                             </p>
                             <p class="mt-2 text-base font-semibold text-gray-900">
                                 {{ eform.nasname }} <span class="text-gray-500 font-medium">({{ eform.shortname
-                                    }})</span>
+                                }})</span>
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.
