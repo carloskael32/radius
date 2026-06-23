@@ -304,6 +304,7 @@ class ReportController extends Controller
             DB::raw('MAX(UNIX_TIMESTAMP(acctstoptime) - UNIX_TIMESTAMP(acctstarttime)) as max_session_time')
         )
             ->whereNotNull('acctstoptime')
+            ->whereDate('acctstoptime', Carbon::today())
             ->groupBy('username')
             ->orderBy('avg_session_time', 'DESC')
             ->limit(10)
@@ -823,39 +824,39 @@ class ReportController extends Controller
     /**
      * Exportar tabla a PDF
      */
-    public function exportToPdf(Request $request)
-    {
-        $reportType = $request->get('type');
-        $title = $request->get('title', 'Reporte RADIUS');
-        $data = [];
+    // public function exportToPdf(Request $request)
+    // {
+    //     $reportType = $request->get('type');
+    //     $title = $request->get('title', 'Reporte RADIUS');
+    //     $data = [];
 
-        switch ($reportType) {
-            case 'bandwidth':
-                $data = $this->prepareBandwidthExcelData($request);
-                break;
-            case 'top_consumers':
-                $data = $this->getTopConsumers();
-                break;
-            case 'disconnections':
-                $disconn = $this->getDisconnectionAnalysis();
-                $data = $disconn['topDisconnectors'] ?? [];
-                break;
-            case 'active_sessions':
-                $active = $this->getActiveSessionsCount();
-                $data = $active['sessions'] ?? [];
-                break;
-            case 'nas_stats':
-                $nas = $this->getNasStats();
-                $data = $nas['stats'] ?? [];
-                break;
-        }
+    //     switch ($reportType) {
+    //         case 'bandwidth':
+    //             $data = $this->prepareBandwidthExcelData($request);
+    //             break;
+    //         case 'top_consumers':
+    //             $data = $this->getTopConsumers();
+    //             break;
+    //         case 'disconnections':
+    //             $disconn = $this->getDisconnectionAnalysis();
+    //             $data = $disconn['topDisconnectors'] ?? [];
+    //             break;
+    //         case 'active_sessions':
+    //             $active = $this->getActiveSessionsCount();
+    //             $data = $active['sessions'] ?? [];
+    //             break;
+    //         case 'nas_stats':
+    //             $nas = $this->getNasStats();
+    //             $data = $nas['stats'] ?? [];
+    //             break;
+    //     }
 
-        return response()->json([
-            'message' => 'PDF export initiated',
-            'data' => $data,
-            'type' => $reportType,
-        ]);
-    }
+    //     return response()->json([
+    //         'message' => 'PDF export initiated',
+    //         'data' => $data,
+    //         'type' => $reportType,
+    //     ]);
+    // }
 
     /**
      * Generar archivo Excel

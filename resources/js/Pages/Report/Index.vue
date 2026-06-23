@@ -545,7 +545,7 @@ onMounted(() => {
 
 
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-2">
                         <div class="bg-white border border-gray-200 rounded-lg p-4">
                             <h4 class="font-bold text-gray-900 mb-3">Causas de Corte (Hoy)</h4>
                             <div v-if="disconnectionData?.disconnectReasons" class="space-y-2">
@@ -834,10 +834,6 @@ onMounted(() => {
                                     bodyClass="border border-gray-300">
                                 </Column>
 
-
-
-
-
                             </DataTable>
                         </div>
                     </div>
@@ -933,7 +929,7 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> 
 
             <!-- 🏢 NAS/NODOS -->
             <div v-if="activeTab === 'nas'" class="space-y-4">

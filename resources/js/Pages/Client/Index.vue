@@ -28,7 +28,6 @@ const FilterMatchMode = {
 const props = defineProps({
     clients: { type: Array },
     grupos: { type: Array },
-    errors: { type: Object, default: () => ({}) }
 });
 
 
@@ -55,11 +54,7 @@ const exportCSV = () => {
 };
 
 
-
-
-
-// Añade una ref para manejar errores específicos para validaciones de entrada
-const validationErrors = ref({});
+// Usaremos `form.errors` de Inertia para manejar errores
 
 const form = useForm({
     username: '',
@@ -76,15 +71,7 @@ const form = useForm({
 
 const eform = ref({
     id: '',
-    username: '',
     nombre_completo: '',
-    email: '',
-    telefono: '',
-    direccion: '',
-    estado: '',
-    observaciones: '',
-    plan: '',
-    password_radius: '',
 
 })
 //const mn = defineProps(['success']);
@@ -94,7 +81,8 @@ const operation = ref(1);
 // envio de datos al controlador insert update
 const save = () => {
     //Limpiar errores previos
-    validationErrors.value = {};
+
+    form.clearErrors();
 
     if (operation.value == 1) {
         form.post(route('client.store'), {
@@ -102,9 +90,8 @@ const save = () => {
                 ok('Cliente guardado exitosamente'); // Mostrar mensaje de éxito
                 closeModalForm(); // Cerrar el modal y resetear el formulario
             },
-            onError: (errors) => {
-                // Captura errores de validacion
-                validationErrors.value = errors;
+            onError: () => {
+                // Los errores se exponen en `form.errors` automáticamente
             }
         });
     } else {
@@ -113,9 +100,9 @@ const save = () => {
                 ok('Cliente actualizado')
                 closeModalForm();
             },
-            onError: (errors) => {
+            onError: () => {
                 // Capturar errores de validación
-                validationErrors.value = errors;
+                // Los errores se exponen en `form.errors` automáticamente
             },
         });
     }
@@ -133,7 +120,7 @@ const title = ref('');
 const openModalForm = (op, c) => {
     showModalForm.value = true;
     operation.value = op;
-    validationErrors.value = {}; // Limpiar errores al abrir modal
+    form.clearErrors(); // Limpiar errores al abrir modal
     if (op == 1) {
         title.value = 'Nuevo cliente';
     } else {
@@ -174,7 +161,7 @@ const openModalDel = (c) => {
 const closeModalDel = () => {
     showModalDel.value = false;
     form.reset();
-    validationErrors.value = {}; // Limpiar errores al cerrar
+    form.clearErrors(); // Limpiar errores al cerrar
 }
 
 
@@ -192,19 +179,17 @@ const deleteUser = () => {
 // para Validaciones de entrada
 //Funcion para limpiar errores cuando se cambia un campo
 const clearError = (field) => {
-    if (validationErrors.value[field]) {
-        delete validationErrors.value[field];
-    }
+    form.clearErrors(field);
 }
 
 // Función para obtener mensaje de error de un campo específico
 const getErrorMessage = (field) => {
-    return validationErrors.value[field] ? validationErrors.value[field] : '';
+    return form.errors[field] ? form.errors[field] : '';
 }
 
 // Función para verificar si un campo tiene error
 const hasError = (field) => {
-    return validationErrors.value[field] ? true : false;
+    return form.errors[field] ? true : false;
 }
 
 // estados por fila para switches
@@ -269,7 +254,6 @@ const canEdit = computed(() =>
 <template>
 
     <Head title="User PPPoE" />
-    <Toast />
 
     <AuthenticatedLayout>
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
@@ -324,7 +308,7 @@ const canEdit = computed(() =>
                                     Excel</button>
                             </div>
                         </template>
-                   
+
                         <Column field="username" sortable header="username"
                             headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
@@ -345,7 +329,7 @@ const canEdit = computed(() =>
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <Column field="estado" sortable header="estado"
+                        <Column v-if="canEdit" field="estado" sortable header="estado"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
@@ -362,15 +346,15 @@ const canEdit = computed(() =>
                                             </div>
                                         </div>
                                         <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
-                                            }}</span>
+                                        }}</span>
                                     </label>
                                 </div>
                             </template>
-                        </Column>                       
+                        </Column>
                         <Column field="plan" sortable header="plan"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
-                            <template #body="{ data }">
+                            <!-- <template #body="{ data }">
                                 <span v-if="data.plan"
                                     class="bg-green-400 text-green-900 inline-block px-3 rounded-sm font-semibold">
                                     {{ data.plan }}
@@ -379,20 +363,28 @@ const canEdit = computed(() =>
                                     class="bg-yellow-300 text-red-900 inline-block px-3 rounded-xl font-semibold">
                                     ninguno
                                 </span>
+                            
                             </template>
-                        </Column>
-                         <Column field="observaciones" sortable header="observaciones"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
-                        </Column> 
+                            -->
+                            <template #body="{ data }">
+                                <span class="bg-blue-200 text-blue-900 inline-block px-1 rounded-md font-semibold text-center">
+                                    {{ data.plan }}
+                                </span>
+                            </template>
 
-                        <Column v-if="canEdit || canDelete " header="acciones" #body="slotProps"
+                        </Column>
+                        <Column field="observaciones" sortable header="observaciones"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300">
+                        </Column>
+
+                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
 
                             <div class="flex gap-2 items-center justify-center">
                                 <!-- BOTON PARA VER MAS DETALLES DEL CLIENTE-->
-                                 <!-- <Link v-if="canView" :href="route('client.show', slotProps.data)">
+                                <!-- <Link v-if="canView" :href="route('client.show', slotProps.data)">
                                     <button
                                         class="inline-flex items-center justify-center p-2 rounded-md hover:bg-purple-200">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
@@ -433,7 +425,7 @@ const canEdit = computed(() =>
 
 
 
-        <!-- MODAL PARA FORMULARIO DE REGISTRO -->
+        <!-- MODAL PARA FORMULARIO DE REGISTRO Y MODIFICACION -->
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
             <div class="p-5">
                 <div class="flex justify-between items-center pb-4">
@@ -446,20 +438,10 @@ const canEdit = computed(() =>
                     </button>
                 </div>
 
-                <!-- Mostrar errores generales si existen -->
-                <div v-if="Object.keys(validationErrors).length > 0"
-                    class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                    <p class="text-red-800 font-semibold mb-2">Por favor, corrige los siguientes errores:</p>
-                    <ul class="list-disc list-inside text-sm text-red-600">
-                        <li v-for="(error, field) in validationErrors" :key="field">
-                            {{ error }}
-                        </li>
-                    </ul>
-                </div>
                 <form @submit.prevent="save">
 
 
-                    <div class="grid grid-cols-3 gap-2 pb-4">
+                    <div class="grid grid-cols-3 gap-3 pb-6">
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre de
                                 usuario</label>
@@ -474,11 +456,8 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="text" id="username" v-model="form.username"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="user1" autofocus />
-
-
-
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="user1" />
                             <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('username') }}
                             </p>
@@ -495,18 +474,16 @@ const canEdit = computed(() =>
                                     </svg>
                                 </div>
                             </div>
-                            <!--  <input type="text" id="plan" v-model="form.plan"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="premiun" /> -->
+
 
                             <select v-model="form.plan"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md">
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md">
                                 <option value="">Selecciona</option>
                                 <option v-for="g in grupos" key="g.id" :value="g.groupname">{{ g.groupname }}</option>
                             </select>
-                            <!--     <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
+                            <p v-if="hasError('plan')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('plan') }}
-                            </p> -->
+                            </p>
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Clave de
@@ -521,15 +498,15 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="text" v-model="form.password_radius"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="246810" required />
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="246810" />
                             <p v-if="hasError('password_radius')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('password_radius') }}
                             </p>
                         </div>
 
                     </div>
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-2 gap-4 pb-6">
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre
                                 completo</label>
@@ -541,13 +518,15 @@ const canEdit = computed(() =>
                                             d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Zm10.857 5.691a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 0 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
                                             clip-rule="evenodd" />
                                     </svg>
-
-
                                 </div>
                             </div>
                             <input type="text" v-model="form.nombre_completo"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="juan juanito perez " required />
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="juan juanito perez" />
+
+                            <p v-if="hasError('nombre_completo')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('nombre_completo') }}
+                            </p>
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Correo
@@ -565,8 +544,8 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="text" v-model="form.email"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="user1@gmail.com" required />
+                                class=" text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="user1@gmail.com" />
                             <p v-if="hasError('email')" class="mt-1 text-sm text-red-600">
                                 {{ getErrorMessage('email') }}
                             </p>
@@ -575,7 +554,7 @@ const canEdit = computed(() =>
                     </div>
 
 
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-2 gap-4 pb-6">
                         <div>
                             <label for="visitors"
                                 class="block mb-1.5 text-sm font-medium text-heading">Direccion</label>
@@ -591,8 +570,12 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="text" v-model="form.direccion"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="Z. perdidos " required />
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="Z. perdidos " />
+                            <p v-if="hasError('direccion')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('direccion') }}
+                            </p>
+
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nro. telefono
@@ -611,21 +594,24 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="tel" v-model="form.telefono"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="77712312" required />
+                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="77712312" />
+                            <p v-if="hasError('telefono')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('telefono') }}
+                            </p>
                         </div>
 
                     </div>
-                    <div class="pb-4">
+                    <div class="pb-6">
                         <label for="visitors"
                             class="block mb-1.5 text-sm font-medium text-heading">Observaciones</label>
                         <textarea v-model="form.observaciones" rows="3"
-                            class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
-                            placeholder="alguna observacion ?" required></textarea>
+                            class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
+                            placeholder="alguna observacion ?"></textarea>
                     </div>
 
 
-                        <!-- RADIO BUTTON PARA EL ESTADO DEL CLIENTE -->
+                    <!-- RADIO BUTTON PARA EL ESTADO DEL CLIENTE -->
                     <!-- <h2 class="pb-1">Estado</h2>
                     <div class="grid grid-cols-6 pb-8 ">
 

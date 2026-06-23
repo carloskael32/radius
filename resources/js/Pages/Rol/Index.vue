@@ -246,7 +246,6 @@ const canEdit = computed(() =>
 <template>
 
     <Head title="Roles" />
-    <Toast />
 
     <AuthenticatedLayout>
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">

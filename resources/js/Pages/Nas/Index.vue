@@ -4,11 +4,11 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import axios from 'axios';
 
 //datatable primevue
 import DataTable from 'primevue/datatable';
@@ -16,7 +16,6 @@ import Column from 'primevue/column';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
 
 
 //para el filter
@@ -27,11 +26,8 @@ const FilterMatchMode = {
 
 const props = defineProps({
     nas: { type: Array },
-    total: { type: Array },
+    total: { type: Number },
 });
-
-//para mostrar los datos en cada columna del datatable
-const columns = [{ data: "id" }, { data: "nasname" }, { data: "shortname" }, { data: "type" }, { data: "ports" }, { data: "secret" }, { data: "status" }, { data: "description" }];
 
 //para el boton de filtrado de datos
 const filters = ref({
@@ -47,7 +43,7 @@ const exportCSV = () => {
     if (dt.value) {
         dt.value.exportCSV({
             selectionOnly: false, // Exportar todos los datos
-            fileName: 'usuarios.csv'
+            fileName: 'nas.csv'
         });
     }
 };
@@ -70,23 +66,25 @@ const form = useForm({
 });
 
 const eform = ref({
+    id:'',
     nasname: '',
-    shortname: '',
-    type: '',
-    ports: '',
-    secret: '',
-    description: '',
-    /* host:'', */
-    user: '',
-    pass: '',
-    port: '',
-    status: '',
+    shortname:'',
+    // shortname: '',
+    // type: '',
+    // ports: '',
+    // secret: '',
+    // description: '',
+    // /* host:'', */
+    // user: '',
+    // pass: '',
+    // port: '',
+    // status: '',
 });
 
 
 //ENVIO DE DATOS AL CONTROLADOR
 const save = () => {
-    if (operation.value == 1) {
+    if (operation.value === 1) {
         form.post(route('nas.store'), {
             onSuccess: () => {
                 ok('Nas registrado correctamente');
@@ -96,7 +94,7 @@ const save = () => {
     } else {
         form.put(route('nas.update', eform.value.id), {
             onSuccess: () => {
-                ok('Nas actualizado correctamente')
+                ok('Nas actualizado correctamente');
                 closeModalForm();
 
             },
@@ -133,7 +131,7 @@ const title = ref('');
 const openModalForm = (op, n) => {
     showModalForm.value = true;
     operation.value = op;
-    if (op == 1) {
+    if (op === 1) {
         title.value = 'Agregar Nuevo Nas';
     } else {
         title.value = 'Actualizar Nas';
@@ -142,11 +140,11 @@ const openModalForm = (op, n) => {
         form.type = n.type;
         form.ports = n.ports;
         form.secret = n.secret;
-        form.server = n.server;
         form.description = n.description;
         form.user = n.user;
         form.port = n.port;
         form.status = n.status;
+        // form.pass = n.pass;
 
 
         eform.value.id = n.id;
@@ -168,8 +166,93 @@ const closeModalDel = () => {
 }
 
 
-//seccion de permisos
+// VALIDACIONES DE ENTRADA
 
+const fieldLabels = {
+    nasname: 'Nas IP',
+    shortname: 'Nombre Corto',
+    user: 'usuario',
+    pass: 'Contraseña'
+}
+
+//Funcion para limpiar errores cuando se cambia un campo
+const clearError = (field) => {
+    form.clearErrors(field);
+}
+// Función para obtener mensaje de error de un campo específico
+const getErrorMessage = (field) => {
+    if (!form.errors[field]) return '';
+    let message = form.errors[field];
+    //Reemplazar el nombre del campo por la etiqueta legible
+    const fieldLabel = fieldLabels[field] || field;
+    message = message.replace(field, fieldLabel);
+    return message;
+
+}
+// Función para verificar si un campo tiene error
+const hasError = (field) => {
+    return form.errors[field] ? true : false;
+}
+
+
+//funciones para SWITCH
+// estados por fila para switches para cambiar de estado de activo e inactivo
+const rowStates = ref({});
+const loadingStates = ref({});
+
+const initRowStates = () => {
+    rowStates.value = {};
+    loadingStates.value = {};
+    const dataArray = props.nas && props.nas.data ? props.nas.data : (Array.isArray(props.nas) ? props.nas : []);
+
+    if (Array.isArray(dataArray)) {
+        dataArray.forEach(n => {
+            if (n && n.id) {
+                rowStates.value[n.id] = n.status === 'activo';
+                loadingStates.value[n.id] = false;
+            }
+        });
+    }
+};
+
+
+//para iniciar nuevamente la funcion cuando se actualice el props de nas
+watch(() => props.nas, () => {
+    initRowStates();
+}, { immediate: true, deep: true });
+
+const toggleEstado = async (nas, checked) => {
+    if (!nas || !nas.id) {
+        toast.add({ severity: 'error', summary: 'Error', detail: 'Datos inválidos', life: 3000 });
+        return;
+    }
+
+    const previousState = rowStates.value[nas.id];
+    const newEstado = checked ? 'activo' : 'inactivo';
+
+    //optimista: actualizar UI primero
+    rowStates.value[nas.id] = checked;
+    loadingStates.value[nas.id] = true;
+
+    try {
+        await axios.patch(route('nas.toggle', nas.id), { status: newEstado });
+        nas.status = newEstado;
+        toast.add({ severity: 'success', summary: 'Éxito', detail: 'Estado actualizado', life: 3000 });
+    } catch (error) {
+        //revertir cambios en caso de error
+        rowStates.value[nas.id] = previousState;
+        console.error('Error al actualizar estado:', error);
+        const errorMessage = error.response?.data?.message || 'No se pudo actualizar estado';
+        toast.add({ severity: 'error', summary: 'Error', detail: errorMessage, life: 3000 });
+    } finally {
+        loadingStates.value[nas.id] = false;
+    }
+}
+
+
+
+
+//SECCION DE PERMISOS
 const page = usePage();
 
 const canAdd = computed(() =>
@@ -192,7 +275,6 @@ const canEdit = computed(() =>
 <template>
 
     <Head title="Nas" />
-    <Toast />
 
     <AuthenticatedLayout>
 
@@ -240,7 +322,7 @@ const canEdit = computed(() =>
                                 </div>
 
                                 <!-- Botones de exportación -->
-                                 <button type="button" @click="exportCSV"
+                                <button type="button" @click="exportCSV"
                                     class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
                                     Excel</button>
                             </div>
@@ -269,7 +351,7 @@ const canEdit = computed(() =>
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
-                        <Column field="status" sortable header="estado"
+                        <!-- <Column field="status" sortable header="estado"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
@@ -281,14 +363,38 @@ const canEdit = computed(() =>
                                     {{ data.status }}
                                 </span>
                             </template>
-
+                        </Column> -->
+                        <Column v-if="canEdit" field="status" sortable header="estado"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            bodyClass="border border-gray-300 text-center">
+                            <template #body="{ data }">
+                                <div class="flex items-center justify-center gap-3">
+                                    <label class="flex items-center cursor-pointer"
+                                        :class="{ 'opacity-50 pointer-events-none': loadingStates[data.id] }">
+                                        <div class="relative">
+                                            <input type="checkbox" class="sr-only" :checked="rowStates[data.id]"
+                                                :disabled="loadingStates[data.id]"
+                                                @change="(e) => toggleEstado(data, e.target.checked)" />
+                                            <div class="block w-12 h-6 rounded-full transition-colors"
+                                                :class="rowStates[data.id] ? 'bg-green-500' : 'bg-red-500'">
+                                            </div>
+                                            <div class="absolute left-1 top-1 w-4 h-4 rounded-full transition-transform"
+                                                :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'">
+                                            </div>
+                                        </div>
+                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
+                                            }}</span>
+                                    </label>
+                                </div>
+                            </template>
                         </Column>
                         <Column field="description" sortable header="observaciones"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300">
                         </Column>
 
-                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps" bodyClass="border border-gray-300"
+                        <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
+                            bodyClass="border border-gray-300"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
                             <div class="flex gap-2 items-center justify-center">
                                 <button v-if="canEdit" @click="openModalForm(2, slotProps.data)"
@@ -344,7 +450,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z" />
                                     </svg>
@@ -352,8 +458,11 @@ const canEdit = computed(() =>
                             </div>
                             <input @input="form.nasname = form.nasname.replace(/[^0-9.]/g, '')" type="text" name="ipv4"
                                 id="nasname" v-model="form.nasname"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="192.168.1.1" required />
+                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="192.168.1.1" />
+                            <p v-if="hasError('nasname')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('nasname') }}
+                            </p>
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre
@@ -361,7 +470,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5  text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                     </svg>
@@ -369,8 +478,11 @@ const canEdit = computed(() =>
                                 </div>
                             </div>
                             <input type="text" v-model="form.shortname"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="NAS-Central" required />
+                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="NAS-Central" />
+                            <p v-if="hasError('shortname')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('shortname') }}
+                            </p>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 pb-4">
@@ -379,7 +491,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -390,7 +502,7 @@ const canEdit = computed(() =>
                             </div>
                             <input type="text" v-model="form.type"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="Cisco" required />
+                                placeholder="Cisco" />
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nro. de
@@ -398,7 +510,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class=" size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class=" size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                                     </svg>
@@ -406,7 +518,7 @@ const canEdit = computed(() =>
                             </div>
                             <input type="number" v-model="form.ports"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="1812" required />
+                                placeholder="24" />
                         </div>
                     </div>
 
@@ -417,7 +529,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
                                     </svg>
@@ -425,14 +537,17 @@ const canEdit = computed(() =>
                             </div>
                             <input type="text" v-model="form.secret"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="•••••" required />
+                                placeholder="•••••" />
+                            <p v-if="hasError('secret')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('secret') }}
+                            </p>
                         </div>
                     </div>
                     <div class="pb-4">
                         <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Descripcion</label>
                         <textarea v-model="form.description" rows="3"
                             class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
-                            placeholder="Descripcion del NAS" required></textarea>
+                            placeholder="Descripcion del NAS"></textarea>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 pb-4">
@@ -441,7 +556,7 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z" />
                                     </svg>
@@ -449,24 +564,25 @@ const canEdit = computed(() =>
                             </div>
                             <input type="text" name="host" id="host" v-bind:value="form.nasname"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="192.168.1.1" required disabled />
+                                placeholder="192.168.1.1" disabled />
                         </div>
                         <div>
                             <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">USUARIO*</label>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
-
-
                                 </div>
                             </div>
-                            <input type="text" v-model="form.user"
+                            <input type="text" v-model="form.user" autocomplete="username"
                                 class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="admin" required />
+                                placeholder="admin" />
+                            <p v-if="hasError('user')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('user') }}
+                            </p>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 pb-4">
@@ -475,15 +591,15 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class=" size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class=" size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                                     </svg>
                                 </div>
                             </div>
-                            <input type="number" v-model="form.port"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="8728" required />
+                            <input type="number" v-model="form.port" autocomplete="number"
+                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="8728" />
                         </div>
                         <div>
                             <label for="visitors"
@@ -491,40 +607,43 @@ const canEdit = computed(() =>
                             <div class="relative">
                                 <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
+                                        stroke-width="1.5" stroke="currentColor" class="size-5">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                     </svg>
 
                                 </div>
                             </div>
-                            <input type="password" v-model="form.pass"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="•••••" required />
+                            <input type="password" v-model="form.pass" autocomplete="new-password"
+                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
+                                placeholder="•••••" />
+                            <p v-if="hasError('pass')" class="mt-1 text-sm text-red-600">
+                                {{ getErrorMessage('pass') }}
+                            </p>
                         </div>
                     </div>
 
 
 
-                    <h2 class="pb-1">Estado</h2>
+                    <!-- <h2 class="pb-1">Estado</h2>
                     <div class="grid grid-cols-6 pb-8 ">
 
                         <div>
-                            <input v-model="form.status" id="default-radio-1" type="radio" value="active"
+                            <input v-model="form.status" id="default-radio-1" type="radio" value="activo"
                                 name="default-radio"
                                 class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
                             <label for="default-radio-1"
                                 class="select-none ms-2 text-sm font-medium text-heading">Activo</label>
                         </div>
                         <div>
-                            <input v-model="form.status" id="default-radio-2" type="radio" value="inactive"
+                            <input v-model="form.status" id="default-radio-2" type="radio" value="inactivo"
                                 name="default-radio"
                                 class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
                             <label for="default-radio-2"
                                 class="select-none ms-2 text-sm font-medium text-heading">Inactivo</label>
                         </div>
 
-                    </div>
+                    </div> -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
@@ -585,9 +704,5 @@ const canEdit = computed(() =>
                 </div>
             </div>
         </Modal>
-
-
-
-
     </AuthenticatedLayout>
 </template>

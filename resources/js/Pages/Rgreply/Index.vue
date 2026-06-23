@@ -6,6 +6,9 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import Modal from '@/Components/Modal.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
+import IconField from 'primevue/iconfield';
+import InputIcon from 'primevue/inputicon';
+import InputText from 'primevue/inputtext';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 import { useToast } from "primevue/usetoast";
@@ -261,6 +264,30 @@ const DelteClient = () => {
         });
 }
 
+// Filtro para el buscador
+const filters = ref({
+    global: { value: '' }
+});
+
+// Listas filtradas
+const filteredClients = computed(() => {
+    if (!filters.value.global.value) return modalData.value.clients;
+    const searchTerm = filters.value.global.value.toLowerCase();
+    return modalData.value.clients.filter(client =>
+        client.username.toLowerCase().includes(searchTerm) ||
+        (client.nombre_completo && client.nombre_completo.toLowerCase().includes(searchTerm))
+    );
+});
+
+const filteredClientsNoGroup = computed(() => {
+    if (!filters.value.global.value) return modalData.value.clsngr;
+    const searchTerm = filters.value.global.value.toLowerCase();
+    return modalData.value.clsngr.filter(client =>
+        client.username.toLowerCase().includes(searchTerm) ||
+        (client.nombre_completo && client.nombre_completo.toLowerCase().includes(searchTerm))
+    );
+});
+
 //seccion de permisos
 const page = usePage();
 
@@ -375,7 +402,6 @@ const canGest = computed(() =>
                                 d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                         </svg>
                         <p class="pl-1 text-white">Gestionar Clientes</p>
-
                     </button>
 
 
@@ -574,7 +600,7 @@ const canGest = computed(() =>
                     <div>
                         <h2 class="text-lg font-medium text-gray-900">Gestionar Clientes</h2>
                         <p class="text-sm text-gray-500">Plan: <span class="font-semibold">{{ modalData.groupName
-                                }}</span></p>
+                        }}</span></p>
                     </div>
                     <button @click="closeModalAdd"
                         class="rounded-md text-white bg-red-600 hover:bg-red-400 active:bg-red-700">
@@ -604,15 +630,29 @@ const canGest = computed(() =>
                     <div v-if="modalData.clients && modalData.clients.length > 0 || modalData.clsngr && modalData.clsngr.length > 0"
                         class="space-y-3">
 
+                        <!-- BUSCADOR -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+                            
+                                <IconField iconPosition="left" class="w-full md:w-64">
+                                    <InputIcon>
+                                        <i class="pi pi-search" />
+                                    </InputIcon>
+                                    <InputText v-model="filters['global'].value" placeholder="Buscar cliente..." class="w-full pl-8 rounded-lg" />
+                                </IconField>
+                            
+                        </div>
+                        
+
+
                         <div class="grid grid-cols-2 gap-2">
                             <div>
                                 <div class="text-sm font-medium text-gray-700 mb-1">
                                     Clientes registrados: <span class="text-blue-600 font-semibold">{{
-                                        modalData.clients.length
-                                    }}</span>
+                                        filteredClients.length
+                                        }}</span>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-                                    <div v-for="client in modalData.clients" :key="client.id"
+                                    <div v-for="client in filteredClients" :key="client.id"
                                         class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50">
                                         <div class="flex items-center gap-3">
                                             <!--  <input type="checkbox" :id="`client-${client.id}`" :value="client.username"
@@ -622,7 +662,7 @@ const canGest = computed(() =>
                                                     class="font-medium text-gray-900 cursor-pointer">
                                                     {{ client.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">{{ client.email || 'Sin correo' }}</p>
+                                                <p class="text-xs text-gray-500">{{ client.nombre_completo || 'Sin nombre' }}</p>
                                             </div>
                                         </div>
                                         <button @click="openModalDelClient(client)"
@@ -639,11 +679,11 @@ const canGest = computed(() =>
                             <div>
                                 <div class="text-sm font-medium text-gray-700 mb-1">
                                     Clientes sin grupo(plan): <span class="text-blue-600 font-semibold">{{
-                                        modalData.clsngr.length
-                                    }}</span>
+                                        filteredClientsNoGroup.length
+                                        }}</span>
                                 </div>
                                 <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
-                                    <div v-for="csgrp in modalData.clsngr" :key="csgrp.id"
+                                    <div v-for="csgrp in filteredClientsNoGroup" :key="csgrp.id"
                                         class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50">
                                         <div class="flex items-center gap-3">
                                             <input type="checkbox" :id="`csgrp-${csgrp.id}`" :value="csgrp.username"
@@ -653,7 +693,7 @@ const canGest = computed(() =>
                                                     class="font-medium text-gray-900 cursor-pointer">
                                                     {{ csgrp.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">{{ csgrp.email || 'Sin correo' }}</p>
+                                                <p class="text-xs text-gray-500">{{ csgrp.nombre_completo || 'Sin nombre' }}</p>
                                             </div>
                                         </div>
                                         <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
@@ -716,7 +756,7 @@ const canGest = computed(() =>
                             <p class="mt-2 text-base font-semibold text-gray-900">
                                 {{ Clform.username }} <span class="text-gray-500 font-medium">({{ Clform.id ||
                                     'ninguno'
-                                    }})</span>
+                                }})</span>
                             </p>
                             <p class="mt-3 text-sm text-red-600">
                                 Esta acción no se puede deshacer.

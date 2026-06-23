@@ -32,10 +32,40 @@ const props = defineProps({
     },
 
     //para mostrar usuarios sin perfil de navegacion
-     clientesSinGrupo: {
+    clientesSinGrupo: {
         type: Number,
         default: 0
-    }, 
+    },
+
+    // Usuarios por NAS (desde el controlador)
+    usersByNas: {
+        type: Array,
+        default: () => []
+    },
+
+    // Conexiones exitosas y fallidas desde radpostauth
+    successfulAttempts: {
+        type: Number,
+        default: 0
+    },
+    failedAttempts: {
+        type: Number,
+        default: 0
+    },
+
+    // Datos diarios para el gráfico de línea (desde radpostauth)
+    dailyLabels: {
+        type: Array,
+        default: () => ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb']
+    },
+    dailySuccess: {
+        type: Array,
+        default: () => []
+    },
+    dailyFailed: {
+        type: Array,
+        default: () => []
+    },
 })
 
 // Colores para los gráficos
@@ -73,13 +103,13 @@ const usersByGroupOptions = ref({
     }
 });
 
-// Datos para gráfico de línea - Conexiones diarias
-const dailyConnectionsData = ref({
-    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+// Datos para gráfico de línea - Conexiones diarias (dinámico desde radpostauth)
+const dailyConnectionsData = computed(() => ({
+    labels: props.dailyLabels,
     datasets: [
         {
             label: 'Conexiones Exitosas',
-            data: [620, 580, 710, 690, 750, 600, 550],
+            data: props.dailySuccess,
             borderColor: '#10b981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
             borderWidth: 3,
@@ -88,7 +118,7 @@ const dailyConnectionsData = ref({
         },
         {
             label: 'Conexiones Fallidas',
-            data: [45, 52, 38, 41, 35, 48, 55],
+            data: props.dailyFailed,
             borderColor: '#ef4444',
             backgroundColor: 'rgba(239, 68, 68, 0.1)',
             borderWidth: 3,
@@ -96,7 +126,7 @@ const dailyConnectionsData = ref({
             fill: true
         }
     ]
-});
+}));
 
 const dailyConnectionsOptions = ref({
     responsive: true,
@@ -118,16 +148,22 @@ const dailyConnectionsOptions = ref({
     }
 });
 
-// Datos para gráfico de barras horizontal - Usuarios por NAS
-const usersByNASData = ref({
-    labels: ['NAS-Office-01', 'NAS-Warehouse-02', 'NAS-Branch1-03', 'NAS-Branch2-04', 'NAS-Remote-05'],
-    datasets: [{
-        label: 'Usuarios Conectados',
-        data: [185, 156, 142, 128, 95],
-        backgroundColor: '#3b82f6',
-        borderColor: '#1e40af',
-        borderWidth: 1
-    }]
+        // Datos para gráfico de barras horizontal - Total de usuarios por NAS (dinámico desde el backend)
+const usersByNASData = computed(() => {
+    const labels = props.usersByNas.map(item => item.name);
+    const data = props.usersByNas.map(item => item.count);
+    const backgroundColors = labels.map((_, index) => chartColors[index % chartColors.length]);
+
+    return {
+        labels,
+        datasets: [{
+            label: 'Total de Usuarios',
+            data,
+            backgroundColor: backgroundColors,
+            borderColor: backgroundColors.map(c => c + '80'),
+            borderWidth: 1
+        }]
+    };
 });
 
 const usersByNASOptions = ref({
@@ -147,16 +183,16 @@ const usersByNASOptions = ref({
     }
 });
 
-// Datos para gráfico de intento de conexión (Pie)
-const connectionAttemptsData = ref({
+// Datos para gráfico de intento de conexión (Pie) - dinámico desde radpostauth
+const connectionAttemptsData = computed(() => ({
     labels: ['Exitosos', 'Fallidos'],
     datasets: [{
-        data: [4250, 380],
+        data: [props.successfulAttempts, props.failedAttempts],
         backgroundColor: ['#10b981', '#ef4444'],
         borderColor: '#ffffff',
         borderWidth: 2
     }]
-});
+}));
 
 const connectionAttemptsOptions = ref({
     responsive: true,
@@ -169,115 +205,149 @@ const connectionAttemptsOptions = ref({
     }
 });
 
-// Métrica adicional - Tasa de éxito
+// Métrica adicional - Tasa de éxito (dinámica)
 const successRate = computed(() => {
-    const total = 4250 + 380;
-    return ((4250 / total) * 100).toFixed(1);
+    const total = props.successfulAttempts + props.failedAttempts;
+    if (total === 0) return '0.0';
+    return ((props.successfulAttempts / total) * 100).toFixed(1);
 });
 </script>
 
 <template>
+
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
         <template #header>
-            
+
         </template>
 
         <div class="space-y-6">
             <!-- Tarjetas de Métricas Principales -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                 <!-- Total Usuarios -->
-                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm hover:shadow-md transition-all p-6 border border-blue-200">
+                <div
+                    class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-blue-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Total Usuarios</span>
-                                <!-- <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-green-500">↑ 12%</span> -->
+                                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Total
+                                    Clientes</span>
+
                             </div>
                             <p class="text-4xl font-black text-gray-900">{{ props.totalClient }}</p>
-                            <p class="text-xs text-gray-600 mt-3">Desde el mes pasado</p>
+
                         </div>
-                        <div class="bg-blue-500 p-4 rounded-2xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM15 20H9m6 0h6"></path>
+                        <div class="bg-blue-500 p-3 rounded-2xl shadow-lg">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                             </svg>
+
                         </div>
                     </div>
                 </div>
 
                 <!-- Total NAS -->
-                <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-sm hover:shadow-md transition-all p-6 border border-purple-200">
+                <div
+                    class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-purple-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Total NAS</span>
+                                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Total
+                                    NAS</span>
                                 <!-- <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-purple-500">Activos</span> -->
                             </div>
                             <p class="text-4xl font-black text-gray-900">{{ props.totalNAS }}</p>
-                            <p class="text-xs text-gray-600 mt-3">Dispositivos conectados</p>
+
                         </div>
-                        <div class="bg-purple-500 p-4 rounded-2xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        <div class="bg-purple-500 p-3 rounded-2xl shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />
                             </svg>
+
                         </div>
                     </div>
                 </div>
 
                 <!-- Usuarios Conectados -->
-                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm hover:shadow-md transition-all p-6 border border-green-200">
+                <div
+                    class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-green-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xs font-bold text-green-600 uppercase tracking-wider">Conectados</span>
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-green-500">{{ ((props.connectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
+                                <span class="text-xs font-bold text-green-600 uppercase tracking-wider">Clientes
+                                    Activos</span>
+
+
                             </div>
+
                             <p class="text-4xl font-black text-gray-900">{{ props.connectedClient }}</p>
-                            <p class="text-xs text-gray-600 mt-3">Usuarios en línea ahora</p>
+
                         </div>
-                        <div class="bg-green-500 p-4 rounded-2xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        <div class="bg-green-500 p-3 rounded-2xl shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
+
+                            <span class="rounded-full text-xs font-semibold text-white bg-green-500">{{
+                                ((props.connectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Usuarios Desconectados -->
-                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm hover:shadow-md transition-all p-6 border border-red-200">
+                <div
+                    class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-red-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xs font-bold text-red-600 uppercase tracking-wider">Desconectados</span>
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-red-500">{{ ((props.disconnectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
+                                <span class="text-xs font-bold text-red-600 uppercase tracking-wider">Clientes
+                                    inactivos</span>
+
                             </div>
                             <p class="text-4xl font-black text-gray-900">{{ props.disconnectedClient }}</p>
-                            <p class="text-xs text-gray-600 mt-3">Sin conexión activa</p>
+
                         </div>
-                        <div class="bg-red-500 p-4 rounded-2xl shadow-lg">
-                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <div class="bg-red-500 p-3 rounded-2xl shadow-lg">
+                            <svg class="size-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12">
+                                </path>
                             </svg>
+                            <span class="rounded-full text-xs font-semibold text-white bg-red-500">{{
+                                ((props.disconnectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Clientes Sin Grupo -->
-                <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-sm hover:shadow-md transition-all p-6 border border-orange-200">
+                <div
+                    class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-orange-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="text-xs font-bold text-orange-600 uppercase tracking-wider">Sin Grupo</span>
-                                <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-orange-500">{{ ((props.clientesSinGrupo / props.totalClient) * 100).toFixed(1) }}%</span>
+                                <span class="text-xs font-bold text-orange-600 uppercase tracking-wider">clientes sin
+                                    plan</span>
+
                             </div>
                             <p class="text-4xl font-black text-gray-900">{{ props.clientesSinGrupo }}</p>
-                            <p class="text-xs text-gray-600 mt-3">Sin plan asignado</p>
+
                         </div>
-                        <div class="bg-orange-500 p-4 rounded-2xl shadow-lg">
+                        <div class="bg-orange-500 p-3 rounded-2xl shadow-lg">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
                             </svg>
+                            <span class="rounded-full text-xs font-semibold text-white bg-orange-500">{{
+                                ((props.clientesSinGrupo / props.totalClient) * 100).toFixed(1) }}%</span>
                         </div>
                     </div>
                 </div>
@@ -291,7 +361,8 @@ const successRate = computed(() => {
                         <h3 class="text-2xl font-black text-gray-900">Conexiones</h3>
                         <p class="text-sm text-gray-500 mt-1">Últimos 7 días</p>
                     </div>
-                    <Chart type="line" :data="dailyConnectionsData" :options="dailyConnectionsOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="line" :data="dailyConnectionsData" :options="dailyConnectionsOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
 
                 <!-- Intentos de Conexión -->
@@ -301,21 +372,24 @@ const successRate = computed(() => {
                         <p class="text-sm text-gray-500 mt-1">{{ successRate }}% de conexiones exitosas</p>
                     </div>
                     <div class="flex flex-col items-center">
-                        <Chart type="doughnut" :data="connectionAttemptsData" :options="connectionAttemptsOptions" class="w-full" style="height: 280px;" />
+                        <Chart type="doughnut" :data="connectionAttemptsData" :options="connectionAttemptsOptions"
+                            class="w-full" style="height: 280px;" />
                         <div class="mt-6 w-full space-y-3">
-                            <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
+                            <div
+                                class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-100">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 rounded-full bg-green-500"></div>
                                     <span class="text-sm text-gray-700">Exitosas</span>
                                 </div>
-                                <span class="font-black text-green-600">4,250</span>
+                                <span class="font-black text-green-600">{{ props.successfulAttempts.toLocaleString() }}</span>
                             </div>
-                            <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
+                            <div
+                                class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
                                 <div class="flex items-center gap-2">
                                     <div class="w-3 h-3 rounded-full bg-red-500"></div>
                                     <span class="text-sm text-gray-700">Fallidas</span>
                                 </div>
-                                <span class="font-black text-red-600">380</span>
+                                <span class="font-black text-red-600">{{ props.failedAttempts.toLocaleString() }}</span>
                             </div>
                         </div>
                     </div>
@@ -327,25 +401,29 @@ const successRate = computed(() => {
                         <h3 class="text-2xl font-black text-gray-900">Clientes por Plan</h3>
                         <p class="text-sm text-gray-500 mt-1">Distribución total: {{ props.totalClient }} clientes</p>
                     </div>
-                    <Chart type="pie" :data="usersByGroupData" :options="usersByGroupOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="pie" :data="usersByGroupData" :options="usersByGroupOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
 
                 <!-- Usuarios por NAS -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-lg transition-all">
                     <div class="mb-6">
-                        <h3 class="text-2xl font-black text-gray-900">Usuarios por NAS</h3>
-                        <p class="text-sm text-gray-500 mt-1">Conexiones activas por dispositivo</p>
+                         <h3 class="text-2xl font-black text-gray-900">Usuarios por NAS</h3>
+                         <p class="text-sm text-gray-500 mt-1">Total de usuarios por Dispositivo</p>
                     </div>
-                    <Chart type="bar" :data="usersByNASData" :options="usersByNASOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="bar" :data="usersByNASData" :options="usersByNASOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
             </div>
 
             <!-- Resumen estadístico adicional -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div
+                    class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <p class="text-blue-100 text-sm font-semibold uppercase tracking-wider">Promedio Conexiones</p>
+                            <p class="text-blue-100 text-sm font-semibold uppercase tracking-wider">Promedio Conexiones
+                            </p>
                             <p class="text-4xl font-black mt-2">650</p>
                             <p class="text-blue-100 text-xs mt-2">Por día</p>
                         </div>
@@ -356,10 +434,12 @@ const successRate = computed(() => {
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div
+                    class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <p class="text-green-100 text-sm font-semibold uppercase tracking-wider">Disponibilidad NAS</p>
+                            <p class="text-green-100 text-sm font-semibold uppercase tracking-wider">Disponibilidad NAS
+                            </p>
                             <p class="text-4xl font-black mt-2">99.8%</p>
                             <p class="text-green-100 text-xs mt-2">Sistema operativo</p>
                         </div>
@@ -370,10 +450,12 @@ const successRate = computed(() => {
                     </div>
                 </div>
 
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
+                <div
+                    class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <p class="text-purple-100 text-sm font-semibold uppercase tracking-wider">Tiempo Promedio</p>
+                            <p class="text-purple-100 text-sm font-semibold uppercase tracking-wider">Tiempo Promedio
+                            </p>
                             <p class="text-4xl font-black mt-2">4.2h</p>
                             <p class="text-purple-100 text-xs mt-2">Por sesión</p>
                         </div>

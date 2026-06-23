@@ -23,6 +23,7 @@ class NasController extends Controller
 
     /**
      * Show the form for creating a new resource.
+     * Not used - uses Vue modal instead
      */
     public function create()
     {
@@ -35,18 +36,18 @@ class NasController extends Controller
     public function store(Request $request)
     {
         $validate = $request->validate([
-            'nasname' => 'required|string|max:50',
+            'nasname' => 'required|string|max:50|unique:nas,nasname',
             'shortname' => 'required|string|max:50',
             'type' => 'nullable|string|max:50',
             'ports' => 'nullable|integer',
             'secret' => 'required|string|max:50',
             'description' => 'nullable|string|max:255',
-            /* 'host' => 'required|string|max:50', */
             'user' => 'required|string|max:50',
             'pass' => 'required|string|max:255',
             'port' => 'nullable|integer',
-            'status' => 'required|string|max:10',
+            // 'status' => 'required|string|max:10',
         ]);
+        
         Nas::create([
             'nasname' => $validate['nasname'],
             'shortname' => $validate['shortname'],
@@ -57,18 +58,19 @@ class NasController extends Controller
             'host' => $validate['nasname'],
             'user' => $validate['user'],
             'pass' => Crypt::encryptString($validate['pass']),
-            'port' => $validate['port'],
-            'status' => $validate['status'],
-
+            'port' => $request->port ?? '8622',
+            'status' => $request->status ?? 'activo',
         ]);
-        exec('sudo systemctl kill -s USR1 freeradius.service');
+        
+        // Reiniciar servicio FreeRADIUS para aplicar cambios
+        // exec('sudo systemctl kill -s USR1 freeradius.service');
 
-        //echo $output;
         return redirect()->route('nas.index');
     }
 
     /**
      * Display the specified resource.
+     * Not used in this implementation
      */
     public function show(string $id)
     {
@@ -77,6 +79,7 @@ class NasController extends Controller
 
     /**
      * Show the form for editing the specified resource.
+     * Not used - uses Vue modal instead
      */
     public function edit(string $id)
     {
@@ -98,10 +101,10 @@ class NasController extends Controller
             'user' => 'required|string|max:50',
             'pass' => 'required|string|max:255',
             'port' => 'nullable|integer',
-            'status' => 'required|string|max:10',
+            // 'status' => 'required|string|max:10',
 
         ]);
-        $nas = Nas::find($id);
+        $nas = Nas::findOrFail($id);
         $nas->update([
             'nasname' => $validate['nasname'],
             'shortname' => $validate['shortname'],
@@ -111,22 +114,15 @@ class NasController extends Controller
             'description' => $validate['description'],
             'host' => $validate['nasname'],
             'user' => $validate['user'],
-            //'pass' => Hash::make($validate['pass']),
             'pass' => Crypt::encryptString($validate['pass']),
-            'port' => $validate['port'],
-            'status' => $validate['status'],
+            'port' => $request->port ?? '8622',
+            'status' => $request->status ?? 'activo',
 
         ]);
 
-        /*
-        $nas->update(array_map(function ($value) {
-            return $value === '' ? null : $value;
-        }, $validate)); */
-        /*       $command = "ssh debian@10.2.2.4 'sudo systemctl kill -s USR1 freeradius.service'";
-        $output = shell_exec($command);
-        //echo $output;
-        exec('sudo systemctl kill -s USR1 freeradius.service'); */
-        return redirect()->route('nas.index');
+        // Reiniciar servicio FreeRADIUS para aplicar cambios
+        // exec('sudo systemctl kill -s USR1 freeradius.service');
+        // return redirect()->route('nas.index');
     }
 
     /**
@@ -134,10 +130,44 @@ class NasController extends Controller
      */
     public function destroy(string $id)
     {
-        $nas = Nas::find($id);
+        $nas = Nas::findOrFail($id);
         $nas->delete();
-        exec('sudo systemctl kill -s USR1 freeradius.service');
-        return redirect()->route('nas.index');
-       
+        
+        // Reiniciar servicio FreeRADIUS para aplicar cambios
+        // exec('sudo systemctl kill -s USR1 freeradius.service');
+        // return redirect()->route('nas.index');
+    }
+
+  
+    public function toggle(Request $request, string $id)
+    {
+        try {
+            $validated = $request->validate([
+                'status' => 'required|in:activo,inactivo',
+            ]);
+
+            $nas = Nas::find($id);
+            $newEstado = $validated['status'];
+
+            $nas->status = $newEstado;
+            $nas->save();
+            
+            // Reiniciar servicio de FreeRADIUS como en los demás métodos
+            //exec('sudo systemctl kill -s USR1 freeradius.service');
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Estado actualizado correctamente',
+                'data' => [
+                    'id' => $nas->id,
+                    'status' => $nas->status,
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el estado: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -16,7 +16,7 @@ import Column from 'primevue/column';
 import IconField from 'primevue/iconfield';
 import InputIcon from 'primevue/inputicon';
 import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
+
 
 
 //para el filter
@@ -232,8 +232,7 @@ const canEdit = computed(() =>
 <template>
 
     <Head title="Users" />
-    <Toast />
-
+    
     <AuthenticatedLayout>
         <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
             <div class="flex items-start justify-between pb-4">
@@ -313,7 +312,7 @@ const canEdit = computed(() =>
                                 </span> -->
                             </template>
                         </Column>
-                        <Column field="estado" sortable header="estado"
+                        <Column v-if="canEdit" field="estado" sortable header="estado"
                             headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Client\Client;
 use App\Models\Nas\Nas;
+use App\Models\Rdacct\Radacct;
+use App\Models\Rdacct\Radpostauth;
 use App\Models\Rcheck\Radcheck;
 use App\Models\Rcheck\Radgroupreply;
 use App\Models\Rcheck\Radusergroup;
@@ -33,12 +35,61 @@ class DashboardController extends Controller
             ->whereNull('radusergroup.username')
             ->count();
 
-        // O usando whereNotIn
-        // $clientesSinGrupo = Client::whereNotIn('username', 
-        //     Radusergroup::pluck('username'))->count();
+        // Obtener total de usuarios por NAS (todos los usuarios que han usado cada NAS)
+        $nasList = Nas::all();
+        $usersByNas = [];
 
-        // O usando whereDoesntHave (si hay relación definida)
-        // $clientesSinGrupo = Client::whereDoesntHave('radusergroup')->count();
+        foreach ($nasList as $nas) {
+            // Intentar obtener el nombre del NAS (shortname > nasname)
+            $nasName = $nas->shortname ?: $nas->nasname;
+
+            // Contar usuarios únicos que han usado este NAS (activos e inactivos)
+            $count = Radacct::where(function ($query) use ($nas) {
+                    $query->where('nasipaddress', $nas->nasname)
+                          ->orWhere('nasipaddress', $nas->shortname)
+                          ->orWhere('nasipaddress', $nas->host);
+                })
+                ->distinct('username')
+                ->count('username');
+
+            $usersByNas[] = [
+                'name' => $nasName,
+                'count' => $count,
+            ];
+        }
+
+        // Ordenar de mayor a menor cantidad de usuarios (solo los que tengan al menos 1 usuario)
+        $usersByNas = array_filter($usersByNas, function ($item) {
+            return $item['count'] > 0;
+        });
+        $usersByNas = array_values($usersByNas);
+
+        usort($usersByNas, function ($a, $b) {
+            return $b['count'] - $a['count'];
+        });
+
+        // Obtener conexiones exitosas y fallidas desde radpostauth (totales generales)
+        $successfulAttempts = Radpostauth::where('reply', 'Access-Accept')->count();
+        $failedAttempts = Radpostauth::where('reply', 'Access-Reject')->count();
+
+        // Obtener conexiones diarias de los últimos 7 días desde radpostauth
+        $daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+        $dailySuccess = [];
+        $dailyFailed = [];
+        $dailyLabels = [];
+
+        for ($i = 6; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $dayName = $daysOfWeek[(int) now()->subDays($i)->format('w')];
+
+            $dailyLabels[] = $dayName;
+            $dailySuccess[] = Radpostauth::where('reply', 'Access-Accept')
+                ->whereDate('authdate', $date)
+                ->count();
+            $dailyFailed[] = Radpostauth::where('reply', 'Access-Reject')
+                ->whereDate('authdate', $date)
+                ->count();
+        }
 
          return Inertia::render('Dashboard', [
             'totalClient' => Client::count(),
@@ -48,7 +99,12 @@ class DashboardController extends Controller
             'Planes' => $planes,
             'clientesPorPlan' => $clientesPorPlan,
             'clientesSinGrupo' => $clientesSinGrupo,
-         
+            'usersByNas' => $usersByNas,
+            'successfulAttempts' => $successfulAttempts,
+            'failedAttempts' => $failedAttempts,
+            'dailyLabels' => $dailyLabels,
+            'dailySuccess' => $dailySuccess,
+            'dailyFailed' => $dailyFailed,
         ]);
     }
 
@@ -92,9 +148,7 @@ class DashboardController extends Controller
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
+  
     public function destroy(string $id)
     {
         //

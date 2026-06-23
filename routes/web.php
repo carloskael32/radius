@@ -77,6 +77,7 @@ Route::middleware('auth')->group(function () {
 
     //NAS para administrador y operador
     Route::resource('nas', NasController::class);
+    Route::patch('nas/{id}/toggle',[NasController::class, 'toggle'])->name('nas.toggle');
 
     //para poner permisis y roles directamente aqui
     // Route::middleware('permission:ver nas')->group(function () {

@@ -47,16 +47,27 @@ class ClientController extends Controller
                 'username' => 'required|string|max:64|unique:clients,username',
                 'nombre_completo' => 'required|string|max:100',
                 'email' => 'nullable|email|max:100',
-                'telefono' => 'nullable|string|max:20',
-                'direccion' => 'nullable|string',
+                'telefono' => 'required|string|max:20',
+                'direccion' => 'required|string',
                 'password_radius' => 'required|string|min:6',
-                'estado' => 'nullable|in:activo,inactivo',
+                //'estado' => 'nullable|in:activo,inactivo',
                 'observaciones' => 'nullable|string',
                 'plan' => 'required|string',
             ]);
 
 
-            Client::create($validate);
+
+            Client::create([
+                'username' => $validate['username'],
+                'nombre_completo' => $validate['nombre_completo'],
+                'email' => $validate['email'],
+                'telefono' => $validate['telefono'],
+                'direccion' => $validate['direccion'],
+                'password_radius' => $validate['password_radius'],
+                'estado' => $request->estado ?? 'activo',
+                'observaciones' => $validate->observaciones ?? 'Ninguna',
+                'plan' => $validate['plan'],
+            ]);
 
             Radcheck::create([
                 'username' => $validate['username'],
@@ -67,7 +78,7 @@ class ClientController extends Controller
 
 
             //actualizar el grupo de servicio de los clientes
-            if ($validate['estado'] == 'inactivo') {
+            if ($request->estado == 'inactivo') {
 
                 Radusergroup::create([
                     'username' => $validate['username'],
@@ -198,8 +209,8 @@ class ClientController extends Controller
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {       
-      
+    {
+
         $validate = $request->validate([
             'username' => 'required|string|max:64',
             'nombre_completo' => 'required|string|max:100',
@@ -207,7 +218,7 @@ class ClientController extends Controller
             'telefono' => 'nullable|string|max:20',
             'direccion' => 'nullable|string',
             'password_radius' => 'required|string|min:6',
-            'estado' => 'nullable|in:activo,inactivo',
+            //'estado' => 'nullable|in:activo,inactivo',
             'observaciones' => 'nullable|string',
             'plan' => 'required|string',
         ]);
@@ -216,9 +227,6 @@ class ClientController extends Controller
         $client = Client::find($id);
         $rad = Radcheck::where('username', $client->username)->first();
         $radusrg = Radusergroup::where('username', $client->username)->first();
-
-        $client->update($validate);
-
         $rad->update([
             'username' => $validate['username'],
             'attribute' => 'Cleartext-Password',
@@ -226,7 +234,21 @@ class ClientController extends Controller
             'value' => $validate['password_radius'],
         ]);
 
-        $groupname = $validate['estado'] === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
+        $client->update([
+            'username' => $validate['username'],
+            'nombre_completo' => $validate['nombre_completo'],
+            'email' => $request->email ?? 'no tiene',
+            'telefono' => $validate['telefono'],
+            'direccion' => $validate['direccion'],
+            'password_radius' => $validate['password_radius'],
+            'estado' => $request->estado ?? 'activo',
+            'observaciones' => $validate['observaciones'],
+            'plan' => $validate['plan'],
+        ]);
+
+
+    
+        $groupname = $request->estado === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
 
 
         if ($radusrg) {

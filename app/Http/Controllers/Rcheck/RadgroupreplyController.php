@@ -18,6 +18,7 @@ class RadgroupreplyController extends Controller
      */
     public function index()
     {
+
         $usuariosPorGrupo = DB::table('radgroupreply')
             ->join('radusergroup', 'radgroupreply.groupname', '=', 'radusergroup.groupname')
             ->select('radgroupreply.groupname', DB::raw('COUNT(radusergroup.username) as total_usuarios'))
@@ -25,8 +26,9 @@ class RadgroupreplyController extends Controller
             ->get()
             ->keyBy('groupname'); // Convertir a array asociativo clave-valor
 
-        //$rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
-        $rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
+
+        $rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
+        //$rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
 
         // Combinar los datos
         $datosCombinados = $rgreply->map(function ($item) use ($usuariosPorGrupo) {
@@ -35,6 +37,7 @@ class RadgroupreplyController extends Controller
                 'groupname' => $item->groupname,
                 'value' => $item->value,
                 'total_usuarios' => $usuariosPorGrupo[$item->groupname]->total_usuarios ?? 0
+
             ];
         });
 
@@ -91,17 +94,24 @@ class RadgroupreplyController extends Controller
      */
     public function show(string $groupname)
     {
-        //devuelve el nombre de  clientes del grupo selecionado
-        $usrcongrupo = Radusergroup::select('id', 'username')->where('groupname', $groupname)
+
+        //devuelve el nombre de usuario clientes del grupo selecionado
+        $usrcongrupo = Radusergroup::select('id', 'username')
+            ->join('clients', 'radusergroup.username', '=', 'clients.username')
+            ->select('clients.nombre_completo', 'radusergroup.username')
+            ->where('groupname', $groupname)
             ->get();
 
 
         //devuelve usuarios que no esten en ningun grupo de radusergroup
-        $usrsingrupo = DB::table('radcheck')
-            ->whereNotIn('username', function ($query) {
+        $usrsingrupo = DB::table('radcheck as r')
+
+            ->whereNotIn('r.username', function ($query) {
                 $query->select('username')
                     ->from('radusergroup');
             })
+            ->join('clients', 'r.username', '=', 'clients.username')
+            ->select('clients.nombre_completo', 'r.username')
             ->get();
 
         //return response()->json($usrsingrupo);
