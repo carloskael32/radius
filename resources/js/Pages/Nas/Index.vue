@@ -6,7 +6,6 @@ import Modal from '@/Components/Modal.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
 import { usePage } from '@inertiajs/vue3';
 import axios from 'axios';
 

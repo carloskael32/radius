@@ -1,68 +1,70 @@
 <script setup>
 import Dropdown from '@/Components/Dropdown.vue';
-import DropdownLink from '@/Components/DropdownLink.vue';
+import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <header class="flex items-center justify-between border-b border-gray-300 bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-3 shadow-sm">
-        <!-- Mobile Menu Button -->
+    <header class="flex items-center justify-between border-b border-slate-700 bg-slate-800 px-6 py-3 shadow-sm">
         <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu"
-            class="text-white focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-lg p-1 transition lg:hidden hover:bg-gray-600">
+            class="rounded-lg p-2 text-slate-100 transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500 lg:hidden">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                     stroke-linejoin="round" />
             </svg>
         </button>
 
-        <!-- Spacer for centering on desktop -->
-        <div class="hidden lg:block flex-1"></div>
+        <div class="hidden flex-1 lg:block"></div>
 
-        <!-- User Profile Section -->
-        <div class="flex items-center gap-4">
-            <!-- User Avatar with Dropdown -->
+        <div class="flex items-center gap-3">
             <dropdown>
                 <template #trigger>
-                    <button class="flex items-center gap-3 rounded-lg px-3 py-2 transition hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">
-                        <!-- User Avatar Circle -->
-                        <div class="relative flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 font-semibold text-sm">
+                    <button class="flex items-center gap-3 rounded-full border border-slate-700 bg-slate-900/70 px-3 py-2 text-left transition hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500">
+                        <div class="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 font-semibold text-sm text-indigo-700">
                             {{ $page.props.auth.user.username.charAt(0).toUpperCase() }}
                         </div>
 
-                        <!-- User Info -->
-                        <div class="hidden text-left sm:block">
-                            <p class="text-sm font-medium text-gray-100 truncate">
+                        <div class="hidden sm:block">
+                            <p class="truncate text-sm font-semibold text-slate-100">
                                 {{ $page.props.auth.user.username }}
                             </p>
-                            <p class="text-xs text-gray-300 truncate">
-                                {{ $page.props.auth.user.email || 'Administrator' }}
+                            <p class="truncate text-xs uppercase tracking-[0.2em] text-slate-400">
+                                {{ ($page.props.auth.user.roles && $page.props.auth.user.roles.length) ? $page.props.auth.user.roles[0] : 'Sin rol' }}
                             </p>
                         </div>
 
-                        <!-- Dropdown Arrow -->
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-300 hidden sm:block" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4 text-slate-400 sm:block"
+                            viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
                         </svg>
                     </button>
                 </template>
 
                 <template #content>
-                    <dropdown-link :href="route('profile.edit')" class="text-gray-700 hover:bg-gray-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L9 5.414V18a1 1 0 102 0V5.414l6.293 6.293a1 1 0 001.414-1.414l-7-7z" />
-                        </svg>
-                        Perfil
-                    </dropdown-link>
+                    <div class="flex min-w-[180px] flex-col gap-1 rounded-xl border border-slate-200 bg-white p-2 shadow-lg">
+                        <Link :href="route('profile.edit')"
+                            class="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-gray-700 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M10 2a4 4 0 100 8 4 4 0 000-8zm-6 14a6 6 0 0112 0v1H4v-1z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Perfil
+                        </Link>
 
-                    <div class="border-t border-gray-200"></div>
+                        <div class="my-1 border-t border-slate-200"></div>
 
-                     <dropdown-link :href="route('logout')" method="post" class="text-gray-700 hover:bg-gray-50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="inline mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
-                        </svg>
-                        Cerrar Sesion
-                    </dropdown-link>
-
-              
+                        <Link :href="route('logout')" method="post"
+                            class="flex items-center rounded-lg px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-red-600 hover:text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd"
+                                    d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Cerrar sesión
+                        </Link>
+                    </div>
                 </template>
             </dropdown>
         </div>

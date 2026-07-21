@@ -43,29 +43,31 @@ const isAdmin = computed(() =>
 
     <!-- Sidebar Navigation -->
     <div :class="$page.props.showingMobileMenu ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'"
-        class="overflow-y-auto fixed inset-y-0 left-0 z-30 w-64 bg-gradient-to-b from-slate-800 to-slate-900 transition duration-300 transform lg:translate-x-0 lg:static lg:inset-0 border-r border-slate-700">
+        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto border-r border-slate-700 bg-slate-900/95 shadow-2xl transition duration-300 transform lg:static lg:inset-0 lg:translate-x-0">
 
         <!-- Logo Section -->
-        <div class="flex justify-center items-center pt-6 pb-8 border-b border-slate-700">
+        <div class="flex items-center justify-center border-b border-slate-800 px-4 py-6">
             <div class="flex items-center gap-3">
-                <svg class="w-10 h-10" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                        d="M364.61 390.213C304.625 450.196 207.37 450.196 147.386 390.213C117.394 360.22 102.398 320.911 102.398 281.6C102.398 242.291 117.394 202.981 147.386 172.989C147.386 230.4 153.6 281.6 230.4 307.2C230.4 256 256 102.4 294.4 76.7999C320 128 334.618 142.997 364.608 172.989C394.601 202.981 409.597 242.291 409.597 281.6C409.597 320.911 394.601 360.22 364.61 390.213Z"
-                        fill="#3B82F6" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    <path
-                        d="M201.694 387.105C231.686 417.098 280.312 417.098 310.305 387.105C325.301 372.109 332.8 352.456 332.8 332.8C332.8 313.144 325.301 293.491 310.305 278.495C295.309 263.498 288 256 275.2 230.4C256 243.2 243.201 320 243.201 345.6C201.694 345.6 179.2 332.8 179.2 332.8C179.2 352.456 186.698 372.109 201.694 387.105Z"
-                        fill="white" />
-                </svg>
-                <span class="text-xl font-bold text-white">Dashboard</span>
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600/20 text-indigo-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-8">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                    </svg>
+                </div>
+
+                <div>
+                    <p class="text-sm font-semibold tracking-[0.25em] text-slate-400">RADIUS</p>
+                    <p class="text-base font-bold text-white">FENIX TELECOM</p>
+                </div>
             </div>
         </div>
 
         <!-- Navigation Menu -->
-        <nav class="mt-4 px-4">
+        <nav class="mt-5 px-3">
             <!-- Main Navigation Section -->
             <div>
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">Main Menu</p>
+                <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-500">Inicio</p>
 
                 <nav-link :href="route('dashboard')" :active="route().current('dashboard')" class="mb-2">
                     <template #icon>
@@ -79,8 +81,20 @@ const isAdmin = computed(() =>
                     </template>
                     Dashboard
                 </nav-link>
-
-                <nav-link v-if="canViewUsers" :href="route('users.index')" :active="route().current('users.index')" class="mb-2">
+                <nav-link :href="route('status')" :active="route().current('status')" class="mb-2">
+                    <template #icon>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
+                        </svg>
+                    </template>
+                    Estado
+                </nav-link>
+                <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-500">administración
+                </p>
+                <nav-link v-if="canViewUsers" :href="route('users.index')" :active="route().current('users.index')"
+                    class="mb-2">
                     <template #icon>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                             xmlns="http://www.w3.org/2000/svg">
@@ -91,7 +105,8 @@ const isAdmin = computed(() =>
                     </template>
                     Usuarios
                 </nav-link>
-                <nav-link v-if="canViewRoles" :href="route('rol.index')" :active="route().current('rol.index')" class="mb-2">
+                <nav-link v-if="canViewRoles" :href="route('rol.index')" :active="route().current('rol.index')"
+                    class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -106,9 +121,11 @@ const isAdmin = computed(() =>
 
             <!-- Network Section -->
             <div class="mt-6">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">Network</p>
+                <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-500">conexion con
+                    nas</p>
 
-                <nav-link v-if="canViewNas" :href="route('nas.index')" :active="route().current('nas.index')" class="mb-2">
+                <nav-link v-if="canViewNas" :href="route('nas.index')" :active="route().current('nas.index')"
+                    class="mb-2">
                     <template #icon>
                         <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round"
                             stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,7 +140,9 @@ const isAdmin = computed(() =>
 
             <!-- PPPoE Section -->
             <div class="mt-6">
-                <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider px-2 mb-3">PPPoE Management</p>
+                <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-500">clientes y
+                    planes
+                </p>
 
                 <!--     <nav-link :href="route('radcheck.index')" :active="route().current('radcheck.index')" class="mb-2">
                     <template #icon>
@@ -136,7 +155,8 @@ const isAdmin = computed(() =>
                     Usuario PPPoE
                 </nav-link> -->
 
-                <nav-link v-if="canViewClients" :href="route('client.index')" :active="route().current('client.*')" class="mb-2">
+                <nav-link v-if="canViewClients" :href="route('client.index')" :active="route().current('client.*')"
+                    class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="2">
@@ -147,7 +167,8 @@ const isAdmin = computed(() =>
                     Clientes PPPoE
                 </nav-link>
 
-                <nav-link v-if="canViewPlans" :href="route('rgreply.index')" :active="route().current('rgreply.index')" class="mb-2">
+                <nav-link v-if="canViewPlans" :href="route('rgreply.index')" :active="route().current('rgreply.index')"
+                    class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
@@ -157,8 +178,12 @@ const isAdmin = computed(() =>
                     </template>
                     Planes de Servicio
                 </nav-link>
-
-                <nav-link v-if="canViewReports" :href="route('report.index')" :active="route().current('report.index')" class="mb-2">
+            </div>
+            <div class="mt-6">
+                <p class="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.25em] text-slate-500">Reporteria
+                </p>
+                <nav-link v-if="canViewReports" :href="route('report.index')" :active="route().current('report.index')"
+                    class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
@@ -170,7 +195,8 @@ const isAdmin = computed(() =>
                     Reportes
                 </nav-link>
 
-                <nav-link v-if="canViewAuditLog" :href="route('auditlog.index')" :active="route().current('auditlog.index')" class="mb-2">
+                <nav-link v-if="canViewAuditLog" :href="route('auditlog.index')"
+                    :active="route().current('auditlog.index')" class="mb-2">
                     <template #icon>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-5">
@@ -183,16 +209,6 @@ const isAdmin = computed(() =>
                     Auditoria
                 </nav-link>
 
-               <!--  <nav-link :href="route('radacct.index')" :active="route().current('radacct.index')" class="mb-2">
-                    <template #icon>
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                    </template>
-                    Sesiones de usuario PPPoE
-                </nav-link> -->
             </div>
 
             <!-- Collapsible Section -->
@@ -230,14 +246,14 @@ const isAdmin = computed(() =>
 
 <style scoped>
 :deep(.nav-link) {
-    @apply flex items-center gap-3 py-2.5 px-3 text-slate-200 rounded-lg transition-all;
+    @apply flex items-center gap-3 rounded-xl px-3 py-2.5 text-slate-200 transition-all;
 }
 
 :deep(.nav-link:hover) {
-    @apply bg-slate-700 text-white;
+    @apply bg-slate-700/80 text-white;
 }
 
 :deep(.nav-link.active) {
-    @apply bg-gray-600 text-white font-medium shadow-md;
+    @apply bg-slate-700/90 text-white font-semibold shadow-sm;
 }
 </style>

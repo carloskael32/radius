@@ -11,7 +11,7 @@ use RouterOS\Query;
 class MikrotikService
 {
 
-     /**
+    /**
      * Método para obtener sesiones PPPoE activas
      */
     public function getActiveSessions($host, $user, $pass, $port = 8728): array
@@ -29,5 +29,34 @@ class MikrotikService
 
         // 3. Ejecutamos el comando y obtenemos la respuesta
         return $client->query($query)->read();
+    }
+
+    public function logoutUsers($host, $user, $pass, $username, $port = 8728): array
+    {
+        // 1. Creamos el cliente (conexión al MikroTik)
+        $client = new Client([
+            'host' => $host,
+            'user' => $user,
+            'pass' => Crypt::decryptString($pass),
+            'port' => $port,
+        ]);
+
+        //listamos las sesiones activas
+        $query = new Query('/ppp active print');
+        $sessions = $client->query($query)->read();
+
+        // buscar la session por nombre de usuario
+        foreach ($sessions as $session) {
+            if ($session['name'] === $username) {
+                $id = $session['.id']; // identificador interno de usuario
+
+                // matamos la sesion del usuario temporalmente
+                $kill = new Query('/ppp active kill-session');
+                $kill->equal('numbers', $id);
+                $client->query($kill)->read();
+            }
+        }
+        // Si no se encontró el usuario, devolver vacío o mensaje
+        return ['error' => 'Usuario no encontrado en sesiones activas'];
     }
 }

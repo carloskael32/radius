@@ -179,11 +179,11 @@ const submit = () => {
         </form>
 
         <!-- Footer Links -->
-        <div v-if="canResetPassword" class="mt-6 text-center">
+        <!-- <div v-if="canResetPassword" class="mt-6 text-center">
             <Link :href="route('password.request')"
                 class="text-sm text-gray-600 hover:text-gray-900 font-medium transition">
                 ¿Olvidaste tu contraseña?
             </Link>
-        </div>
+        </div> -->
     </GuestLayout>
 </template>

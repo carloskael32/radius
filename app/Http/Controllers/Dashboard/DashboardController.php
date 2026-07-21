@@ -11,6 +11,7 @@ use App\Models\Rcheck\Radcheck;
 use App\Models\Rcheck\Radgroupreply;
 use App\Models\Rcheck\Radusergroup;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -23,10 +24,10 @@ class DashboardController extends Controller
     {
 
         //para mostrar Clientes y planes
-        $planes = Radgroupreply::where('groupname','!=','inactivo')
-        ->pluck('groupname')
-        ->toArray();
-        foreach ($planes as $plan){
+        $planes = Radgroupreply::where('groupname', '!=', 'inactivo')
+            ->pluck('groupname')
+            ->toArray();
+        foreach ($planes as $plan) {
             $clientesPorPlan[$plan] = Radusergroup::where('groupname', $plan)->count();
         }
 
@@ -45,10 +46,10 @@ class DashboardController extends Controller
 
             // Contar usuarios únicos que han usado este NAS (activos e inactivos)
             $count = Radacct::where(function ($query) use ($nas) {
-                    $query->where('nasipaddress', $nas->nasname)
-                          ->orWhere('nasipaddress', $nas->shortname)
-                          ->orWhere('nasipaddress', $nas->host);
-                })
+                $query->where('nasipaddress', $nas->nasname)
+                    ->orWhere('nasipaddress', $nas->shortname)
+                    ->orWhere('nasipaddress', $nas->host);
+            })
                 ->distinct('username')
                 ->count('username');
 
@@ -69,8 +70,48 @@ class DashboardController extends Controller
         });
 
         // Obtener conexiones exitosas y fallidas desde radpostauth (totales generales)
-        $successfulAttempts = Radpostauth::where('reply', 'Access-Accept')->count();
-        $failedAttempts = Radpostauth::where('reply', 'Access-Reject')->count();
+        $successfulAttempts = Radpostauth::where('reply', 'Access-Accept')
+        ->whereDate('authdate', Carbon::today())
+        ->count();        
+
+        $failedAttempts = Radpostauth::where('reply', 'Access-Reject')
+        ->whereDate('authdate', Carbon::today())
+        ->count();
+
+        //obtener clientes en ONLINE y OFFLINE
+        $online = Radacct::whereNull('acctstoptime')
+            ->select('username', 'nasipaddress')
+            ->orderBy('acctstarttime', 'desc')
+            ->get();
+
+
+        // Usuarios OFFLINE (excluyendo los que están ONLINE)
+        $offline = Radacct::whereNotNull('acctstoptime')
+            ->whereNotIn('username', function ($query) {
+                $query->select('username')
+                    ->from('radacct')
+                    ->whereNull('acctstoptime');
+            })
+            ->select('username', 'acctstoptime', 'nasipaddress')
+            ->orderBy('acctstoptime', 'desc')
+            ->get()
+            ->groupBy('username')
+            ->map(function ($group) {
+                return $group->first();
+            })
+            ->values();
+
+        // $offline =Radacct::whereNotNull('acctstoptime')
+        // ->whereNotIn('username', $online->pluck('username'))
+        // ->select('username','acctstoptime','nasipaddress')
+        // ->orderBy('acctstoptime','desc')
+        // ->get()
+        // ->groupBy('username')
+        // ->map(function ($group){
+        //     return $group->first();
+        // })
+        // ->values();
+
 
         // Obtener conexiones diarias de los últimos 7 días desde radpostauth
         $daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
@@ -91,7 +132,7 @@ class DashboardController extends Controller
                 ->count();
         }
 
-         return Inertia::render('Dashboard', [
+        return Inertia::render('Dashboard', [
             'totalClient' => Client::count(),
             'totalNAS' => Nas::count(),
             'connectedClient' => Client::where('estado', 'activo')->count(),
@@ -105,6 +146,8 @@ class DashboardController extends Controller
             'dailyLabels' => $dailyLabels,
             'dailySuccess' => $dailySuccess,
             'dailyFailed' => $dailyFailed,
+            'online' => $online,
+            'offline' => $offline,
         ]);
     }
 
@@ -148,7 +191,7 @@ class DashboardController extends Controller
         //
     }
 
-  
+
     public function destroy(string $id)
     {
         //

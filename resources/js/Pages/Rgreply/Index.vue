@@ -251,6 +251,10 @@ const openModalDelClient = (client) => {
 
 // eliminar los clientes de los grupos
 const DelteClient = () => {
+    if (!Clform.value.id) {
+        error('No se pudo identificar el cliente para eliminar');
+        return;
+    }
 
     axios.post(route('rgreply.delClients', Clform.value.id))
         .then(response => {
@@ -334,7 +338,7 @@ const canGest = computed(() =>
                 </div>
             </div>
 
-            <!-- CUERPO DE LA PAGINA -->
+            <!-- CUERPO DE LA PAGINA PLANES DE SERVICIO-->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div v-for="(r, i) in rgreply" :key="r.id"
                     class="relative bg-neutral-primary-soft max-w-xs p-4 border border-indigo-200 rounded-base shadow-xl rounded-md ">

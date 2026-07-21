@@ -66,6 +66,14 @@ const props = defineProps({
         type: Array,
         default: () => []
     },
+    online: {
+        type: Array,
+        default: () => []
+    },
+    offline: {
+        type: Array,
+        default: () => []
+    },
 })
 
 // Colores para los gráficos
@@ -148,7 +156,7 @@ const dailyConnectionsOptions = ref({
     }
 });
 
-        // Datos para gráfico de barras horizontal - Total de usuarios por NAS (dinámico desde el backend)
+// Datos para gráfico de barras horizontal - Total de usuarios por NAS (dinámico desde el backend)
 const usersByNASData = computed(() => {
     const labels = props.usersByNas.map(item => item.name);
     const data = props.usersByNas.map(item => item.count);
@@ -211,6 +219,10 @@ const successRate = computed(() => {
     if (total === 0) return '0.0';
     return ((props.successfulAttempts / total) * 100).toFixed(1);
 });
+
+
+
+
 </script>
 
 <template>
@@ -353,6 +365,69 @@ const successRate = computed(() => {
                 </div>
             </div>
 
+            <!-- CLIENTES EN ACTIVOS EN LINEA Y CLIENTES DESCONECTADOS -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- clientes en ONLINE -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-lg transition-all">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-black text-gray-900">🟢 Clientes en Linea </h3>
+                        <p class="text-sm text-gray-500 mt-1">Hoy</p>
+                    </div>
+
+                    <div v-if="online.length > 0" class="max-h-64 overflow-y-auto">
+                      
+                        <table class="w-full text-sm">
+                            <thead class="text-center bg-gray-100">
+                                <tr>
+                                    <td>Usuarios</td>
+                                    <td>NAs</td>
+                                    
+                                </tr>                                
+                            </thead>
+                            <tbody class="divide-y divide-green-200">
+                                <tr v-for="on in online" :key="on.username" class="hover:bg-green-100">
+                                    <td class="px-2 py-2 font-medium">{{ on.username }}</td>
+                                    <td class="px-2 py-2 text-gray-600 text-xs">{{ on.nasipaddress }}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- clientes OFFLINE -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-lg transition-all">
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-black text-gray-900">🔴 Cientes Fuera de Linea </h3>
+                        <p class="text-sm text-gray-500 mt-1">Hoy</p>
+                    </div>
+                    <div v-if="offline.length > 0" class="max-h-64 overflow-y-auto">
+                        <table class="w-full text-sm">
+                            <thead class="text-center bg-gray-100">
+                                <tr>
+                                    <td>Usuarios</td>
+                                    <td>NAS</td>
+                                    <td>Ultima Conexion</td>
+                                </tr>                            
+                            </thead>
+                            <tbody class="divide-y divide-green-200">
+                                <tr v-for="off in offline" :key="off.username" class="hover:bg-green-100">
+                                    <td class="px-2 py-2 font-medium">{{ off.username }}</td>
+                                    <td class="px-2 py-2 text-gray-600 text-xs">{{ off.nasipaddress }}</td>
+                                    <td class="px-2 py-2 text-gray-600 text-xs">{{ off.acctstoptime }}
+
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+            </div>
+
+
             <!-- Gráficos principales -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Conexiones Diarias -->
@@ -381,7 +456,8 @@ const successRate = computed(() => {
                                     <div class="w-3 h-3 rounded-full bg-green-500"></div>
                                     <span class="text-sm text-gray-700">Exitosas</span>
                                 </div>
-                                <span class="font-black text-green-600">{{ props.successfulAttempts.toLocaleString() }}</span>
+                                <span class="font-black text-green-600">{{ props.successfulAttempts.toLocaleString()
+                                    }}</span>
                             </div>
                             <div
                                 class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-red-100">
@@ -408,16 +484,18 @@ const successRate = computed(() => {
                 <!-- Usuarios por NAS -->
                 <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 hover:shadow-lg transition-all">
                     <div class="mb-6">
-                         <h3 class="text-2xl font-black text-gray-900">Usuarios por NAS</h3>
-                         <p class="text-sm text-gray-500 mt-1">Total de usuarios por Dispositivo</p>
+                        <h3 class="text-2xl font-black text-gray-900">Usuarios por NAS</h3>
+                        <p class="text-sm text-gray-500 mt-1">Total de usuarios por Dispositivo</p>
                     </div>
                     <Chart type="bar" :data="usersByNASData" :options="usersByNASOptions" class="w-full"
                         style="height: 320px;" />
                 </div>
             </div>
 
+
+
             <!-- Resumen estadístico adicional -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div
                     class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white hover:shadow-xl transition-all transform hover:-translate-y-1">
                     <div class="flex items-center justify-between mb-6">
@@ -465,7 +543,7 @@ const successRate = computed(() => {
                         <div class="bg-white h-full rounded-full" style="width: 60%"></div>
                     </div>
                 </div>
-            </div>
+            </div> -->
         </div>
     </AuthenticatedLayout>
 </template>

@@ -8,6 +8,9 @@ use App\Models\Rcheck\Radcheck;
 use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radusergroup;
 use App\Models\Rcheck\Radgroupreply;
+use App\Models\Rdacct\Radacct;
+use App\Services\MikrotikService;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -15,6 +18,13 @@ use League\Config\Exception\ValidationException;
 
 class ClientController extends Controller
 {
+    protected $mikrotik;
+
+    public function __construct(MikrotikService $mikrotik)
+    {
+        $this->mikrotik = $mikrotik;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -25,7 +35,7 @@ class ClientController extends Controller
 
         //$rgreply = Radgroupreply::orderBy('id', 'desc')->get();
 
-        $rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
+        $rgreply = Radgroupreply::where('value', '!=', 'morosos')->get();
 
         return Inertia::render('Client/Index', [
             'clients' => $clients,
@@ -185,6 +195,31 @@ class ClientController extends Controller
             ]);
         }
 
+        //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
+
+        $nas = Radacct::where('username', $client->username)
+            ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
+            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+            ->orderBy('acctstarttime', 'desc')
+            ->first();
+
+        $results = [];
+        $nasName = $nas?->nasname ?? 'sin-nas';
+
+        try {
+            $sessions =  $this->mikrotik->logoutUsers(
+                $nas->host,
+                $nas->user,
+                $nas->pass,
+                $client->username,
+                //$nas->port ?? 8728
+            );
+            $results[$nasName] = $sessions;
+        } catch (\Throwable $e) {
+            $results[$nasName] = ['No se pudo conectar :(' => $e->getMessage()];
+        }
+
+
         // refrescar freeradius
         /*   try {
             exec('sudo systemctl kill -s USR1 freeradius.service');
@@ -247,7 +282,7 @@ class ClientController extends Controller
         ]);
 
 
-    
+
         $groupname = $request->estado === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
 
 

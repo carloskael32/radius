@@ -18,6 +18,7 @@ use App\Http\Controllers\Rcheck\RadgroupreplyController;
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\RolController;
 use App\Http\Controllers\AuditLog\AuditLogController;
+use App\Http\Controllers\Status\StatusController;
 use Inertia\Inertia;
 
 /*
@@ -40,15 +41,9 @@ use Inertia\Inertia;
     ]);
 });
  */
-
 Route::get('/', function () {
     return Inertia::render('Auth/Login');
 });
-
-
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/about', fn() => Inertia::render('About'))->name('about');
@@ -60,7 +55,7 @@ Route::middleware('auth')->group(function () {
     //     Route::patch('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
     // }); 
 
-
+    // Usuario
     Route::get('users', [UserController::class, 'index'])->name('users.index');
     Route::resource('users', UserController::class)->except(['index', 'show']);
     Route::patch('users/{user}/toggle', [UserController::class, 'toggle'])->name('users.toggle');
@@ -70,6 +65,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     //Dashboard
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    //Servicios
+    Route::get('status', [StatusController::class, 'index'])->name('status');
 
 
     // Solo admin puede gestionar Radcheck directamente
@@ -77,7 +76,7 @@ Route::middleware('auth')->group(function () {
 
     //NAS para administrador y operador
     Route::resource('nas', NasController::class);
-    Route::patch('nas/{id}/toggle',[NasController::class, 'toggle'])->name('nas.toggle');
+    Route::patch('nas/{id}/toggle', [NasController::class, 'toggle'])->name('nas.toggle');
 
     //para poner permisis y roles directamente aqui
     // Route::middleware('permission:ver nas')->group(function () {

@@ -19,16 +19,17 @@ class RadgroupreplyController extends Controller
     public function index()
     {
 
-        $usuariosPorGrupo = DB::table('radgroupreply')
-            ->join('radusergroup', 'radgroupreply.groupname', '=', 'radusergroup.groupname')
-            ->select('radgroupreply.groupname', DB::raw('COUNT(radusergroup.username) as total_usuarios'))
-            ->groupBy('radgroupreply.groupname')
+        $usuariosPorGrupo = DB::table('radgroupcheck')
+            ->join('radusergroup', 'radgroupcheck.groupname', '=', 'radusergroup.groupname')
+            ->select('radgroupcheck.groupname', DB::raw('COUNT(radusergroup.username) as total_usuarios'))
+            ->groupBy('radgroupcheck.groupname')
             ->get()
             ->keyBy('groupname'); // Convertir a array asociativo clave-valor
 
 
-        $rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
-        //$rgreply = Radgroupreply::where('groupname', '!=', 'inactivo')->get();
+        //$rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
+        $rgreply = Radgroupreply::where('value', '!=', 'morosos')
+        ->get();
 
         // Combinar los datos
         $datosCombinados = $rgreply->map(function ($item) use ($usuariosPorGrupo) {
@@ -96,9 +97,8 @@ class RadgroupreplyController extends Controller
     {
 
         //devuelve el nombre de usuario clientes del grupo selecionado
-        $usrcongrupo = Radusergroup::select('id', 'username')
-            ->join('clients', 'radusergroup.username', '=', 'clients.username')
-            ->select('clients.nombre_completo', 'radusergroup.username')
+        $usrcongrupo = Radusergroup::join('clients', 'radusergroup.username', '=', 'clients.username')
+            ->select('radusergroup.id', 'radusergroup.username', 'clients.nombre_completo')
             ->where('groupname', $groupname)
             ->get();
 
@@ -206,8 +206,10 @@ class RadgroupreplyController extends Controller
 
         //actualiza el nombre de grupo en radgroupcheck
         Radgroupcheck::where('groupname', $rgreply->groupname)
-            ->update(['groupname' => $validate['groupname']]);
-
+            ->update(['groupname' => $validate['groupname']]);  
+        
+        Radgroupreply::where('groupname', $rgreply->groupname)
+        ->update(['groupname' => $validate['groupname']]);
 
         $rgreply->update([
             'groupname' => $validate['groupname'],
@@ -215,6 +217,8 @@ class RadgroupreplyController extends Controller
             'op' => '=', */
             'value' => $validate['valued'] . $validate['navd'] . '/' . $validate['valueu'] . $validate['navu'],
         ]);
+
+
 
 
         return redirect()->route('rgreply.index');

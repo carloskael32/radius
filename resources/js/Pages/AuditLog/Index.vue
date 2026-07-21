@@ -67,7 +67,7 @@ const props = defineProps({
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
 
                     <DataTable :value="logs" v-model:filters="filters" ref="dt" selectionMode="single" size="small"
-                        :globalFilterFields="['log_name', 'description', 'properties']" paginator :rows="10"
+                        :globalFilterFields="['log_name', 'description']" paginator :rows="10"
                         :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                         currentPageReportTemplate="{first} a {last} de {totalRecords}">
