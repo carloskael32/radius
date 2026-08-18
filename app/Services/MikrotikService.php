@@ -42,18 +42,20 @@ class MikrotikService
         ]);
 
         //listamos las sesiones activas
-        $query = new Query('/ppp active print');
+        $query = new Query('/ppp/active/print');
+        
         $sessions = $client->query($query)->read();
 
-        // buscar la session por nombre de usuario
+        //buscar la session por nombre de usuario
         foreach ($sessions as $session) {
             if ($session['name'] === $username) {
                 $id = $session['.id']; // identificador interno de usuario
 
                 // matamos la sesion del usuario temporalmente
-                $kill = new Query('/ppp active kill-session');
-                $kill->equal('numbers', $id);
-                $client->query($kill)->read();
+                $kill = new Query('/ppp/active/remove');
+                $kill->equal('.id', $id);
+                
+              return  $client->query($kill)->read();
             }
         }
         // Si no se encontró el usuario, devolver vacío o mensaje

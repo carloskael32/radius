@@ -17,9 +17,12 @@ import { useToast } from "primevue/usetoast";
 //recibimos los datos del controlador
 const props = defineProps({
     rgreply: { type: Array },
+    morosos: { type: Array },
+    dagrupo: { type: Array },
 
 });
 
+// Mantener `umors` reactivo y disponible en el script
 
 
 //Sirven para manejar el estado de los 
@@ -151,14 +154,24 @@ const modalData = ref({
     loading: false,
 });
 
+const modalDataShow = ref({
+
+    groupName: '',
+    clients: [],
+
+})
+
 // Variables para gestionar selecciones de usuarios
 const selectedClients = ref([]);
 const selectedClientsNoGroup = ref([]);
+
+//varias para gestionar los modales
 const showModalDelClient = ref(false);
 const showModalAdd = ref(false);
+const showModalShow = ref(false);
 
 
-// para adicionar clientes al grupo de servicio
+// para mostrar los clientes con y sin grupo de cada grupo
 const openModalAddUsr = (r) => {
     showModalAdd.value = true;
     modalData.value.loading = true;
@@ -188,7 +201,28 @@ const closeModalAdd = () => {
     showModalAdd.value = false;
     selectedClients.value = [];
     selectedClientsNoGroup.value = [];
-    router.reload({ only: ['rgreply'] });
+    router.reload({ only: ['rgreply', 'dagrupo'] });
+}
+
+// para mostrar la lista de clientes suspendidos
+const openModalShow = (rr) => {
+    showModalShow.value = true;
+    modalDataShow.value.groupName = rr.groupname;
+    axios.get(route('rgreply.show', rr.groupname))
+        .then(response => {
+            modalDataShow.value.clients = response.data.morosos || [];
+        }).catch(error => {
+            console.error('Error al cargar datos del grupo:', error);
+            error('Error al cargar los datos');
+            modalData.value.loading = false;
+            closeModalShow();
+        }).finally(() => {
+        });
+}
+
+const closeModalShow = () => {
+    showModalShow.value = false;
+    router.reload({ only: ['dagrupo'] });
 }
 
 // Función para recargar datos del modal sin cerrarlo
@@ -200,12 +234,15 @@ const refreshModalData = () => {
             modalData.value.clsngr = response.data.clsngr || [];
             selectedClients.value = [];
             selectedClientsNoGroup.value = [];
-            //modalData.value.loading = false;
+            //clientes suspendidos
+            //modalDataShow.value.clients = response.data.morosos || [];
+
         })
         .catch(error => {
             console.error('Error al recargar datos:', error);
             error('Error al recargar los datos');
             modalData.value.loading = false;
+
         });
 }
 
@@ -247,8 +284,6 @@ const openModalDelClient = (client) => {
 
 }
 
-
-
 // eliminar los clientes de los grupos
 const DelteClient = () => {
     if (!Clform.value.id) {
@@ -287,6 +322,18 @@ const filteredClientsNoGroup = computed(() => {
     if (!filters.value.global.value) return modalData.value.clsngr;
     const searchTerm = filters.value.global.value.toLowerCase();
     return modalData.value.clsngr.filter(client =>
+        client.username.toLowerCase().includes(searchTerm) ||
+        (client.nombre_completo && client.nombre_completo.toLowerCase().includes(searchTerm))
+    );
+});
+
+
+
+// listar cientes suspendidos con busqueda
+const filteredClientsShow = computed(() => {
+    if (!filters.value.global.value) return modalDataShow.value.clients;
+    const searchTerm = filters.value.global.value.toLowerCase();
+    return modalDataShow.value.clients.filter(client =>
         client.username.toLowerCase().includes(searchTerm) ||
         (client.nombre_completo && client.nombre_completo.toLowerCase().includes(searchTerm))
     );
@@ -339,24 +386,130 @@ const canGest = computed(() =>
             </div>
 
             <!-- CUERPO DE LA PAGINA PLANES DE SERVICIO-->
+            <!--  PLANES DE SERVICIO -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div v-for="(r, i) in rgreply" :key="r.id"
-                    class="relative bg-neutral-primary-soft max-w-xs p-4 border border-indigo-200 rounded-base shadow-xl rounded-md ">
 
-                    <div class="flex justify-center uppercase">
+                <!-- GRUPO DE SUSPENDIDOS -->
+                <div v-for="(rr, i) in dagrupo" :key="rr.id"
+                    class="relative bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 max-w-xs p-4 border border-red-200 rounded-base shadow-xl rounded-md shadow-red-100/80">
+
+                    <div class="flex items-center justify-between gap-2 uppercase">
                         <b>
-                            <p>{{ r.groupname }}</p>
+                            <p>{{ rr.groupname }}</p>
                         </b>
-                        <!-- <p class="flex justify-end">activo</p> -->
+                        <span class="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-[10px] font-bold tracking-wide text-red-700 border border-red-200">
+                            Suspendidos
+                        </span>
                     </div>
 
 
-                    <hr class="w-full h-0.5 bg-gray-400 mt-2 mb-2">
+                    <hr class="w-full h-0.5 bg-red-200 mt-2 mb-2">
 
                     <div class="grid grid-cols-2 gap-2 items-center p-1">
 
                         <div
-                            class=" flex items-center gap-1 justify-center text-center bg-green-100  border border-green-200 rounded-md p-1">
+                            class=" flex items-center gap-1 justify-center text-center bg-red-100 border border-red-200 rounded-md p-1 text-red-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-6">
+                                <path
+                                    d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                            </svg>
+                            Download
+                            <br>
+                            <!-- {{ r.value.split('/')[0].replace(/\D/g, '') }} --> {{ rr.value.split('/')[0] }}
+                        </div>
+                        <div
+                            class="flex items-center gap-1 justify-center text-center bg-orange-100  border border-orange-200 rounded-md p-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-6">
+                                <path
+                                    d="M9.25 13.25a.75.75 0 0 0 1.5 0V4.636l2.955 3.129a.75.75 0 0 0 1.09-1.03l-4.25-4.5a.75.75 0 0 0-1.09 0l-4.25 4.5a.75.75 0 1 0 1.09 1.03L9.25 4.636v8.614Z" />
+                                <path
+                                    d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                            </svg>
+
+                            Upload
+                            <br>
+                            <!-- {{ r.value.split('/')[1].replace(/\D/g, '') }}--> {{ rr.value.split('/')[1] }}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 p-4">
+                        <div class="flex justify-start">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                class="size-5">
+                                <path
+                                    d="M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM14.5 9a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM1.615 16.428a1.224 1.224 0 0 1-.569-1.175 6.002 6.002 0 0 1 11.908 0c.058.467-.172.92-.57 1.174A9.953 9.953 0 0 1 7 18a9.953 9.953 0 0 1-5.385-1.572ZM14.5 16h-.106c.07-.297.088-.611.048-.933a7.47 7.47 0 0 0-1.588-3.755 4.502 4.502 0 0 1 5.874 2.636.818.818 0 0 1-.36.98A7.465 7.465 0 0 1 14.5 16Z" />
+                            </svg>
+                            <p class="pl-2">Clientes</p>
+                        </div>
+
+                        <p class="flex justify-end">{{ rr.total }}</p>
+                    </div>
+
+                    <button v-if="canGest" @click="openModalShow(rr)"
+                        class="inline-flex w-full items-center justify-center p-1 rounded-md text-white bg-red-600 hover:bg-red-500 active:bg-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                        </svg>
+                        <p class="pl-1 text-white">Ver Clientes {{rr.groupname }}</p>
+                    </button>
+
+
+                    <hr class="w-full h-0.5  bg-gray-400 mt-2 mb-2">
+                    <div v-if="canEdit || canDelete" class="grid grid-cols-2 gap-4">
+
+                        <button v-if="canEdit" @click="openModalForm(2, rr)"
+                            class="inline-flex w-full items-center justify-center p-2 rounded-md hover:bg-blue-100 active:bg-blue-200">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5 text-blue-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
+                            </svg>
+                            <p class="pl-1 text-blue-600">Editar</p>
+                        </button>
+
+
+                        <button v-if="canDelete" @click="openModalDel(rr)"
+                            class="inline-flex w-full items-center justify-center p-2 rounded-md active:bg-red-200 cursor-not-allowed opacity-50"
+                            disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5 text-red-600">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                            </svg>
+                            <p class="pl-1 text-red-600">Eliminar</p>
+                        </button>
+
+                    </div>
+                </div>
+
+
+                <!-- LOS DEMAS GRUPOS DE PERFILES -->
+                <div v-for="(r, i) in rgreply" :key="r.id"
+                    class="relative bg-gradient-to-br from-emerald-50 via-sky-50 to-indigo-50 max-w-xs p-4 border border-emerald-200 rounded-base shadow-xl rounded-md shadow-emerald-100/80">
+
+                    <div class="flex items-center justify-between gap-2 uppercase">
+                        <b>
+                            <p>{{ r.groupname }}</p>
+                        </b>
+                        <span class="inline-flex items-center rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold tracking-wide text-emerald-700 border border-emerald-200">
+                            Activos
+                        </span>
+                    </div>
+
+
+                    <hr class="w-full h-0.5 bg-emerald-200 mt-2 mb-2">
+
+                    <div class="grid grid-cols-2 gap-2 items-center p-1">
+
+                        <div
+                            class=" flex items-center gap-1 justify-center text-center bg-emerald-100 border border-emerald-200 rounded-md p-1 text-emerald-700">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                                 class="size-6">
                                 <path
@@ -399,7 +552,7 @@ const canGest = computed(() =>
                     </div>
 
                     <button v-if="canGest" @click="openModalAddUsr(r)"
-                        class="inline-flex w-full items-center justify-center p-1 rounded-md text-white bg-blue-600 hover:bg-blue-400 active:bg-blue-700">
+                        class="inline-flex w-full items-center justify-center p-1 rounded-md text-white bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -407,8 +560,6 @@ const canGest = computed(() =>
                         </svg>
                         <p class="pl-1 text-white">Gestionar Clientes</p>
                     </button>
-
-
 
 
                     <hr class="w-full h-0.5  bg-gray-400 mt-2 mb-2">
@@ -437,19 +588,14 @@ const canGest = computed(() =>
 
                     </div>
                 </div>
+
             </div>
 
         </div>
 
 
 
-
-
-
-
-
         <!-- MODAL PARA FORMULARIO DE REGISTRO Y EDITAR GRUPOS DE PLANES DE SERVICIO -->
-
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
             <div class="p-5">
                 <div class="flex justify-between items-center pb-4">
@@ -550,7 +696,7 @@ const canGest = computed(() =>
         </Modal>
 
 
-        <!-- MODAL PARA ELIMINAR GRUPOS DE PLANES DE SERVICIO -->
+        <!-- MODAL PARA ELIMINAR  PLANES DE SERVICIO -->
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
             <div class="p-5">
                 <div class="flex justify-between items-center pb-6">
@@ -597,23 +743,25 @@ const canGest = computed(() =>
         </Modal>
 
 
-        <!-- MODAL PARA ADICIONAR CLIENTES A GRUPOS  DE SERVICIO -->
+        <!-- MODAL PARA ADICIONAR O ELIMINAR CLIENTES A GRUPOS  DE SERVICIO -->
         <Modal :show="showModalAdd" @close="closeModalAdd" maxWidth="xxxl">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-4">
-                    <div>
-                        <h2 class="text-lg font-medium text-gray-900">Gestionar Clientes</h2>
-                        <p class="text-sm text-gray-500">Plan: <span class="font-semibold">{{ modalData.groupName
-                        }}</span></p>
+            <div class="p-5 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
+                <div class="mb-4 flex items-center justify-between rounded-2xl border border-indigo-100 bg-white/80 px-4 py-3 shadow-sm">
+                    <div class="flex flex-1 items-center justify-center gap-3">
+                      
+                        <p class="text-2xl uppercase text-gray-800"><span class="font-semibold">{{
+                            modalData.groupName }}</span></p>
                     </div>
+
                     <button @click="closeModalAdd"
-                        class="rounded-md text-white bg-red-600 hover:bg-red-400 active:bg-red-700">
+                        class="rounded-md bg-red-600 p-1 text-white shadow-sm hover:bg-red-500 active:bg-red-700">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+                            stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
+                <hr class="w-full h-0.5 bg-gradient-to-r from-indigo-200 via-slate-200 to-transparent mt-1 mb-4">
 
                 <!-- INDICADOR DE CARGA -->
                 <div v-if="modalData.loading" class="flex items-center justify-center py-8">
@@ -630,34 +778,38 @@ const canGest = computed(() =>
 
                 <!-- CONTENIDO CUANDO LOS DATOS ESTÁN CARGADOS -->
                 <div v-else class="pb-6">
+
                     <!-- LISTA DE CLIENTES -->
                     <div v-if="modalData.clients && modalData.clients.length > 0 || modalData.clsngr && modalData.clsngr.length > 0"
                         class="space-y-3">
 
                         <!-- BUSCADOR -->
                         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-                            
-                                <IconField iconPosition="left" class="w-full md:w-64">
-                                    <InputIcon>
-                                        <i class="pi pi-search" />
-                                    </InputIcon>
-                                    <InputText v-model="filters['global'].value" placeholder="Buscar cliente..." class="w-full pl-8 rounded-lg" />
-                                </IconField>
-                            
+
+                            <IconField iconPosition="left" class="w-full md:w-64">
+                                <InputIcon>
+                                    <i class="pi pi-search" />
+                                </InputIcon>
+                                <InputText v-model="filters['global'].value" placeholder="Buscar cliente..."
+                                    class="w-full pl-8 rounded-lg" />
+                            </IconField>
+
                         </div>
-                        
 
 
                         <div class="grid grid-cols-2 gap-2">
+
+
                             <div>
-                                <div class="text-sm font-medium text-gray-700 mb-1">
-                                    Clientes registrados: <span class="text-blue-600 font-semibold">{{
+                                <div class="mb-2 flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-medium text-gray-700">
+                                    <span>Clientes registrados</span>
+                                    <span class="rounded-full bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white">{{
                                         filteredClients.length
-                                        }}</span>
+                                    }}</span>
                                 </div>
-                                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                                <div class="max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
                                     <div v-for="client in filteredClients" :key="client.id"
-                                        class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50">
+                                        class="flex items-center justify-between border-b border-gray-100 p-3 transition hover:bg-blue-50/60">
                                         <div class="flex items-center gap-3">
                                             <!--  <input type="checkbox" :id="`client-${client.id}`" :value="client.username"
                                                 v-model="selectedClients" class="rounded" /> -->
@@ -666,7 +818,9 @@ const canGest = computed(() =>
                                                     class="font-medium text-gray-900 cursor-pointer">
                                                     {{ client.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">{{ client.nombre_completo || 'Sin nombre' }}</p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ client.nombre_completo || 'Sin nombre' }}
+                                                </p>
                                             </div>
                                         </div>
                                         <button @click="openModalDelClient(client)"
@@ -681,14 +835,15 @@ const canGest = computed(() =>
                                 </div>
                             </div>
                             <div>
-                                <div class="text-sm font-medium text-gray-700 mb-1">
-                                    Clientes sin grupo(plan): <span class="text-blue-600 font-semibold">{{
+                                <div class="mb-2 flex items-center justify-between rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm font-medium text-gray-700">
+                                    <span>Clientes sin grupo(plan)</span>
+                                    <span class="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-bold text-white">{{
                                         filteredClientsNoGroup.length
-                                        }}</span>
+                                    }}</span>
                                 </div>
-                                <div class="max-h-96 overflow-y-auto border border-gray-200 rounded-lg">
+                                <div class="max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
                                     <div v-for="csgrp in filteredClientsNoGroup" :key="csgrp.id"
-                                        class="flex items-center justify-between p-3 border-b border-gray-100 hover:bg-gray-50">
+                                        class="flex items-center justify-between border-b border-gray-100 p-3 transition hover:bg-emerald-50/60">
                                         <div class="flex items-center gap-3">
                                             <input type="checkbox" :id="`csgrp-${csgrp.id}`" :value="csgrp.username"
                                                 v-model="selectedClientsNoGroup" class="rounded" />
@@ -697,17 +852,24 @@ const canGest = computed(() =>
                                                     class="font-medium text-gray-900 cursor-pointer">
                                                     {{ csgrp.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">{{ csgrp.nombre_completo || 'Sin nombre' }}</p>
+                                                <p class="text-xs text-gray-500">
+                                                    {{ csgrp.nombre_completo || 'Sin nombre' }}
+                                                </p>
                                             </div>
                                         </div>
-                                        <span class="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                                            {{ csgrp.status || 'activo' }}
+                                        <span v-if="csgrp.value === 'morosos'"
+                                            class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">
+                                            {{ csgrp.plan }}
+                                        </span>
+                                        <span v-else class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
+                                            {{ 'activo' }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
 
                         </div>
+
 
                     </div>
 
@@ -725,8 +887,9 @@ const canGest = computed(() =>
                 <!-- BOTONES DE ACCIÓN -->
                 <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
                     <SecondaryButton class="w-full" @click="closeModalAdd">Cerrar</SecondaryButton>
-                    <PrimaryButton class="w-full" :disabled="modalData.loading" @click="saveClientsToGroup">Guardar
-                        Clientes Seleccionados</PrimaryButton>
+                    <PrimaryButton class="w-full" :disabled="modalData.loading" @click="saveClientsToGroup">
+                        Guardar Clientes Seleccionados
+                    </PrimaryButton>
                 </div>
             </div>
         </Modal>
@@ -734,9 +897,18 @@ const canGest = computed(() =>
 
         <!-- MODAL PARA ELIMINAR CLIENTE DEL GRUPO DE SERVICIO -->
         <Modal :show="showModalDelClient" @close="closeModalDel" maxWidth="md">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
+            <div class="p-5 bg-gradient-to-br from-red-50 via-white to-rose-50">
+                <div class="flex items-center justify-between pb-6">
+                    <div class="flex items-center gap-3">
+                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-red-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                        </span>
+                        <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
+                    </div>
                     <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="size-6">
@@ -775,6 +947,110 @@ const canGest = computed(() =>
                     <div>
                         <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="DelteClient">Eliminar
                         </PrimaryButton>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+
+
+
+        <!-- MODAL PARA MOSTRAR LOS CLIENTES SUSPENDIDOS -->
+        <Modal :show="showModalShow" @close="closeModalShow" maxWidth="md">
+            <div class="bg-gradient-to-br from-red-50 via-orange-50 to-amber-50 p-5">
+                <div class="mb-4 flex items-center justify-between rounded-2xl border border-red-200 bg-white/80 px-4 py-3 shadow-sm">
+                    <div class="flex flex-1 items-center justify-center gap-3">
+                        
+                        <p class="text-2xl uppercase text-gray-800"><span class="font-semibold">
+                                {{ modalDataShow.groupName }}</span></p>
+                    </div>
+
+                    <button @click="closeModalShow"
+                        class="rounded-md bg-red-600 p-1 text-white shadow-sm hover:bg-red-500 active:bg-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <hr class="w-full h-0.5 bg-gradient-to-r from-red-200 via-amber-200 to-transparent mt-1 mb-4">
+
+                <!-- INDICADOR DE CARGA -->
+                <div v-if="modalDataShow.loading" class="flex items-center justify-center py-8">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6 animate-spin text-red-600">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.995-1.465" />
+                        </svg>
+                        <span class="text-gray-600">Cargando datos...</span>
+                    </div>
+                </div>
+
+
+                <!-- CONTENIDO CUANDO LOS DATOS ESTÁN CARGADOS -->
+                <div v-else class="pb-2">
+
+                    <!-- LISTA DE CLIENTES -->
+                    <div v-if="morosos.length > 0" class="space-y-3">
+
+                        <!-- BUSCADOR -->
+                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
+
+                            <IconField iconPosition="left" class="w-full md:w-64">
+                                <InputIcon>
+                                    <i class="pi pi-search" />
+                                </InputIcon>
+                                <InputText v-model="filters['global'].value" placeholder="Buscar cliente..."
+                                    class="w-full pl-8 rounded-lg border-red-200 focus:border-red-400 focus:ring-red-200" />
+                            </IconField>
+
+                        </div>
+
+
+                        <div>
+
+                            <div class="mb-2 flex items-center justify-between rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm font-medium text-gray-700">
+                                <span>Clientes {{ modalDataShow.groupName }}</span>
+                                <span class="rounded-full bg-red-600 px-2.5 py-0.5 text-xs font-bold text-white">{{
+                                    filteredClientsShow.length
+                                    }}</span>
+                            </div>
+                            <div class="max-h-96 overflow-y-auto rounded-xl border border-red-100 bg-white shadow-sm">
+                                <div v-for="client in filteredClientsShow" :key="client.id"
+                                    class="flex items-center justify-between border-b border-gray-100 p-3 transition hover:bg-red-50/80">
+                                    <div class="flex items-center gap-3">
+                                        <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-red-100 text-red-600">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                            </svg>
+                                        </span>
+                                        <div>
+                                            <label :for="`client-${client.id}`"
+                                                class="font-medium text-gray-900 cursor-pointer">
+                                                {{ client.username }}
+                                            </label>
+                                            <p class="text-xs text-gray-500">
+                                                {{ client.nombre_completo || 'Sin nombre' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <span class="rounded-full border border-red-200 bg-red-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-red-700">
+                                        suspendido
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- MENSAJE SI NO HAY CLIENTES -->
+                    <div v-else class="text-center py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-12 mx-auto text-red-300 mb-3">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                        </svg>
+                        <p class="text-red-600 font-medium">No hay clientes suspendidos</p>
                     </div>
                 </div>
             </div>

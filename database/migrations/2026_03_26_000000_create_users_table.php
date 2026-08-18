@@ -34,7 +34,7 @@ return new class extends Migration
 
             // Columnas de estado de control
             $table->enum('estado', ['activo', 'inactivo'])->default('activo');
-            $table->dateTime('ultimo_acceso')->nullable();
+            //$table->dateTime('ultimo_acceso')->nullable();
 
 
             //Timestamps

@@ -33,7 +33,7 @@ class User extends Authenticatable
         'direccion',
         'password',
         'estado',
-        'ultimo_acceso',
+        //'ultimo_acceso',
     ];
 
     /**
@@ -78,7 +78,7 @@ class User extends Authenticatable
                 'direccion',
                 'password',
                 'estado',
-                'ultimo_acceso'
+                //'ultimo_acceso'
             ])
             ->logOnlyDirty();
     }

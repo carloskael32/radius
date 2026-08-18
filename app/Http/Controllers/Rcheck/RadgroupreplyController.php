@@ -9,13 +9,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Client\Client;
 use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radgroupreply;
+use App\Models\Rdacct\Radacct;
 use Inertia\Inertia;
+use App\Services\MikrotikService;
 
 class RadgroupreplyController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $mikrotik;
+
+    public function __construct(MikrotikService $mikrotik)
+    {
+        $this->mikrotik = $mikrotik;
+    }
+
     public function index()
     {
 
@@ -28,22 +34,80 @@ class RadgroupreplyController extends Controller
 
 
         //$rgreply = Radgroupreply::select('id', 'groupname', 'value')->get();
-        $rgreply = Radgroupreply::where('value', '!=', 'morosos')
-        ->get();
+        // $rgreply = Radgroupreply::where('value', '!=', 'morosos')
+        //     ->get();
 
+        $suspendidos = DB::table('radgroupreply as rreply')
+            ->whereIn('rreply.groupname', function ($query) {
+                $query->select('sub.groupname')
+                    ->from('radgroupreply as sub')
+                    ->where('sub.value', '=', 'morosos');
+            })
+            ->select('rreply.groupname')
+            ->first();
+
+        $rgreply = Radgroupreply::where('groupname', '!=', $suspendidos->groupname)->get();
+        //return response()->json($rgreply);
+
+        
         // Combinar los datos
         $datosCombinados = $rgreply->map(function ($item) use ($usuariosPorGrupo) {
             return [
                 'id' => $item->id,
                 'groupname' => $item->groupname,
                 'value' => $item->value,
-                'total_usuarios' => $usuariosPorGrupo[$item->groupname]->total_usuarios ?? 0
-
+                'total_usuarios' => $usuariosPorGrupo[$item->groupname]->total_usuarios ?? 0,
             ];
         });
 
+
+        //datos del grupo suspendidos y cantidad de suspendidos
+        $dagrupo = DB::table('radgroupreply as rreply')
+            ->whereIn('rreply.groupname', function ($query) {
+                $query->select('sub.groupname')
+                    ->from('radgroupreply as sub')
+                    ->where('sub.value', '=', 'morosos');
+            })
+            ->where('rreply.value', '!=', 'morosos')
+            ->join('radusergroup as rgroup', 'rreply.groupname', '=', 'rgroup.groupname')
+            ->join('clients as c', 'rgroup.username', '=', 'c.username')
+            ->select(
+                'rreply.id',
+                'rreply.groupname',
+                // 'rreply.attribute',
+                // 'rreply.op',
+                'rreply.value',
+                DB::raw('COUNT(c.username) as total')
+            )
+            ->groupBy('rreply.id', 'rreply.groupname', 'rreply.value')
+            ->get();
+
+
+        // clientes en el grupo de suspendidos
+        $morosos = DB::table('radusergroup as rgroup')
+            ->join('radgroupreply as rreply', 'rgroup.groupname', '=', 'rreply.groupname')
+            ->join('radgroupreply as datos', 'rgroup.groupname', '=', 'datos.groupname')
+            ->join('clients as c', 'rgroup.username', '=', 'c.username')
+            ->where('rreply.value', '=', 'morosos')
+            ->where('datos.value', '!=', 'morosos')
+            ->select(
+                'rgroup.username',
+                //'rgroup.groupname',
+                // 'datos.id',
+                // 'datos.attribute',
+                // 'datos.op',
+                //'datos.value',
+                'c.nombre_completo',
+                'c.telefono',
+            )
+            ->get();
+
+        //return response()->json($dagrupo);
+
         return inertia::render('Rgreply/Index', [
-            'rgreply' => $datosCombinados
+            'rgreply' => $datosCombinados,
+            'morosos' => $morosos,
+            'dagrupo' => $dagrupo
         ]);
     }
 
@@ -103,22 +167,45 @@ class RadgroupreplyController extends Controller
             ->get();
 
 
-        //devuelve usuarios que no esten en ningun grupo de radusergroup
+        // devuelve los usuarios que no tiene ningun grupo asgnado
         $usrsingrupo = DB::table('radcheck as r')
-
-            ->whereNotIn('r.username', function ($query) {
-                $query->select('username')
-                    ->from('radusergroup');
-            })
             ->join('clients', 'r.username', '=', 'clients.username')
-            ->select('clients.nombre_completo', 'r.username')
+            ->leftJoin('radusergroup as rug', 'r.username', '=', 'rug.username')
+            ->leftJoin('radgroupreply as rr', 'rug.groupname', '=', 'rr.groupname')
+            ->where(function ($q) {
+                $q->whereNull('rug.username') // no tiene grupo
+                    ->orWhere('rr.value', '=', 'morosos'); // o está en grupo morosos
+            })
+            ->select('clients.nombre_completo', 'r.username', 'clients.plan', 'rr.value')
+            ->get();
+        //return response()->json($usrsingrupo);
+
+
+        //clientes en el grupo de suspendidos
+        $morosos = DB::table('radusergroup as rgroup')
+            ->join('radgroupreply as rreply', 'rgroup.groupname', '=', 'rreply.groupname')
+            ->join('radgroupreply as datos', 'rgroup.groupname', '=', 'datos.groupname')
+            ->join('clients as c', 'rgroup.username', '=', 'c.username')
+            ->where('rreply.value', '=', 'morosos')
+            ->where('datos.value', '!=', 'morosos')
+            ->select(
+                'rgroup.username',
+                'rgroup.groupname',
+                // 'datos.id',
+                // 'datos.attribute',
+                // 'datos.op',
+                'datos.value',
+                'c.nombre_completo',
+                'c.telefono'
+            )
             ->get();
 
-        //return response()->json($usrsingrupo);
+
 
         return response()->json([
             'clients' => $usrcongrupo,
             'clsngr' => $usrsingrupo,
+            'morosos' => $morosos,
         ]);
     }
 
@@ -140,20 +227,41 @@ class RadgroupreplyController extends Controller
         // Asignar clientes al grupo
         foreach ($validated['clients'] as $username) {
             // Verificar si ya existe la asignación
-            $existe = Radusergroup::where('username', $username)
-                ->where('groupname', $rgreply->groupname)
+            Radusergroup::updateOrCreate(
+                ['username' => $username],
+                ['groupname' => $rgreply->groupname, 'priority' => 1]
+            );
+
+            Client::where('username', $username)
+                ->update(['plan' => $rgreply->groupname]);
+
+
+            //  desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
+            $client = Client::where('username', $username)->first();
+            $nas = Radacct::where('username', $client->username)
+                ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
+                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+                ->orderBy('acctstarttime', 'desc')
                 ->first();
 
-            if (!$existe) {
-                Radusergroup::create([
-                    'username' => $username,
-                    'groupname' => $rgreply->groupname,
-                    'priority' => 1,
-                ]);
-                Client::where('username', $username)
-                    ->update([
-                        'plan' => $rgreply->groupname,
-                    ]);
+            $results = [];
+            $nasName = $nas?->host ?? 'sin-nas';
+
+            try {
+                if (!$nas || empty($nas->host) || empty($nas->user) || empty($nas->pass)) {
+                    throw new \Exception('No se encontró información válida del NAS para desconectar al usuario.');
+                }
+
+                $sessions = $this->mikrotik->logoutUsers(
+                    $nas->host,
+                    $nas->user,
+                    $nas->pass,
+                    $client->username,
+                );
+
+                $results[$nasName] = $sessions;
+            } catch (\Throwable $e) {
+                $results[$nasName] = ['No se pudo conectar :(' => $e->getMessage()];
             }
         }
 
@@ -167,10 +275,47 @@ class RadgroupreplyController extends Controller
     public function delClients(string $id)
     {
         $rgroup = Radusergroup::find($id);
-        $rgroup->delete();
+        $rgreply = Radgroupreply::where('value', 'morosos')
+            ->first();
+
+        $rgroup->update([
+            'groupname' => $rgreply->groupname,
+        ]);
+        //$rgroup->delete();
 
         Client::where('username', $rgroup->username)
-            ->update(['plan' => null]);
+            ->update(['plan' => $rgreply->groupname]);
+
+
+
+        //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
+        $client = Client::where('username', $rgroup->username)->first();
+        $nas = Radacct::where('username', $client->username)
+            ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
+            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+            ->orderBy('acctstarttime', 'desc')
+            ->first();
+
+        $results = [];
+        $nasName = $nas?->host ?? 'sin-nas';
+
+        try {
+            if (!$nas || empty($nas->host) || empty($nas->user) || empty($nas->pass)) {
+                throw new \Exception('No se encontró información válida del NAS para desconectar al usuario.');
+            }
+
+            $sessions = $this->mikrotik->logoutUsers(
+                $nas->host,
+                $nas->user,
+                $nas->pass,
+                $client->username,
+            );
+
+            $results[$nasName] = $sessions;
+        } catch (\Throwable $e) {
+            $results[$nasName] = ['No se pudo conectar :(' => $e->getMessage()];
+        }
+
 
         return response()->json([
             'message' => 'Clientes eliminado correctamente',
@@ -206,10 +351,10 @@ class RadgroupreplyController extends Controller
 
         //actualiza el nombre de grupo en radgroupcheck
         Radgroupcheck::where('groupname', $rgreply->groupname)
-            ->update(['groupname' => $validate['groupname']]);  
-        
+            ->update(['groupname' => $validate['groupname']]);
+
         Radgroupreply::where('groupname', $rgreply->groupname)
-        ->update(['groupname' => $validate['groupname']]);
+            ->update(['groupname' => $validate['groupname']]);
 
         $rgreply->update([
             'groupname' => $validate['groupname'],

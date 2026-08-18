@@ -196,7 +196,6 @@ class ClientController extends Controller
         }
 
         //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
-
         $nas = Radacct::where('username', $client->username)
             ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
             ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
@@ -204,28 +203,33 @@ class ClientController extends Controller
             ->first();
 
         $results = [];
-        $nasName = $nas?->nasname ?? 'sin-nas';
+        $nasName = $nas?->host ?? 'sin-nas';
 
         try {
-            $sessions =  $this->mikrotik->logoutUsers(
+            if (!$nas || empty($nas->host) || empty($nas->user) || empty($nas->pass)) {
+                throw new \Exception('No se encontró información válida del NAS para desconectar al usuario.');
+            }
+
+            $sessions = $this->mikrotik->logoutUsers(
                 $nas->host,
                 $nas->user,
                 $nas->pass,
                 $client->username,
-                //$nas->port ?? 8728
             );
+
             $results[$nasName] = $sessions;
+            
+            if (isset($sessions['error'])) {
+                //$results[$nasName] = ['error' => $sessions['error']];
+                $radusrg->update(['groupname' => 'activo']);
+                $client->update(['estado' => 'activo']);
+            } else {
+                $radusrg->update(['groupname' => 'inactivo']);
+                $client->update(['estado' => 'inactivo']);
+            }
         } catch (\Throwable $e) {
             $results[$nasName] = ['No se pudo conectar :(' => $e->getMessage()];
         }
-
-
-        // refrescar freeradius
-        /*   try {
-            exec('sudo systemctl kill -s USR1 freeradius.service');
-        } catch (\Throwable $e) {
-            // no bloquear si falla el reload; loguear en futuro si es necesario
-        } */
 
         return response()->json(['estado' => $client->estado]);
     }
@@ -281,13 +285,46 @@ class ClientController extends Controller
             'plan' => $validate['plan'],
         ]);
 
-
-
         $groupname = $request->estado === 'inactivo' ? 'inactivo' : ($client->plan ?? '');
 
 
         if ($radusrg) {
             $radusrg->update(['groupname' => $groupname]);
+
+            //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
+            $nas = Radacct::where('username', $client->username)
+                ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
+                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+                ->orderBy('acctstarttime', 'desc')
+                ->first();
+
+            $results = [];
+            $nasName = $nas?->host ?? 'sin-nas';
+
+            try {
+                if (!$nas || empty($nas->host) || empty($nas->user) || empty($nas->pass)) {
+                    throw new \Exception('No se encontró información válida del NAS para desconectar al usuario.');
+                }
+
+                $sessions = $this->mikrotik->logoutUsers(
+                    $nas->host,
+                    $nas->user,
+                    $nas->pass,
+                    $client->username,
+                );
+                $results[$nasName] = $sessions;
+
+                // if (isset($sessions['error'])) {
+                //     //$results[$nasName] = ['error' => $sessions['error']];
+                //     $radusrg->update(['groupname' => 'activo']);
+                //     $client->update(['estado' => 'activo']);
+                // } else {
+                //     $radusrg->update(['groupname' => 'inactivo']);
+                //     $client->update(['estado' => 'inactivo']);
+                // }
+            } catch (\Throwable $e) {
+                $results[$nasName] = ['No se pudo conectar :(' => $e->getMessage()];
+            }
         } else {
             Radusergroup::create([
                 'username' => $client->username,

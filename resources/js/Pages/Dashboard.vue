@@ -315,8 +315,7 @@ const successRate = computed(() => {
                 </div>
 
                 <!-- Usuarios Desconectados -->
-                <div
-                    class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-red-200">
+                <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-red-200">
                     <div class="flex justify-between items-start">
                         <div class="flex-1">
                             <div class="flex items-center gap-2 mb-3">
