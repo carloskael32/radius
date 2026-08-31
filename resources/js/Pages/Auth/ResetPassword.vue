@@ -37,24 +37,24 @@ const submit = () => {
 
     <GuestLayout>
         <Link href="/" class="mb-4 flex items-center justify-center">
-            <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" />
+            <ApplicationLogo class="h-20 w-20 fill-current text-slate-500 dark:text-slate-400" />
         </Link>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-4">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="Email" class="text-slate-700 dark:text-slate-200" />
                 <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus autocomplete="username" />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="mt-3">
-                <InputLabel for="password" value="Password" />
+            <div>
+                <InputLabel for="password" value="Password" class="text-slate-700 dark:text-slate-200" />
                 <TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="new-password" />
                 <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <div class="mt-3">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+            <div>
+                <InputLabel for="password_confirmation" value="Confirm Password" class="text-slate-700 dark:text-slate-200" />
                 <TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
             </div>

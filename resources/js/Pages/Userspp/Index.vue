@@ -152,15 +152,15 @@ const deleteUser = () => {
     <Toast />
 
     <AuthenticatedLayout>
-        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-            <div class="flex items-start justify-between pb-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div class="flex items-start justify-between gap-4 pb-5">
                 <div>
-                    <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Usuarios PPPoE</h1>
-                    <p class="text-sm text-gray-500">Manage users: <span class="font-medium text-gray-700">{{
+                    <h1 class="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">Gestión de Usuarios PPPoE</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Manage users: <span class="font-semibold text-slate-700 dark:text-slate-200">{{
                         Object.keys(radchecks).length }}</span> usuarios</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
+                    <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z"
@@ -171,35 +171,32 @@ const deleteUser = () => {
                 </div>
             </div>
 
-
             <!-- CUERPO -->
-               <div class="w-full overflow-hidden ">
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <div class="w-full overflow-hidden">
+                <div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
 
-                    <DataTable :value="radchecks" v-model:filters="filters" ref="dt" selectionMode="single"
+                    <DataTable :value="radchecks" v-model:filters="filters" ref="dt"
                         :globalFilterFields="['username', 'value']" paginator :rows="5"
                         :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}"
+                        class="dark:bg-slate-950">
 
                         <template #header>
-                            <!-- Filtro de búsqueda -->
-                            <div
-                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                            <div class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80 md:flex-row md:items-center md:justify-between">
                                 <div class="w-full md:w-auto">
-                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                    <IconField iconPosition="left" class="w-full md:w-72">
                                         <InputIcon>
-                                            <i class="pi pi-search" />
+                                            <i class="pi pi-search text-slate-400 dark:text-slate-500" />
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Buscar usuario..."
-                                            class="w-full pl-8 rounded-lg" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-9 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                     </IconField>
                                 </div>
 
-                                <!-- Botones de exportación -->
                                 <div class="flex gap-2">
                                     <Button icon="pi pi-file-excel" label="CSV" @click="exportCSV" size="large" raised
-                                        class="rounded-md bg-green-700 px-2 py-1 text-center text-md text-white hover:bg-green-600 active:bg-green-800" />
+                                        class="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500" />
                                 </div>
                             </div>
                         </template>
@@ -213,15 +210,15 @@ const deleteUser = () => {
                         </Column> -->
 
                         <Column field="username" sortable header="nombre"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
                         <Column field="value" sortable header="pass"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
-                        <Column header="acciones" #body="slotProps" bodyClass="border border-gray-300"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
+                        <Column header="acciones" #body="slotProps" bodyClass="border border-slate-200 bg-white text-center dark:border-slate-700 dark:bg-slate-900"
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                             <div class="flex gap-2">
                                 <button @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex items-center justify-center p-2 rounded-md hover:bg-blue-50">
@@ -254,40 +251,29 @@ const deleteUser = () => {
 
         <!-- MODAL PARA FORMULARIO DE REGISTRO -->
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-4">
-                    <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
-                    <button @click="closeModalForm" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-6 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ title }}</h2>
+                    <button @click="closeModalForm" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <form @submit.prevent="save">
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                <form @submit.prevent="save" class="space-y-5">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="username" class="block mb-1.5 text-sm font-medium text-gray-900">Nombre de
-                                usuario</label>
-                            <input type="text" id="username" v-model="form.username"
-                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="usuario" required />
+                            <label for="username" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nombre de usuario</label>
+                            <input type="text" id="username" v-model="form.username" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="usuario" required />
                         </div>
                         <div>
-                            <label for="password"
-                                class="block mb-1.5 text-sm font-medium text-gray-900">Contraseña</label>
-                            <input type="text" id="password" v-model="form.password"
-                                class="block w-full px-2.5 py-2 text-sm text-gray-900 border border-gray-300 rounded-md shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                placeholder="••••••" required />
+                            <label for="password" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Contraseña</label>
+                            <input type="text" id="password" v-model="form.password" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="••••••" required />
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
-                        </div>
-                        <div>
-                            <PrimaryButton class="w-full">Guardar</PrimaryButton>
-                        </div>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
+                        <PrimaryButton class="w-full">Guardar</PrimaryButton>
                     </div>
                 </form>
             </div>
@@ -295,46 +281,30 @@ const deleteUser = () => {
 
         <!-- MODAL PARA ELIMINAR DATOS -->
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
-                    <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-col gap-4 pb-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 pt-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-20 text-red-600">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Está por eliminar el siguiente usuario:
-                            </p>
-                            <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ eform.username }}
-                            </p>
-                            <p class="mt-3 text-sm text-red-600">
-                                Esta acción no se puede deshacer.
-                            </p>
-                        </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente usuario:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ eform.username }}</p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
-                    </div>
-                    <div>
-                        <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteUser">Eliminar
-                        </PrimaryButton>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteUser">Eliminar</PrimaryButton>
                 </div>
             </div>
         </Modal>

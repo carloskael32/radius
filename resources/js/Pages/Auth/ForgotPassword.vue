@@ -26,27 +26,27 @@ const submit = () => {
     <Head title="Forgot Password" />
 
     <GuestLayout>
-        <Link href="/" class="flex justify-center items-center mb-4">
-            <ApplicationLogo class="w-20 h-20 text-gray-500 fill-current" />
+        <Link href="/" class="mb-4 flex items-center justify-center">
+            <ApplicationLogo class="h-20 w-20 fill-current text-slate-500 dark:text-slate-400" />
         </Link>
 
-        <div class="mb-4 text-sm text-gray-600">
+        <div class="mb-4 text-sm text-slate-600 dark:text-slate-400">
             Forgot your password? No problem. Just let us know your email address and we will email you a password reset
             link that will allow you to choose a new one.
         </div>
 
-        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
+        <div v-if="status" class="mb-4 text-sm font-medium text-emerald-600 dark:text-emerald-400">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
+        <form @submit.prevent="submit" class="space-y-4">
             <div>
-                <InputLabel for="email" value="Email" />
-                <TextInput id="email" type="email" class="block mt-1 w-full" v-model="form.email" required autofocus autocomplete="username" />
+                <InputLabel for="email" value="Email" class="text-slate-700 dark:text-slate-200" />
+                <TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus autocomplete="username" />
                 <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
-            <div class="flex justify-end items-center mt-4">
+            <div class="mt-4 flex items-center justify-end">
                 <PrimaryButton class="w-full" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Email Password Reset Link
                 </PrimaryButton>

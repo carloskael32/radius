@@ -6,15 +6,15 @@ import Toast from 'primevue/toast';
 
 <template>
     <Toast/>
-    <div class="flex h-screen bg-white font-roboto">
+    <div class="flex h-screen bg-slate-100 font-roboto dark:bg-slate-950">
         <Navigation />
 
         <div class="flex flex-1 flex-col overflow-hidden">
             <Header />
 
-            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-gray-50">
-                <div class="container mx-auto px-6 py-4">
-                    <h3 class="text-4xl font-bold text-gray-900">
+            <main class="flex-1 overflow-y-auto overflow-x-hidden bg-slate-100 dark:bg-slate-950">
+                <div class="container mx-auto px-4 py-6 sm:px-6">
+                    <h3 class="mb-4 text-3xl font-bold text-slate-900 dark:text-slate-50">
                         <slot name="header" />
                     </h3>
 
@@ -27,13 +27,21 @@ import Toast from 'primevue/toast';
 
 <style>
 .p-paginator {
-    @apply flex justify-center gap-2 mt-2;
+    @apply mt-2 flex justify-center gap-2;
 }
 
 .p-paginator-first,
 .p-paginator-prev,
 .p-paginator-next,
 .p-paginator-last {
-    @apply px-3 py-1 rounded-full bg-gray-200 text-gray-800 hover:bg-gray-300 disabled:opacity-50 transition;
+    @apply rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 transition hover:bg-slate-100 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
+}
+
+.p-paginator-page {
+    @apply rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700;
+}
+
+.p-highlight {
+    @apply border-indigo-500 bg-indigo-500 text-white dark:border-indigo-400 dark:bg-indigo-500;
 }
 </style>

@@ -343,23 +343,22 @@ onMounted(() => {
     <AuthenticatedLayout>
         <div class="space-y-6">
             <!-- Encabezado -->
-            <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                <h1 class="text-4xl font-bold text-gray-900">Reportes RADIUS</h1>
-                <p class="text-gray-600 mt-1">Análisis completo de tu infraestructura de red</p>
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <h1 class="text-4xl font-bold text-slate-900 dark:text-slate-100">Reportes RADIUS</h1>
+                <p class="mt-1 text-slate-600 dark:text-slate-300">Análisis completo de tu infraestructura de red</p>
             </div>
 
-            <!-- Tabs de navegación -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div class="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
                 <button v-for="tab in reportTypes" :key="tab.id" @click="activeTab = tab.id" :class="[
-                    'p-3 rounded-lg border-2 transition-all text-center hover:shadow-md',
+                    'rounded-xl border-2 p-3 text-center transition-all hover:shadow-md',
                     activeTab === tab.id
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300 bg-white'
+                        ? 'border-indigo-500 bg-indigo-50 dark:border-indigo-400 dark:bg-indigo-500/10'
+                        : 'border-slate-200 bg-white hover:border-slate-300 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-slate-600'
                 ]">
-                    <div class="text-2xl mb-1">{{ tab.icon }}</div>
+                    <div class="mb-1 text-2xl">{{ tab.icon }}</div>
                     <p :class="[
-                        'font-medium text-xs',
-                        activeTab === tab.id ? 'text-blue-900' : 'text-gray-700'
+                        'text-xs font-medium',
+                        activeTab === tab.id ? 'text-indigo-900 dark:text-indigo-200' : 'text-slate-700 dark:text-slate-300'
                     ]">
                         {{ tab.label }}
                     </p>
@@ -368,48 +367,39 @@ onMounted(() => {
 
             <!-- 📊 ANCHO DE BANDA -->
             <div v-if="activeTab === 'bandwidth'" class="space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Consumo de Ancho de Banda</h2>
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                    <div class="mb-6 flex items-center justify-between">
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Consumo de Ancho de Banda</h2>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-lg border border-blue-200">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <div class="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-6 dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-600 text-sm font-medium">Descargado (Input)</p>
-                                    <p class="text-3xl font-bold text-blue-600 mt-2">{{ bandwidthData?.totalInput }}</p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Descargado (Input)</p>
+                                    <p class="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{{ bandwidthData?.totalInput }}</p>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400 opacity-50"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                                        clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div
-                            class="bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-lg border border-green-200">
+                        <div class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 dark:border-emerald-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-600 text-sm font-medium">Subido (Output)</p>
-                                    <p class="text-3xl font-bold text-green-600 mt-2">{{ bandwidthData?.totalOutput }}
-                                    </p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Subido (Output)</p>
+                                    <p class="mt-2 text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ bandwidthData?.totalOutput }}</p>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-green-400 opacity-50"
-                                    fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-400 opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div
-                            class="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-lg border border-purple-200">
+                        <div class="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 p-6 dark:border-violet-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-gray-600 text-sm font-medium">Total Combinado</p>
-                                    <p class="text-3xl font-bold text-purple-600 mt-2">{{ bandwidthData?.combined }}</p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Total Combinado</p>
+                                    <p class="mt-2 text-3xl font-bold text-violet-600 dark:text-violet-400">{{ bandwidthData?.combined }}</p>
                                 </div>
                             </div>
                         </div>
@@ -419,39 +409,35 @@ onMounted(() => {
 
 
                 <!-- Top Consumer y Comparativo -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Top 10 Usuarios Semanal</h3>
-                        <div v-if="topConsumers && topConsumers.length > 0" class="overflow-y-auto max-h-96">
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <h3 class="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">Top 10 Usuarios Semanal</h3>
+                        <div v-if="topConsumers && topConsumers.length > 0" class="max-h-96 overflow-y-auto">
                             <table class="w-full text-sm">
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr v-for="user in topConsumers.slice(0, 10)" :key="user.username"
-                                        class="hover:bg-gray-50">
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                    <tr v-for="user in topConsumers.slice(0, 10)" :key="user.username" class="hover:bg-slate-50 dark:hover:bg-slate-800/80">
                                         <td class="px-3 py-2">
                                             <span v-if="user.rank === 1" class="text-lg">🥇</span>
                                             <span v-else-if="user.rank === 2" class="text-lg">🥈</span>
                                             <span v-else-if="user.rank === 3" class="text-lg">🥉</span>
-                                            <span v-else class="font-medium">{{ user.rank }}</span>
+                                            <span v-else class="font-medium text-slate-700 dark:text-slate-200">{{ user.rank }}</span>
                                         </td>
-                                        <td class="px-3 py-2 font-medium">{{ user.username }}</td>
-                                        <td class="px-3 py-2 text-right text-purple-600 font-bold">{{ user.combined }}
-                                        </td>
+                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{ user.username }}</td>
+                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">{{ user.combined }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Últimos 12 Meses</h3>
-                        <div v-if="monthlyComparison && monthlyComparison.length > 0" class="overflow-y-auto max-h-96">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <h3 class="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">Últimos 12 Meses</h3>
+                        <div v-if="monthlyComparison && monthlyComparison.length > 0" class="max-h-96 overflow-y-auto">
                             <table class="w-full text-sm">
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr v-for="(month, idx) in monthlyComparison.slice(0, 12)" :key="idx"
-                                        :class="idx === 0 ? 'bg-yellow-50' : 'hover:bg-gray-50'">
-                                        <td class="px-3 py-2 font-medium">{{ month.period }}</td>
-                                        <td class="px-3 py-2 text-right text-purple-600 font-bold">{{ month.combined }}
-                                        </td>
+                                <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
+                                    <tr v-for="(month, idx) in monthlyComparison.slice(0, 12)" :key="idx" :class="idx === 0 ? 'bg-amber-50 dark:bg-amber-500/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/80'">
+                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{ month.period }}</td>
+                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">{{ month.combined }}</td>
                                     </tr>
                                 </tbody>
                             </table>

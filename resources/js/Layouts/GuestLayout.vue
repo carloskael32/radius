@@ -1,13 +1,11 @@
 <template>
-    <div class="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white px-6">
+    <div class="flex h-screen items-center justify-center bg-slate-100 px-6 dark:bg-slate-950">
         <div class="w-full max-w-md">
-            <!-- Card Container -->
-            <div class="rounded-2xl bg-white p-8 shadow-2xl border border-gray-200">
+            <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/40">
                 <slot />
             </div>
 
-            <!-- Footer Text -->
-            <div class="mt-6 text-center text-sm text-gray-500">
+            <div class="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
                 <p>© 2026 Dashboard. Todos los derechos reservados.</p>
             </div>
         </div>
@@ -15,7 +13,6 @@
 </template>
 
 <style scoped>
-/* Add smooth transitions */
 :deep(input),
 :deep(button) {
     @apply transition-all duration-200;

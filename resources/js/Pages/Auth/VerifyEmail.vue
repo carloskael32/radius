@@ -25,25 +25,25 @@ const verificationLinkSent = computed(() => props.status === 'verification-link-
 
     <GuestLayout>
         <Link href="/" class="mb-4 flex items-center justify-center">
-            <ApplicationLogo class="h-20 w-20 fill-current text-gray-500" />
+            <ApplicationLogo class="h-20 w-20 fill-current text-slate-500 dark:text-slate-400" />
         </Link>
 
-        <div class="mb-4 text-sm text-gray-600">
+        <div class="mb-4 text-sm text-slate-600 dark:text-slate-400">
             Thanks for signing up! Before getting started, could you verify your email address by clicking on the link
             we just emailed to you? If you didn't receive the email, we will gladly send you another.
         </div>
 
-        <div class="mb-4 text-sm font-medium text-green-600" v-if="verificationLinkSent">
+        <div class="mb-4 text-sm font-medium text-emerald-600 dark:text-emerald-400" v-if="verificationLinkSent">
             A new verification link has been sent to the email address you provided during registration.
         </div>
 
         <form @submit.prevent="submit">
-            <div class="mt-4 flex items-center justify-between">
+            <div class="mt-4 flex items-center justify-between gap-3">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                     Resend Verification Email
                 </PrimaryButton>
 
-                <Link :href="route('logout')" method="post" as="button" class="text-sm text-gray-600 underline hover:text-gray-900">
+                <Link :href="route('logout')" method="post" as="button" class="text-sm text-slate-600 underline hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200">
                     Log Out
                 </Link>
             </div>

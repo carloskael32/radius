@@ -65,9 +65,9 @@ const form = useForm({
 });
 
 const eform = ref({
-    id:'',
+    id: '',
     nasname: '',
-    shortname:'',
+    shortname: '',
     // shortname: '',
     // type: '',
     // ports: '',
@@ -277,15 +277,18 @@ const canEdit = computed(() =>
 
     <AuthenticatedLayout>
 
-        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-            <div class="flex items-start justify-between pb-4">
+        <div
+            class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div class="flex items-start justify-between gap-4 pb-5">
                 <div>
-                    <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de NAS</h1>
-                    <p class="text-sm text-gray-500">Total: <span class="font-medium text-gray-700">{{ total }}</span>
+                    <h1 class="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">Gestión de NAS</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Total: <span
+                            class="font-semibold text-slate-700 dark:text-slate-200">{{ total }}</span>
                         NAS</p>
                 </div>
                 <div v-if="canAdd" class="flex items-center gap-3">
-                    <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
+                    <PrimaryButton @click="openModalForm(1)"
+                        class="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z"
@@ -299,31 +302,31 @@ const canEdit = computed(() =>
 
 
             <!-- CUERPO -->
-            <div class="w-full overflow-hidden ">
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <div class="w-full overflow-hidden">
+                <div
+                    class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
                     <DataTable :value="nas" v-model:filters="filters" ref="dt" selectionMode="single"
                         :globalFilterFields="['nasname', 'shortname', 'type', 'ports', 'secret', 'status', 'description']"
                         paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
                         currentPageReportTemplate="{first} a {last} de {totalRecords}">
                         <template #header>
-                            <!-- Filtro de búsqueda -->
                             <div
-                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80 md:flex-row md:items-center md:justify-between">
                                 <div class="w-full md:w-auto">
-                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                    <IconField iconPosition="left" class="w-full md:w-72">
                                         <InputIcon>
-                                            <i class="pi pi-search" />
+                                            <i class="pi pi-search text-slate-400 dark:text-slate-500" />
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Buscar nas..."
-                                            class="w-full pl-8 rounded-lg" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-9 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                     </IconField>
                                 </div>
 
-                                <!-- Botones de exportación -->
                                 <button type="button" @click="exportCSV"
-                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
-                                    Excel</button>
+                                    class="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                                    📊 Excel
+                                </button>
                             </div>
                         </template>
                         <!--    <Column field="id" sortable header="id"
@@ -331,23 +334,23 @@ const canEdit = computed(() =>
                             bodyClass="border border-gray-300">
                         </Column> -->
                         <Column field="nasname" sortable header="IP/host"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="shortname" sortable header="Nombre corto"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="type" sortable header="tipo"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="ports" sortable header="puertos"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="secret" sortable header="clave"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <!-- <Column field="status" sortable header="estado"
@@ -364,7 +367,7 @@ const canEdit = computed(() =>
                             </template>
                         </Column> -->
                         <Column v-if="canEdit" field="status" sortable header="estado"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300 text-center">
                             <template #body="{ data }">
                                 <div class="flex items-center justify-center gap-3">
@@ -381,20 +384,20 @@ const canEdit = computed(() =>
                                                 :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'">
                                             </div>
                                         </div>
-                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
-                                            }}</span>
+                                        <span class="ml-3 text-black dark:text-white">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
+                                        }}</span>
                                     </label>
                                 </div>
                             </template>
                         </Column>
                         <Column field="description" sortable header="observaciones"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
 
                         <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
-                            bodyClass="border border-gray-300"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider">
+                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
+                            bodyClass="border border-gray-300">
                             <div class="flex gap-2 items-center justify-center">
                                 <button v-if="canEdit" @click="openModalForm(2, slotProps.data)"
                                     class="inline-flex p-2 rounded-md hover:bg-blue-50">
@@ -430,276 +433,246 @@ const canEdit = computed(() =>
         <!-- MODAL PARA FORMULARIO DE REGISTRO y MODIFICACION -->
 
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-4">
-                    <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
-                    <button @click="closeModalForm" class="text-gray-400 hover:text-gray-600">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div
+                    class="mb-6 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ title }}</h2>
+                    <button @click="closeModalForm"
+                        class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+                            stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <form @submit.prevent="save">
-
-
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                <form @submit.prevent="save" class="space-y-5">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">NAS IP</label>
+                            <label for="nasname"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">NAS
+                                IP</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z" />
                                     </svg>
                                 </div>
+                                <input @input="form.nasname = form.nasname.replace(/[^0-9.]/g, '')" type="text"
+                                    name="ipv4" id="nasname" v-model="form.nasname"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="192.168.1.1" />
                             </div>
-                            <input @input="form.nasname = form.nasname.replace(/[^0-9.]/g, '')" type="text" name="ipv4"
-                                id="nasname" v-model="form.nasname"
-                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="192.168.1.1" />
-                            <p v-if="hasError('nasname')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('nasname') }}
-                            </p>
+                            <p v-if="hasError('nasname')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{
+                                getErrorMessage('nasname') }}</p>
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre
-                                Corto</label>
+                            <label for="shortname"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nombre
+                                corto</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                     </svg>
-
                                 </div>
+                                <input type="text" id="shortname" v-model="form.shortname"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="NAS-Central" />
                             </div>
-                            <input type="text" v-model="form.shortname"
-                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="NAS-Central" />
-                            <p v-if="hasError('shortname')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('shortname') }}
-                            </p>
+                            <p v-if="hasError('shortname')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{
+                                getErrorMessage('shortname') }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Tipo</label>
+                            <label for="type"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Tipo</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
-
                                 </div>
+                                <input type="text" id="type" v-model="form.type"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="Cisco" />
                             </div>
-                            <input type="text" v-model="form.type"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="Cisco" />
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nro. de
-                                Puertos</label>
+                            <label for="ports"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nro.
+                                de Puertos</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class=" size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                                     </svg>
                                 </div>
+                                <input type="number" id="ports" v-model="form.ports"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="24" />
                             </div>
-                            <input type="number" v-model="form.ports"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="24" />
                         </div>
                     </div>
-
-
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Clave</label>
+                            <label for="secret"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Clave</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
                                     </svg>
                                 </div>
+                                <input type="text" id="secret" v-model="form.secret"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="•••••" />
                             </div>
-                            <input type="text" v-model="form.secret"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="•••••" />
-                            <p v-if="hasError('secret')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('secret') }}
-                            </p>
+                            <p v-if="hasError('secret')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{
+                                getErrorMessage('secret') }}</p>
                         </div>
                     </div>
-                    <div class="pb-4">
-                        <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Descripcion</label>
-                        <textarea v-model="form.description" rows="3"
-                            class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
+                    <div>
+                        <label for="description"
+                            class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Descripcion</label>
+                        <textarea id="description" v-model="form.description" rows="3"
+                            class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
                             placeholder="Descripcion del NAS"></textarea>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">HOST*</label>
+                            <label for="host"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">HOST*</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.737 5.1a3.375 3.375 0 0 1 2.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 0 1 .9 2.7m0 0a3 3 0 0 1-3 3m0 3h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Zm-3 6h.008v.008h-.008v-.008Zm0-6h.008v.008h-.008v-.008Z" />
                                     </svg>
                                 </div>
+                                <input type="text" name="host" id="host" v-bind:value="form.nasname"
+                                    class="block w-full rounded-xl border border-slate-300 bg-slate-100 py-2.5 ps-10 pr-3 text-sm text-slate-700 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                                    placeholder="192.168.1.1" disabled />
                             </div>
-                            <input type="text" name="host" id="host" v-bind:value="form.nasname"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="192.168.1.1" disabled />
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">USUARIO*</label>
+                            <label for="user"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">USUARIO*</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                                     </svg>
                                 </div>
+                                <input type="text" id="user" v-model="form.user" autocomplete="username"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="admin" />
                             </div>
-                            <input type="text" v-model="form.user" autocomplete="username"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="admin" />
-                            <p v-if="hasError('user')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('user') }}
-                            </p>
+                            <p v-if="hasError('user')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{
+                                getErrorMessage('user') }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 pb-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">PUERTO*</label>
+                            <label for="port"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">PUERTO*</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class=" size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M5.25 8.25h15m-16.5 7.5h15m-1.8-13.5-3.9 19.5m-2.1-19.5-3.9 19.5" />
                                     </svg>
                                 </div>
+                                <input type="number" id="port" v-model="form.port" autocomplete="number"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="8728" />
                             </div>
-                            <input type="number" v-model="form.port" autocomplete="number"
-                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="8728" />
                         </div>
                         <div>
-                            <label for="visitors"
-                                class="block mb-1.5 text-sm font-medium text-heading">CONTRASEÑA*</label>
+                            <label for="pass"
+                                class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">CONTRASEÑA*</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
+                                        stroke-width="1.5" stroke="currentColor"
+                                        class="size-5 text-slate-400 dark:text-slate-500">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                     </svg>
-
                                 </div>
+                                <input type="password" id="pass" v-model="form.pass" autocomplete="new-password"
+                                    class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                                    placeholder="•••••" />
                             </div>
-                            <input type="password" v-model="form.pass" autocomplete="new-password"
-                                class="text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="•••••" />
-                            <p v-if="hasError('pass')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('pass') }}
-                            </p>
+                            <p v-if="hasError('pass')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{
+                                getErrorMessage('pass') }}</p>
                         </div>
                     </div>
-
-
-
-                    <!-- <h2 class="pb-1">Estado</h2>
-                    <div class="grid grid-cols-6 pb-8 ">
-
-                        <div>
-                            <input v-model="form.status" id="default-radio-1" type="radio" value="activo"
-                                name="default-radio"
-                                class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
-                            <label for="default-radio-1"
-                                class="select-none ms-2 text-sm font-medium text-heading">Activo</label>
-                        </div>
-                        <div>
-                            <input v-model="form.status" id="default-radio-2" type="radio" value="inactivo"
-                                name="default-radio"
-                                class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
-                            <label for="default-radio-2"
-                                class="select-none ms-2 text-sm font-medium text-heading">Inactivo</label>
-                        </div>
-
-                    </div> -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
-
-                        </div>
-                        <div>
-                            <PrimaryButton class="w-full" @submit.prevent="save">Guardar</PrimaryButton>
-                        </div>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
+                        <PrimaryButton class="w-full" @submit.prevent="save">Guardar</PrimaryButton>
                     </div>
                 </form>
             </div>
         </Modal>
 
-
         <!-- MODAL PARA ELIMINAR DATOS -->
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
-                    <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div
+                    class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel"
+                        class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+                            stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-col gap-4 pb-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 pt-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-20 text-red-600">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Está por eliminar el siguiente NAS:
-                            </p>
-                            <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ eform.nasname }} <span class="text-gray-500 font-medium">({{ eform.shortname
-                                }})</span>
-                            </p>
-                            <p class="mt-3 text-sm text-red-600">
-                                Esta acción no se puede deshacer.
-                            </p>
-                        </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente NAS:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ eform.nasname }} <span
+                                class="text-slate-500 dark:text-slate-400">({{ eform.shortname }})</span></p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 p-1">
-                    <div>
-                        <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
-                    </div>
-                    <div>
-                        <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteNas">Eliminar
-                        </PrimaryButton>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteNas">Eliminar
+                    </PrimaryButton>
                 </div>
             </div>
         </Modal>

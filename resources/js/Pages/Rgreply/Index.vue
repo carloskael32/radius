@@ -367,11 +367,11 @@ const canGest = computed(() =>
 
 
         <!-- CABECERA  -->
-        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div class="flex items-start justify-between pb-4">
                 <div>
-                    <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Planes</h1>
-                    <p class="text-md text-gray-500">Configura los planes de servicio para tus clientes</p>
+                    <h1 class="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">Gestión de Planes</h1>
+                    <p class="text-md text-slate-500 dark:text-slate-400">Configura los planes de servicio para tus clientes</p>
                 </div>
                 <div v-if="canAdd" class="flex items-center gap-3">
                     <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
@@ -597,147 +597,131 @@ const canGest = computed(() =>
 
         <!-- MODAL PARA FORMULARIO DE REGISTRO Y EDITAR GRUPOS DE PLANES DE SERVICIO -->
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-4">
-                    <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
-                    <button @click="closeModalForm" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-6 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ title }}</h2>
+                    <button @click="closeModalForm" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <form @submit.prevent="save">
-
-
-                    <div class="pb-6">
+                <form @submit.prevent="save" class="space-y-5">
+                    <div class="pb-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre de Plan*
-                            </label>
+                            <label for="groupname" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nombre de Plan*</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
-                                    </svg>
-
-                                </div>
-                            </div>
-                            <input type="text" name="plan" v-model="form.groupname" id="plan"
-                                class="bext-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs rounded-md"
-                                placeholder="premiun" required />
-                        </div>
-
-                    </div>
-                    <div class="grid grid-cols-2 gap-4 pb-6">
-                        <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Velocidad
-                                Descarga*</label>
-                            <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                                     </svg>
                                 </div>
-                            </div>
-                            <div class="flex">
-                                <input type="number" v-model="form.valued"
-                                    class="bext-heading text-sm focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-s-md"
-                                    placeholder="50" required />
-                                <select for v-model="form.navd" class=" rounded-e-md py-1" required>
-                                    <option value="">Selecciona</option>
-                                    <option value="K">KB</option>
-                                    <option value="M">MB</option>
-                                    <option value="G">GB</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Velocidad
-                                Subida* </label>
-                            <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5 text-gray-500">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                                    </svg>
-
-                                </div>
-                            </div>
-                            <div class="flex">
-                                <input type="number" v-model="form.valueu"
-                                    class="bext-heading text-sm focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9  rounded-s-md"
-                                    placeholder="50" required />
-                                <select v-model="form.navu" class=" rounded-e-md py-1" required>
-                                    <option value="">Selecciona</option>
-                                    <option value="K">KB</option>
-                                    <option value="M">MB</option>
-                                    <option value="G">GB</option>
-                                </select>
+                                <input id="groupname" type="text" name="plan" v-model="form.groupname" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="premiun" required />
                             </div>
                         </div>
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
-
+                            <label for="valued" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Velocidad Descarga*</label>
+                            <div class="relative">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                    </svg>
+                                </div>
+                                <div class="flex">
+                                    <input id="valued" type="number" v-model="form.valued" class="block w-full rounded-s-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="50" required />
+                                    <select v-model="form.navd" class="rounded-e-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200" required>
+                                        <option value="">Selecciona</option>
+                                        <option value="K">KB</option>
+                                        <option value="M">MB</option>
+                                        <option value="G">GB</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
                         <div>
-                            <PrimaryButton class="w-full" type="submit">Guardar</PrimaryButton>
+                            <label for="valueu" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Velocidad Subida*</label>
+                            <div class="relative">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                                    </svg>
+                                </div>
+                                <div class="flex">
+                                    <input id="valueu" type="number" v-model="form.valueu" class="block w-full rounded-s-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="50" required />
+                                    <select v-model="form.navu" class="rounded-e-xl border border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200" required>
+                                        <option value="">Selecciona</option>
+                                        <option value="K">KB</option>
+                                        <option value="M">MB</option>
+                                        <option value="G">GB</option>
+                                    </select>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
+                        <PrimaryButton class="w-full" type="submit">Guardar</PrimaryButton>
                     </div>
                 </form>
             </div>
         </Modal>
 
-
-        <!-- MODAL PARA ELIMINAR  PLANES DE SERVICIO -->
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
-                    <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-col gap-4 pb-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 pt-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-20 text-red-600">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Está por eliminar el siguiente Plan de Servicio:
-                            </p>
-                            <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ eform.groupname }}
-                            </p>
-                            <p class="mt-3 text-sm text-red-600">
-                                Esta acción no se puede deshacer.
-                            </p>
-                        </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente Plan de Servicio:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ eform.groupname }}</p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 p-1">
-                    <div>
-                        <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <DangerButton class="w-full" @click="deletrgroup">Eliminar</DangerButton>
+                </div>
+            </div>
+        </Modal>
+
+        <Modal :show="showModalDelClient" @close="closeModalDel" maxWidth="md">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
                     </div>
-                    <div>
-                        <DangerButton class="w-full" @click="deletrgroup">Eliminar
-                        </DangerButton>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente cliente:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ Clform.username }} <span class="text-slate-500 dark:text-slate-400">({{ Clform.id || 'ninguno' }})</span></p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="DelteClient">Eliminar</PrimaryButton>
                 </div>
             </div>
         </Modal>
@@ -745,147 +729,105 @@ const canGest = computed(() =>
 
         <!-- MODAL PARA ADICIONAR O ELIMINAR CLIENTES A GRUPOS  DE SERVICIO -->
         <Modal :show="showModalAdd" @close="closeModalAdd" maxWidth="xxxl">
-            <div class="p-5 bg-gradient-to-br from-slate-50 via-white to-indigo-50">
-                <div class="mb-4 flex items-center justify-between rounded-2xl border border-indigo-100 bg-white/80 px-4 py-3 shadow-sm">
+            <div class="bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-5 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+                <div class="mb-4 flex items-center justify-between rounded-2xl border border-indigo-100 bg-white/80 px-4 py-3 shadow-sm dark:border-indigo-500/40 dark:bg-slate-900/80">
                     <div class="flex flex-1 items-center justify-center gap-3">
-                      
-                        <p class="text-2xl uppercase text-gray-800"><span class="font-semibold">{{
-                            modalData.groupName }}</span></p>
+                        <p class="text-2xl uppercase text-slate-800 dark:text-slate-100"><span class="font-semibold">{{ modalData.groupName }}</span></p>
                     </div>
 
-                    <button @click="closeModalAdd"
-                        class="rounded-md bg-red-600 p-1 text-white shadow-sm hover:bg-red-500 active:bg-red-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-5">
+                    <button @click="closeModalAdd" class="rounded-md bg-red-600 p-1 text-white shadow-sm hover:bg-red-500 active:bg-red-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <hr class="w-full h-0.5 bg-gradient-to-r from-indigo-200 via-slate-200 to-transparent mt-1 mb-4">
+                <hr class="mt-1 mb-4 h-0.5 w-full bg-gradient-to-r from-indigo-200 via-slate-200 to-transparent dark:from-indigo-500/40 dark:via-slate-600 dark:to-transparent">
 
-                <!-- INDICADOR DE CARGA -->
                 <div v-if="modalData.loading" class="flex items-center justify-center py-8">
                     <div class="flex items-center gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6 animate-spin text-blue-600">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.995-1.465" />
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 animate-spin text-blue-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.995-1.465" />
                         </svg>
-                        <span class="text-gray-600">Cargando datos...</span>
+                        <span class="text-slate-600 dark:text-slate-300">Cargando datos...</span>
                     </div>
                 </div>
 
-
-                <!-- CONTENIDO CUANDO LOS DATOS ESTÁN CARGADOS -->
                 <div v-else class="pb-6">
-
-                    <!-- LISTA DE CLIENTES -->
-                    <div v-if="modalData.clients && modalData.clients.length > 0 || modalData.clsngr && modalData.clsngr.length > 0"
-                        class="space-y-3">
-
-                        <!-- BUSCADOR -->
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
-
+                    <div v-if="modalData.clients && modalData.clients.length > 0 || modalData.clsngr && modalData.clsngr.length > 0" class="space-y-3">
+                        <div class="mb-2 flex flex-col items-start justify-between md:flex-row md:items-center">
                             <IconField iconPosition="left" class="w-full md:w-64">
                                 <InputIcon>
                                     <i class="pi pi-search" />
                                 </InputIcon>
-                                <InputText v-model="filters['global'].value" placeholder="Buscar cliente..."
-                                    class="w-full pl-8 rounded-lg" />
+                                <InputText v-model="filters['global'].value" placeholder="Buscar cliente..." class="w-full rounded-lg pl-8 dark:bg-slate-900 dark:text-slate-100" />
                             </IconField>
-
                         </div>
 
-
                         <div class="grid grid-cols-2 gap-2">
-
-
                             <div>
-                                <div class="mb-2 flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-medium text-gray-700">
+                                <div class="mb-2 flex items-center justify-between rounded-xl border border-blue-100 bg-blue-50 px-3 py-2 text-sm font-medium text-slate-700 dark:border-blue-500/40 dark:bg-blue-500/10 dark:text-slate-200">
                                     <span>Clientes registrados</span>
-                                    <span class="rounded-full bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white">{{
-                                        filteredClients.length
-                                    }}</span>
+                                    <span class="rounded-full bg-blue-600 px-2.5 py-0.5 text-xs font-bold text-white">{{ filteredClients.length }}</span>
                                 </div>
-                                <div class="max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-                                    <div v-for="client in filteredClients" :key="client.id"
-                                        class="flex items-center justify-between border-b border-gray-100 p-3 transition hover:bg-blue-50/60">
+                                <div class="max-h-96 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                                    <div v-for="client in filteredClients" :key="client.id" class="flex items-center justify-between border-b border-slate-200 p-3 transition hover:bg-blue-50/60 dark:border-slate-700 dark:hover:bg-slate-800/80">
                                         <div class="flex items-center gap-3">
-                                            <!--  <input type="checkbox" :id="`client-${client.id}`" :value="client.username"
-                                                v-model="selectedClients" class="rounded" /> -->
                                             <div>
-                                                <label :for="`client-${client.id}`"
-                                                    class="font-medium text-gray-900 cursor-pointer">
+                                                <label :for="`client-${client.id}`" class="cursor-pointer font-medium text-slate-900 dark:text-slate-100">
                                                     {{ client.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">
                                                     {{ client.nombre_completo || 'Sin nombre' }}
                                                 </p>
                                             </div>
                                         </div>
-                                        <button @click="openModalDelClient(client)"
-                                            class="inline-flex items-center justify-center p-2 rounded-md hover:bg-red-100 active:bg-red-200">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                                stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                                        <button @click="openModalDelClient(client)" class="inline-flex items-center justify-center rounded-md p-2 hover:bg-red-100 active:bg-red-200 dark:hover:bg-red-500/10">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="h-5 w-5 text-red-600">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                                             </svg>
                                         </button>
                                     </div>
                                 </div>
                             </div>
                             <div>
-                                <div class="mb-2 flex items-center justify-between rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm font-medium text-gray-700">
+                                <div class="mb-2 flex items-center justify-between rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-sm font-medium text-slate-700 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-slate-200">
                                     <span>Clientes sin grupo(plan)</span>
-                                    <span class="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-bold text-white">{{
-                                        filteredClientsNoGroup.length
-                                    }}</span>
+                                    <span class="rounded-full bg-emerald-600 px-2.5 py-0.5 text-xs font-bold text-white">{{ filteredClientsNoGroup.length }}</span>
                                 </div>
-                                <div class="max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-sm">
-                                    <div v-for="csgrp in filteredClientsNoGroup" :key="csgrp.id"
-                                        class="flex items-center justify-between border-b border-gray-100 p-3 transition hover:bg-emerald-50/60">
+                                <div class="max-h-96 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                                    <div v-for="csgrp in filteredClientsNoGroup" :key="csgrp.id" class="flex items-center justify-between border-b border-slate-200 p-3 transition hover:bg-emerald-50/60 dark:border-slate-700 dark:hover:bg-slate-800/80">
                                         <div class="flex items-center gap-3">
-                                            <input type="checkbox" :id="`csgrp-${csgrp.id}`" :value="csgrp.username"
-                                                v-model="selectedClientsNoGroup" class="rounded" />
+                                            <input type="checkbox" :id="`csgrp-${csgrp.id}`" :value="csgrp.username" v-model="selectedClientsNoGroup" class="rounded" />
                                             <div>
-                                                <label :for="`csgrp-${csgrp.id}`"
-                                                    class="font-medium text-gray-900 cursor-pointer">
+                                                <label :for="`csgrp-${csgrp.id}`" class="cursor-pointer font-medium text-slate-900 dark:text-slate-100">
                                                     {{ csgrp.username }}
                                                 </label>
-                                                <p class="text-xs text-gray-500">
+                                                <p class="text-xs text-slate-500 dark:text-slate-400">
                                                     {{ csgrp.nombre_completo || 'Sin nombre' }}
                                                 </p>
                                             </div>
                                         </div>
-                                        <span v-if="csgrp.value === 'morosos'"
-                                            class="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">
+                                        <span v-if="csgrp.value === 'morosos'" class="rounded bg-red-100 px-2 py-1 text-xs text-red-700 dark:bg-red-500/15 dark:text-red-300">
                                             {{ csgrp.plan }}
                                         </span>
-                                        <span v-else class="text-xs px-2 py-1 bg-green-100 text-green-700 rounded">
+                                        <span v-else class="rounded bg-green-100 px-2 py-1 text-xs text-green-700 dark:bg-green-500/15 dark:text-green-300">
                                             {{ 'activo' }}
                                         </span>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
-
-
                     </div>
 
-                    <!-- MENSAJE SI NO HAY CLIENTES -->
-                    <div v-else class="text-center py-8">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-12 mx-auto text-gray-300 mb-3">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                    <div v-else class="py-8 text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="mx-auto mb-3 size-12 text-slate-300 dark:text-slate-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
                         </svg>
-                        <p class="text-gray-500">No hay clientes disponibles</p>
+                        <p class="text-slate-500 dark:text-slate-400">No hay clientes disponibles</p>
                     </div>
                 </div>
 
-                <!-- BOTONES DE ACCIÓN -->
-                <div class="grid grid-cols-2 gap-4 pt-4 border-t border-gray-200">
+                <div class="grid grid-cols-2 gap-4 border-t border-slate-200 pt-4 dark:border-slate-700">
                     <SecondaryButton class="w-full" @click="closeModalAdd">Cerrar</SecondaryButton>
                     <PrimaryButton class="w-full" :disabled="modalData.loading" @click="saveClientsToGroup">
                         Guardar Clientes Seleccionados
@@ -897,57 +839,37 @@ const canGest = computed(() =>
 
         <!-- MODAL PARA ELIMINAR CLIENTE DEL GRUPO DE SERVICIO -->
         <Modal :show="showModalDelClient" @close="closeModalDel" maxWidth="md">
-            <div class="p-5 bg-gradient-to-br from-red-50 via-white to-rose-50">
-                <div class="flex items-center justify-between pb-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
                     <div class="flex items-center gap-3">
-                        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-red-600">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                             </svg>
                         </span>
-                        <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
+                        <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
                     </div>
-                    <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-col gap-4 pb-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 pt-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-20 text-red-600">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Está por eliminar el siguiente cliente:
-                            </p>
-                            <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ Clform.username }} <span class="text-gray-500 font-medium">({{ Clform.id ||
-                                    'ninguno'
-                                }})</span>
-                            </p>
-                            <p class="mt-3 text-sm text-red-600">
-                                Esta acción no se puede deshacer.
-                            </p>
-                        </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente cliente:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ Clform.username }} <span class="text-slate-500 dark:text-slate-400">({{ Clform.id || 'ninguno' }})</span></p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4 p-1">
-                    <div>
-                        <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
-                    </div>
-                    <div>
-                        <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="DelteClient">Eliminar
-                        </PrimaryButton>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="DelteClient">Eliminar</PrimaryButton>
                 </div>
             </div>
         </Modal>

@@ -52,71 +52,68 @@ const props = defineProps({
 
     <AuthenticatedLayout>
 
-        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-            <div class="flex items-start justify-between pb-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div class="flex items-start justify-between gap-4 pb-5">
                 <div>
-                    <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de LOGs</h1>
-                    <p class="text-sm text-gray-500">Numero de LOG's: <span class="font-medium text-gray-700">{{
+                    <h1 class="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">Gestión de LOGs</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Numero de LOG's: <span class="font-semibold text-slate-700 dark:text-slate-200">{{
                         Object.keys(logs).length }}</span></p>
                 </div>
 
             </div>
 
-            <!-- CUERPO -->
-            <div class="w-full overflow-hidden ">
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <div class="w-full overflow-hidden">
+                <div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
 
                     <DataTable :value="logs" v-model:filters="filters" ref="dt" selectionMode="single" size="small"
                         :globalFilterFields="['log_name', 'description']" paginator :rows="10"
                         :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}"
+                        class="dark:bg-slate-950">
 
                         <template #header>
-                            <!-- Filtro de búsqueda -->
-                            <div
-                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                            <div class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80 md:flex-row md:items-center md:justify-between">
                                 <div class="w-full md:w-auto">
-                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                    <IconField iconPosition="left" class="w-full md:w-72">
                                         <InputIcon>
-                                            <i class="pi pi-search" />
+                                            <i class="pi pi-search text-slate-400 dark:text-slate-500" />
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Buscar log..."
-                                            class="w-full pl-8 rounded-lg" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-9 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                     </IconField>
                                 </div>
 
-                                <!-- Botones de exportación -->
                                 <div class="flex gap-2">
                                     <Button label="📊 Excel" @click="exportCSV" size="large" raised
-                                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm" />
+                                        class="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500" />
                                 </div>
                             </div>
                         </template>
 
 
                         <Column field="log_name" sortable header="menu"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
                         <Column field="description" sortable header="evento"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
                         <Column field="autor_nombre" header="autor"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
 
                         </Column>
                         <Column field="properties" sortable header="acciones realizadas"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
 
                       
                         <Column field="created_at" sortable header="fecha"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300">
+                            headerClass="border border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                            bodyClass="border border-slate-200 bg-white text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
                         </Column>
 
 

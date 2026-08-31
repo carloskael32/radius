@@ -256,15 +256,15 @@ const canEdit = computed(() =>
     <Head title="User PPPoE" />
 
     <AuthenticatedLayout>
-        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
-            <div class="flex items-start justify-between pb-4">
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/80 dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
+            <div class="flex items-start justify-between gap-4 pb-5">
                 <div>
-                    <h1 class="mb-1 text-2xl font-semibold text-gray-900">Gestión de Clientes PPPoE</h1>
-                    <p class="text-sm text-gray-500">Manage users: <span class="font-medium text-gray-700">{{
+                    <h1 class="mb-1 text-2xl font-semibold text-slate-900 dark:text-slate-100">Gestión de Clientes PPPoE</h1>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">Manage users: <span class="font-semibold text-slate-700 dark:text-slate-200">{{
                         Object.keys(clients).length }}</span> usuarios</p>
                 </div>
                 <div v-if="canAdd" class="flex items-center gap-3">
-                    <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2">
+                    <PrimaryButton @click="openModalForm(1)" class="flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-500 dark:bg-indigo-500 dark:hover:bg-indigo-400">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
                             <path fill-rule="evenodd"
                                 d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-11.25a.75.75 0 0 0-1.5 0v2.5h-2.5a.75.75 0 0 0 0 1.5h2.5v2.5a.75.75 0 0 0 1.5 0v-2.5h2.5a.75.75 0 0 0 0-1.5h-2.5v-2.5Z"
@@ -281,57 +281,56 @@ const canEdit = computed(() =>
 
 
             <!-- CUERPO -->
-            <div class="w-full overflow-hidden ">
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <div class="w-full overflow-hidden">
+                <div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
                     <DataTable :value="clients" v-model:filters="filters" ref="dt" selectionMode="single"
                         :globalFilterFields="['username', 'nombre_completo', 'email', 'telefono', 'direccion', 'estado', 'plan']"
                         paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
                         paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
-                        currentPageReportTemplate="{first} a {last} de {totalRecords}">
+                        currentPageReportTemplate="{first} a {last} de {totalRecords}"
+                        class="dark:bg-slate-950">
                         <template #header>
-                            <!-- Filtro de búsqueda -->
-                            <div
-                                class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                            <div class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80 md:flex-row md:items-center md:justify-between">
                                 <div class="w-full md:w-auto">
-                                    <IconField iconPosition="left" class="w-full md:w-64">
+                                    <IconField iconPosition="left" class="w-full md:w-72">
                                         <InputIcon>
-                                            <i class="pi pi-search" />
+                                            <i class="pi pi-search text-slate-400 dark:text-slate-500" />
                                         </InputIcon>
                                         <InputText v-model="filters['global'].value" placeholder="Buscar cliente..."
-                                            class="w-full pl-8 rounded-lg" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-9 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                     </IconField>
                                 </div>
 
-                                <!-- Botones de exportación excel -->
                                 <button type="button" @click="exportCSV"
-                                    class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">📊
-                                    Excel</button>
+                                    class="inline-flex items-center justify-center rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500">
+                                    📊 Excel
+                                </button>
                             </div>
                         </template>
 
                         <Column field="username" sortable header="username"
-                            headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="nombre_completo" sortable header="Nombre completo"
-                            headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="email" sortable header="correo"
-                            headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="telefono" sortable header="telefono"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column field="direccion" sortable header="direccion"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
                         <Column v-if="canEdit" field="estado" sortable header="estado"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300 text-center">
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
+                            bodyClass="border border-gray-300">
                             <template #body="{ data }">
                                 <div class="flex items-center justify-center gap-3">
                                     <label class="flex items-center cursor-pointer">
@@ -345,14 +344,14 @@ const canEdit = computed(() =>
                                                 :class="rowStates[data.id] ? 'translate-x-6 bg-white' : 'bg-white'">
                                             </div>
                                         </div>
-                                        <span class="ml-3 text-gray-700">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
+                                        <span class="ml-3 text-black dark:text-white">{{ rowStates[data.id] ? 'Activo' : 'Inactivo'
                                         }}</span>
                                     </label>
                                 </div>
                             </template>
                         </Column>
                         <Column field="plan" sortable header="plan"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                             <!-- <template #body="{ data }">
                                 <span v-if="data.plan"
@@ -374,13 +373,13 @@ const canEdit = computed(() =>
 
                         </Column>
                         <Column field="observaciones" sortable header="observaciones"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                           headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                             bodyClass="border border-gray-300">
                         </Column>
 
                         <Column v-if="canEdit || canDelete" header="acciones" #body="slotProps"
-                            headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                            bodyClass="border border-gray-300 text-center">
+                         headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
+                            bodyClass="border border-gray-300">
 
                             <div class="flex gap-2 items-center justify-center">
                                 <!-- BOTON PARA VER MAS DETALLES DEL CLIENTE-->
@@ -427,217 +426,118 @@ const canEdit = computed(() =>
 
         <!-- MODAL PARA FORMULARIO DE REGISTRO Y MODIFICACION -->
         <Modal :show="showModalForm" @close="closeModalForm" maxWidth="xl">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-4">
-                    <h2 class="text-lg font-medium text-gray-900">{{ title }}</h2>
-                    <button @click="closeModalForm" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-6 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">{{ title }}</h2>
+                    <button @click="closeModalForm" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                <form @submit.prevent="save">
-
-
-                    <div class="grid grid-cols-3 gap-3 pb-6">
+                <form @submit.prevent="save" class="space-y-5">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre de
-                                usuario</label>
+                            <label for="username" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nombre de usuario</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path
-                                            d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
-                                    </svg>
-
-                                </div>
-                            </div>
-                            <input type="text" id="username" v-model="form.username"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="user1" />
-                            <p v-if="hasError('username')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('username') }}
-                            </p>
-                        </div>
-                        <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Plan de
-                                Servicio</label>
-                            <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path
-                                            d="M16.555 5.412a8.028 8.028 0 0 0-3.503-2.81 14.899 14.899 0 0 1 1.663 4.472 8.547 8.547 0 0 0 1.84-1.662ZM13.326 7.825a13.43 13.43 0 0 0-2.413-5.773 8.087 8.087 0 0 0-1.826 0 13.43 13.43 0 0 0-2.413 5.773A8.473 8.473 0 0 0 10 8.5c1.18 0 2.304-.24 3.326-.675ZM6.514 9.376A9.98 9.98 0 0 0 10 10c1.226 0 2.4-.22 3.486-.624a13.54 13.54 0 0 1-.351 3.759A13.54 13.54 0 0 1 10 13.5c-1.079 0-2.128-.127-3.134-.366a13.538 13.538 0 0 1-.352-3.758ZM5.285 7.074a14.9 14.9 0 0 1 1.663-4.471 8.028 8.028 0 0 0-3.503 2.81c.529.638 1.149 1.199 1.84 1.66ZM17.334 6.798a7.973 7.973 0 0 1 .614 4.115 13.47 13.47 0 0 1-3.178 1.72 15.093 15.093 0 0 0 .174-3.939 10.043 10.043 0 0 0 2.39-1.896ZM2.666 6.798a10.042 10.042 0 0 0 2.39 1.896 15.196 15.196 0 0 0 .174 3.94 13.472 13.472 0 0 1-3.178-1.72 7.973 7.973 0 0 1 .615-4.115ZM10 15c.898 0 1.778-.079 2.633-.23a13.473 13.473 0 0 1-1.72 3.178 8.099 8.099 0 0 1-1.826 0 13.47 13.47 0 0 1-1.72-3.178c.855.151 1.735.23 2.633.23ZM14.357 14.357a14.912 14.912 0 0 1-1.305 3.04 8.027 8.027 0 0 0 4.345-4.345c-.953.542-1.971.981-3.04 1.305ZM6.948 17.397a8.027 8.027 0 0 1-4.345-4.345c.953.542 1.971.981 3.04 1.305a14.912 14.912 0 0 0 1.305 3.04Z" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
                                     </svg>
                                 </div>
+                                <input type="text" id="username" v-model="form.username" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="user1" />
                             </div>
-
-
-                            <select v-model="form.plan"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md">
-                                <option value="">Selecciona</option>
-                                <option v-for="g in grupos" key="g.id" :value="g.groupname">{{ g.groupname }}</option>
-                            </select>
-                            <p v-if="hasError('plan')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('plan') }}
-                            </p>
+                            <p v-if="hasError('username')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('username') }}</p>
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Clave de
-                                acceso</label>
+                            <label for="plan" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Plan de servicio</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                        stroke-width="1.5" stroke="currentColor" class="size-5">
-                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                            d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path d="M16.555 5.412a8.028 8.028 0 0 0-3.503-2.81 14.899 14.899 0 0 1 1.663 4.472 8.547 8.547 0 0 0 1.84-1.662ZM13.326 7.825a13.43 13.43 0 0 0-2.413-5.773 8.087 8.087 0 0 0-1.826 0 13.43 13.43 0 0 0-2.413 5.773A8.473 8.473 0 0 0 10 8.5c1.18 0 2.304-.24 3.326-.675ZM6.514 9.376A9.98 9.98 0 0 0 10 10c1.226 0 2.4-.22 3.486-.624a13.54 13.54 0 0 1-.351 3.759A13.54 13.54 0 0 1 10 13.5c-1.079 0-2.128-.127-3.134-.366a13.538 13.538 0 0 1-.352-3.758ZM5.285 7.074a14.9 14.9 0 0 1 1.663-4.471 8.028 8.028 0 0 0-3.503 2.81c.529.638 1.149 1.199 1.84 1.66ZM17.334 6.798a7.973 7.973 0 0 1 .614 4.115 13.47 13.47 0 0 1-3.178 1.72 15.093 15.093 0 0 0 .174-3.939 10.043 10.043 0 0 0 2.39-1.896ZM2.666 6.798a10.042 10.042 0 0 0 2.39 1.896 15.196 15.196 0 0 0 .174 3.94 13.472 13.472 0 0 1-3.178-1.72 7.973 7.973 0 0 1 .615-4.115ZM10 15c.898 0 1.778-.079 2.633-.23a13.473 13.473 0 0 1-1.72 3.178 8.099 8.099 0 0 1-1.826 0 13.47 13.47 0 0 1-1.72-3.178c.855.151 1.735.23 2.633.23ZM14.357 14.357a14.912 14.912 0 0 1-1.305 3.04 8.027 8.027 0 0 0 4.345-4.345c-.953.542-1.971.981-3.04 1.305ZM6.948 17.397a8.027 8.027 0 0 1-4.345-4.345c.953.542 1.971.981 3.04 1.305a14.912 14.912 0 0 0 1.305 3.04Z" />
                                     </svg>
                                 </div>
+                                <select id="plan" v-model="form.plan" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100">
+                                    <option value="">Selecciona</option>
+                                    <option v-for="g in grupos" :key="g.id" :value="g.groupname">{{ g.groupname }}</option>
+                                </select>
                             </div>
-                            <input type="text" v-model="form.password_radius"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="246810" />
-                            <p v-if="hasError('password_radius')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('password_radius') }}
-                            </p>
+                            <p v-if="hasError('plan')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('plan') }}</p>
                         </div>
-
+                        <div>
+                            <label for="password_radius" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Clave de acceso</label>
+                            <div class="relative">
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="password_radius" v-model="form.password_radius" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="246810" />
+                            </div>
+                            <p v-if="hasError('password_radius')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('password_radius') }}</p>
+                        </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 pb-6">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nombre
-                                completo</label>
+                            <label for="nombre_completo" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nombre completo</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path fill-rule="evenodd"
-                                            d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Zm10.857 5.691a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 0 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z"
-                                            clip-rule="evenodd" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path fill-rule="evenodd" d="M3 3.5A1.5 1.5 0 0 1 4.5 2h6.879a1.5 1.5 0 0 1 1.06.44l4.122 4.12A1.5 1.5 0 0 1 17 7.622V16.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 3 16.5v-13Zm10.857 5.691a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 0 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
                                     </svg>
                                 </div>
+                                <input type="text" id="nombre_completo" v-model="form.nombre_completo" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="juan juanito perez" />
                             </div>
-                            <input type="text" v-model="form.nombre_completo"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="juan juanito perez" />
-
-                            <p v-if="hasError('nombre_completo')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('nombre_completo') }}
-                            </p>
+                            <p v-if="hasError('nombre_completo')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('nombre_completo') }}</p>
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Correo
-                                electronico</label>
+                            <label for="email" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Correo electronico</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path fill-rule="evenodd"
-                                            d="M5.404 14.596A6.5 6.5 0 1 1 16.5 10a1.25 1.25 0 0 1-2.5 0 4 4 0 1 0-.571 2.06A2.75 2.75 0 0 0 18 10a8 8 0 1 0-2.343 5.657.75.75 0 0 0-1.06-1.06 6.5 6.5 0 0 1-9.193 0ZM10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z"
-                                            clip-rule="evenodd" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path fill-rule="evenodd" d="M5.404 14.596A6.5 6.5 0 1 1 16.5 10a1.25 1.25 0 0 1-2.5 0 4 4 0 1 0-.571 2.06A2.75 2.75 0 0 0 18 10a8 8 0 1 0-2.343 5.657.75.75 0 0 0-1.06-1.06 6.5 6.5 0 0 1-9.193 0ZM10 7.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5Z" clip-rule="evenodd" />
                                     </svg>
-
-
                                 </div>
+                                <input type="text" id="email" v-model="form.email" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="user1@gmail.com" />
                             </div>
-                            <input type="text" v-model="form.email"
-                                class=" text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="user1@gmail.com" />
-                            <p v-if="hasError('email')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('email') }}
-                            </p>
+                            <p v-if="hasError('email')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('email') }}</p>
                         </div>
-
                     </div>
-
-
-                    <div class="grid grid-cols-2 gap-4 pb-6">
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
-                            <label for="visitors"
-                                class="block mb-1.5 text-sm font-medium text-heading">Direccion</label>
+                            <label for="direccion" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Direccion</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path fill-rule="evenodd"
-                                            d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z"
-                                            clip-rule="evenodd" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path fill-rule="evenodd" d="m9.69 18.933.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 0 0 .281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 1 0 3 9c0 3.492 1.698 5.988 3.355 7.584a13.731 13.731 0 0 0 2.273 1.765 11.842 11.842 0 0 0 .976.544l.062.029.018.008.006.003ZM10 11.25a2.25 2.25 0 1 0 0-4.5 2.25 2.25 0 0 0 0 4.5Z" clip-rule="evenodd" />
                                     </svg>
-
                                 </div>
+                                <input type="text" id="direccion" v-model="form.direccion" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="Z. perdidos" />
                             </div>
-                            <input type="text" v-model="form.direccion"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="Z. perdidos " />
-                            <p v-if="hasError('direccion')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('direccion') }}
-                            </p>
-
+                            <p v-if="hasError('direccion')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('direccion') }}</p>
                         </div>
                         <div>
-                            <label for="visitors" class="block mb-1.5 text-sm font-medium text-heading">Nro. telefono
-                            </label>
+                            <label for="telefono" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Nro. telefono</label>
                             <div class="relative">
-                                <div class="absolute p-2 start-0 flex items-center ps-2 pointer-events-none">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
-                                        class="size-5">
-                                        <path
-                                            d="M8 16.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z" />
-                                        <path fill-rule="evenodd"
-                                            d="M4 4a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V4Zm4-1.5v.75c0 .414.336.75.75.75h2.5a.75.75 0 0 0 .75-.75V2.5h1A1.5 1.5 0 0 1 14.5 4v12a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 16V4A1.5 1.5 0 0 1 7 2.5h1Z"
-                                            clip-rule="evenodd" />
+                                <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5 text-slate-400 dark:text-slate-500">
+                                        <path d="M8 16.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z" />
+                                        <path fill-rule="evenodd" d="M4 4a3 3 0 0 1 3-3h6a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V4Zm4-1.5v.75c0 .414.336.75.75.75h2.5a.75.75 0 0 0 .75-.75V2.5h1A1.5 1.5 0 0 1 14.5 4v12a1.5 1.5 0 0 1-1.5 1.5H7A1.5 1.5 0 0 1 5.5 16V4A1.5 1.5 0 0 1 7 2.5h1Z" clip-rule="evenodd" />
                                     </svg>
-
                                 </div>
+                                <input type="tel" id="telefono" v-model="form.telefono" class="block w-full rounded-xl border border-slate-300 bg-white py-2.5 ps-10 pr-3 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="77712312" />
                             </div>
-                            <input type="tel" v-model="form.telefono"
-                                class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 ps-9 shadow-xs placeholder:text-body rounded-md"
-                                placeholder="77712312" />
-                            <p v-if="hasError('telefono')" class="mt-1 text-sm text-red-600">
-                                {{ getErrorMessage('telefono') }}
-                            </p>
+                            <p v-if="hasError('telefono')" class="mt-1 text-sm text-red-600 dark:text-red-400">{{ getErrorMessage('telefono') }}</p>
                         </div>
-
                     </div>
-                    <div class="pb-6">
-                        <label for="visitors"
-                            class="block mb-1.5 text-sm font-medium text-heading">Observaciones</label>
-                        <textarea v-model="form.observaciones" rows="3"
-                            class="text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-2.5 py-2 shadow-xs placeholder:text-body rounded-md"
-                            placeholder="alguna observacion ?"></textarea>
+                    <div>
+                        <label for="observaciones" class="mb-1.5 block text-sm font-medium text-slate-700 dark:text-slate-200">Observaciones</label>
+                        <textarea id="observaciones" v-model="form.observaciones" rows="3" class="block w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 shadow-sm transition placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="alguna observacion ?"></textarea>
                     </div>
-
-
-                    <!-- RADIO BUTTON PARA EL ESTADO DEL CLIENTE -->
-                    <!-- <h2 class="pb-1">Estado</h2>
-                    <div class="grid grid-cols-6 pb-8 ">
-
-                        <div>
-                            <input v-model="form.estado" id="default-radio-1" type="radio" value="activo" name="activo"
-                                class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
-                            <label for="default-radio-1"
-                                class="select-none ms-2 text-sm font-medium text-heading">Activo</label>
-                        </div>
-                        <div>
-                            <input v-model="form.estado" id="default-radio-2" type="radio" value="inactivo"
-                                name="inactivo"
-                                class="w-4 h-4 text-neutral-primary border-default-medium bg-neutral-secondary-medium rounded-full checked:border-brand focus:ring-2 focus:outline-none focus:ring-brand-subtle border border-default appearance-none">
-                            <label for="default-radio-2"
-                                class="select-none ms-2 text-sm font-medium text-heading">Inactivo</label>
-                        </div>
-
-                    </div> -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
-
-                        </div>
-                        <div>
-                            <PrimaryButton class="w-full" type="submit">Guardar</PrimaryButton>
-                        </div>
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <SecondaryButton class="w-full" @click="closeModalForm">Cancelar</SecondaryButton>
+                        <PrimaryButton class="w-full" type="submit">Guardar</PrimaryButton>
                     </div>
                 </form>
             </div>
@@ -645,46 +545,30 @@ const canEdit = computed(() =>
 
         <!-- MODAL PARA ELIMINAR DATOS -->
         <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
-            <div class="p-5">
-                <div class="flex justify-between items-center pb-6">
-                    <h2 class="text-lg font-medium text-gray-900">Confirmar eliminación</h2>
-                    <button @click="closeModalDel" class="text-gray-400 hover:text-gray-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
-                <div class="flex flex-col gap-4 pb-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 pt-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="size-20 text-red-600">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-600 leading-relaxed">
-                                Está por eliminar el siguiente usuario:
-                            </p>
-                            <p class="mt-2 text-base font-semibold text-gray-900">
-                                {{ eform.nombre_completo }}
-                            </p>
-                            <p class="mt-3 text-sm text-red-600">
-                                Esta acción no se puede deshacer.
-                            </p>
-                        </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente usuario:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ eform.nombre_completo }}</p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
-                    </div>
-                    <div>
-                        <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteUser">Eliminar
-                        </PrimaryButton>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deleteUser">Eliminar</PrimaryButton>
                 </div>
             </div>
         </Modal>

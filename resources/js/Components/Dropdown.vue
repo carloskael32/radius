@@ -48,7 +48,6 @@ const open = ref(false);
             <slot name="trigger" />
         </div>
 
-        <!-- Full Screen Dropdown Overlay -->
         <div v-show="open" class="fixed inset-0 z-40" @click="open = false"></div>
 
         <transition
@@ -59,11 +58,11 @@ const open = ref(false);
             leave-from-class="scale-100 transform opacity-100"
             leave-to-class="scale-95 transform opacity-0">
             <div v-show="open"
-                 class="absolute z-50 mt-2 rounded-md shadow-lg"
+                 class="absolute z-50 mt-2 rounded-xl shadow-lg"
                  :class="[widthClass, alignmentClasses]"
                  style="display: none;"
                  @click="open = false">
-                <div class="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-md bg-white shadow-xl">
+                <div class="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-800">
                     <slot name="content" />
                 </div>
             </div>

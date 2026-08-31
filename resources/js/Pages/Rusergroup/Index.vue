@@ -216,17 +216,32 @@ const toggleUser = (user) => {
         </div>
 
         <!-- MODAL PARA ELIMINAR DATOS -->
-        <Modal :show="showModalDel" @close="closeModalDel">
-            <div class="p-6">
-                <p class="text-2xl text-gray-500">
-                    Are you sure detele to
-                    <span class="text-2xl font-medium text-gray-900">{{ uform.username }}</span>
-                    ?
-                </p>
-                <PrimaryButton @click="deluser">Yes, delete</PrimaryButton>
-            </div>
-            <div class="m-6 flex justify-end">
-                <SecondaryButton @click="closeModalDel">Cancel</SecondaryButton>
+        <Modal :show="showModalDel" @close="closeModalDel" maxWidth="md">
+            <div class="bg-slate-50 p-6 dark:bg-slate-950">
+                <div class="mb-5 flex items-center justify-between gap-3 border-b border-slate-200 pb-4 dark:border-slate-700">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Confirmar eliminación</h2>
+                    <button @click="closeModalDel" class="rounded-full p-2 text-slate-500 transition hover:bg-slate-200 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="flex gap-4 pb-6">
+                    <div class="flex-shrink-0 rounded-2xl bg-red-100 p-3 dark:bg-red-900/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-12 text-red-600 dark:text-red-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                        </svg>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-sm text-slate-600 dark:text-slate-300">Está por eliminar el siguiente usuario:</p>
+                        <p class="text-base font-semibold text-slate-900 dark:text-slate-100">{{ uform.username }}</p>
+                        <p class="text-sm text-red-600 dark:text-red-400">Esta acción no se puede deshacer.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <SecondaryButton class="w-full" @click="closeModalDel">Cancelar</SecondaryButton>
+                    <PrimaryButton class="w-full bg-red-600 hover:bg-red-700" @click="deluser">Eliminar</PrimaryButton>
+                </div>
             </div>
         </Modal>
 

@@ -48,7 +48,7 @@ const overallStatus = computed(() => {
     <AuthenticatedLayout>
     
 
-        <div class="py-6">
+        <div class="py-6 dark:bg-slate-950">
             <div class="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
                 <div class="overflow-hidden rounded-3xl border border-sky-100 bg-gradient-to-r from-sky-600 via-cyan-500 to-emerald-500 p-6 text-white shadow-lg">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -85,20 +85,20 @@ const overallStatus = computed(() => {
                     <div
                         v-for="service in services"
                         :key="service.name"
-                        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                        class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-900 dark:shadow-none"
                     >
                         <div class="flex items-start justify-between gap-3">
                             <div>
-                                <p class="text-sm font-medium text-slate-500">{{ service.label }}</p>
-                                <h3 class="mt-1 text-lg font-semibold text-slate-900">{{ service.name }}</h3>
+                                <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ service.label }}</p>
+                                <h3 class="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{{ service.name }}</h3>
                             </div>
                             <span
                                 class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold"
                                 :class="service.status === 'online'
-                                    ? 'bg-emerald-100 text-emerald-700'
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
                                     : service.status === 'warning'
-                                        ? 'bg-amber-100 text-amber-700'
-                                        : 'bg-rose-100 text-rose-700'"
+                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300'
+                                        : 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300'"
                             >
                                 {{ service.status === 'online' ? 'Conectado' : service.status === 'warning' ? 'Parcial' : 'Caído' }}
                             </span>
@@ -108,28 +108,28 @@ const overallStatus = computed(() => {
                             <div
                                 class="flex h-12 w-12 items-center justify-center rounded-2xl text-xl"
                                 :class="service.status === 'online'
-                                    ? 'bg-emerald-100 text-emerald-600'
+                                    ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-300'
                                     : service.status === 'warning'
-                                        ? 'bg-amber-100 text-amber-600'
-                                        : 'bg-rose-100 text-rose-600'"
+                                        ? 'bg-amber-100 text-amber-600 dark:bg-amber-500/15 dark:text-amber-300'
+                                        : 'bg-rose-100 text-rose-600 dark:bg-rose-500/15 dark:text-rose-300'"
                             >
                                 {{ service.icon }}
                             </div>
                             <div>
-                                <p class="text-sm font-medium text-slate-700">{{ service.detail }}</p>
-                                <p class="text-xs text-slate-500">Estado visual de monitoreo</p>
+                                <p class="text-sm font-medium text-slate-700 dark:text-slate-200">{{ service.detail }}</p>
+                                <p class="text-xs text-slate-500 dark:text-slate-400">Estado visual de monitoreo</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:shadow-none">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <h3 class="text-lg font-semibold text-slate-900">Mikrotiks</h3>
-                            <p class="text-sm text-slate-500">Lista de routers con indicador de conexión</p>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">Mikrotiks</h3>
+                            <p class="text-sm text-slate-500 dark:text-slate-400">Lista de routers con indicador de conexión</p>
                         </div>
-                        <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
+                        <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                             3/4 activos
                         </span>
                     </div>
@@ -138,15 +138,15 @@ const overallStatus = computed(() => {
                         <div
                             v-for="router in mikrotiks"
                             :key="router.name"
-                            class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 transition hover:border-sky-200 hover:bg-sky-50"
+                            class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 transition hover:border-sky-200 hover:bg-sky-50 dark:border-slate-700 dark:hover:border-sky-500/40 dark:hover:bg-slate-800/80"
                         >
                             <div class="flex items-center gap-3">
-                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-lg">
+                                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-lg dark:bg-slate-800">
                                     📡
                                 </div>
                                 <div>
-                                    <p class="font-medium text-slate-800">{{ router.name }}</p>
-                                    <p class="text-sm text-slate-500">{{ router.ip }}</p>
+                                    <p class="font-medium text-slate-800 dark:text-slate-100">{{ router.name }}</p>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ router.ip }}</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -156,7 +156,7 @@ const overallStatus = computed(() => {
                                 />
                                 <span
                                     class="text-sm font-semibold"
-                                    :class="router.status === 'online' ? 'text-emerald-600' : 'text-rose-600'"
+                                    :class="router.status === 'online' ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'"
                                 >
                                     {{ router.status === 'online' ? 'En línea' : 'Sin conexión' }}
                                 </span>
