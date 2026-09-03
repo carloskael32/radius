@@ -43,7 +43,7 @@ const isAdmin = computed(() =>
 
     <!-- Sidebar Navigation -->
     <div :class="$page.props.showingMobileMenu ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'"
-        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto border-r border-slate-200 bg-white/95 shadow-2xl shadow-slate-200/50 transition duration-300 transform dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-slate-950/30 lg:static lg:inset-0 lg:translate-x-0">
+        class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto border-r border-slate-200 bg-indigo-50 shadow-xl shadow-slate-400 transition duration-300 transform dark:border-slate-700 dark:bg-slate-900/95 dark:shadow-slate-950/30 lg:static lg:inset-0 lg:translate-x-0">
 
         <!-- Logo Section -->
         <div class="flex items-center justify-center  border-slate-200 px-4 py-6 dark:border-slate-700">

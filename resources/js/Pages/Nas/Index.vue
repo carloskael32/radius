@@ -303,8 +303,7 @@ const canEdit = computed(() =>
 
             <!-- CUERPO -->
             <div class="w-full overflow-hidden">
-                <div
-                    class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
+                <div class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
                     <DataTable :value="nas" v-model:filters="filters" ref="dt" selectionMode="single"
                         :globalFilterFields="['nasname', 'shortname', 'type', 'ports', 'secret', 'status', 'description']"
                         paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"

@@ -236,70 +236,141 @@ const successRate = computed(() => {
 
         <div class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                <div class="rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-4 shadow-sm transition hover:shadow-md dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
-                    <div class="flex items-start justify-between">
+                <!-- Total Usuarios -->
+                <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-blue-200 dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="mb-3 flex items-center gap-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-300">Total Clientes</span>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">
+                                    Total Clientes</span>
+
                             </div>
-                            <p class="text-4xl font-black text-slate-900 dark:text-slate-100">{{ props.totalClient }}</p>
+                            <p class="text-4xl font-black text-gray-900 dark:text-white">{{ props.totalClient }}</p>
+
                         </div>
-                        <div class="rounded-2xl bg-blue-500 p-3 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg></div>
+                        <div class="bg-blue-500 p-3 rounded-2xl shadow-lg">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                            </svg>
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-purple-50 p-4 shadow-sm transition hover:shadow-md dark:border-violet-500/40 dark:from-slate-900 dark:to-slate-800">
-                    <div class="flex items-start justify-between">
+                <!-- Total NAS -->
+                <div
+                    class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-purple-200  dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="mb-3 flex items-center gap-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-violet-600 dark:text-violet-300">Total NAS</span>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs font-bold text-purple-600 uppercase tracking-wider">Total
+                                    NAS</span>
+                                <!-- <span class="px-2 py-1 rounded-full text-xs font-semibold text-white bg-purple-500">Activos</span> -->
                             </div>
-                            <p class="text-4xl font-black text-slate-900 dark:text-slate-100">{{ props.totalNAS }}</p>
+                            <p class="text-4xl font-black text-gray-900 dark:text-white">{{ props.totalNAS }}</p>
+
                         </div>
-                        <div class="rounded-2xl bg-violet-500 p-3 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" /></svg></div>
+                        <div class="bg-purple-500 p-3 rounded-2xl shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M8.288 15.038a5.25 5.25 0 0 1 7.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 0 1 1.06 0Z" />
+                            </svg>
+
+                        </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-green-50 p-4 shadow-sm transition hover:shadow-md dark:border-emerald-500/40 dark:from-slate-900 dark:to-slate-800">
-                    <div class="flex items-start justify-between">
+                <!-- Usuarios Conectados -->
+                <div
+                    class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-green-200  dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="mb-3 flex items-center gap-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-300">Clientes Activos</span>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs font-bold text-green-600 uppercase tracking-wider">Clientes
+                                    Activos</span>
+
+
                             </div>
-                            <p class="text-4xl font-black text-slate-900 dark:text-slate-100">{{ props.connectedClient }}</p>
+
+                            <p class="text-4xl font-black text-gray-900 dark:text-white">{{ props.connectedClient }}</p>
+
                         </div>
-                        <div class="rounded-2xl bg-emerald-500 p-3 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-8 text-white"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg><span class="mt-2 inline-flex rounded-full bg-emerald-500 px-2 py-1 text-[10px] font-semibold text-white">{{ ((props.connectedClient / props.totalClient) * 100).toFixed(1) }}%</span></div>
+                        <div class="bg-green-500 p-3 rounded-2xl shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="size-8 text-white">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+
+                            <span class="rounded-full text-xs font-semibold text-white bg-green-500">{{
+                                ((props.connectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 to-red-50 p-4 shadow-sm transition hover:shadow-md dark:border-rose-500/40 dark:from-slate-900 dark:to-slate-800">
-                    <div class="flex items-start justify-between">
+                <!-- Usuarios Desconectados -->
+                <div
+                    class="bg-gradient-to-br from-red-50 to-red-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-red-200  dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="mb-3 flex items-center gap-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-rose-600 dark:text-rose-300">Clientes Inactivos</span>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs font-bold text-red-600 uppercase tracking-wider">Clientes
+                                    inactivos</span>
+
                             </div>
-                            <p class="text-4xl font-black text-slate-900 dark:text-slate-100">{{ props.disconnectedClient }}</p>
+                            <p class="text-4xl font-black text-gray-900 dark:text-white">{{ props.disconnectedClient }}</p>
+
                         </div>
-                        <div class="rounded-2xl bg-rose-500 p-3 shadow-lg"><svg class="size-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg><span class="mt-2 inline-flex rounded-full bg-rose-500 px-2 py-1 text-[10px] font-semibold text-white">{{ ((props.disconnectedClient / props.totalClient) * 100).toFixed(1) }}%</span></div>
+                        <div class="bg-red-500 p-3 rounded-2xl shadow-lg">
+                            <svg class="size-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12">
+                                </path>
+                            </svg>
+                            <span class="rounded-full text-xs font-semibold text-white bg-red-500">{{
+                                ((props.disconnectedClient / props.totalClient) * 100).toFixed(1) }}%</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-4 shadow-sm transition hover:shadow-md dark:border-amber-500/40 dark:from-slate-900 dark:to-slate-800">
-                    <div class="flex items-start justify-between">
+                <!-- Clientes Sin Grupo -->
+                <div
+                    class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-sm hover:shadow-md transition-all p-4 border border-orange-200  dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                    <div class="flex justify-between items-start">
                         <div class="flex-1">
-                            <div class="mb-3 flex items-center gap-2">
-                                <span class="text-xs font-bold uppercase tracking-wider text-amber-600 dark:text-amber-300">Clientes sin plan</span>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-xs font-bold text-orange-600 uppercase tracking-wider">clientes sin
+                                    plan</span>
+
                             </div>
-                            <p class="text-4xl font-black text-slate-900 dark:text-slate-100">{{ props.clientesSinGrupo }}</p>
+                            <p class="text-4xl font-black text-gray-900 dark:text-white">{{ props.clientesSinGrupo }}</p>
+
                         </div>
-                        <div class="rounded-2xl bg-amber-500 p-3 shadow-lg"><svg class="h-8 w-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg><span class="mt-2 inline-flex rounded-full bg-amber-500 px-2 py-1 text-[10px] font-semibold text-white">{{ ((props.clientesSinGrupo / props.totalClient) * 100).toFixed(1) }}%</span></div>
+                        <div class="bg-orange-500 p-3 rounded-2xl shadow-lg">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z">
+                                </path>
+                            </svg>
+                            <span class="rounded-full text-xs font-semibold text-white bg-orange-500">{{
+                                ((props.clientesSinGrupo / props.totalClient) * 100).toFixed(1) }}%</span>
+                        </div>
                     </div>
                 </div>
+
             </div>
 
+
+
+            <!-- CLIENTES EN LINEA Y FUERA DE LINEA -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
-                    <div class="mb-6">                        
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                    <div class="mb-6">
                         <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">🟢 Cientes en Linea</h3>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Hoy</p>
                     </div>
@@ -313,34 +384,53 @@ const successRate = computed(() => {
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-emerald-200 dark:divide-slate-700">
-                                <tr v-for="on in online" :key="on.username" class="hover:bg-emerald-50 dark:hover:bg-slate-800/80">
-                                    <td class="px-2 py-2 font-medium text-slate-800 dark:text-slate-100">{{ on.username }}</td>
-                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">{{ on.nasipaddress }}</td>
+                                <tr v-for="on in online" :key="on.username"
+                                    class="hover:bg-emerald-50 dark:hover:bg-slate-800/80">
+                                    <td class="px-2 py-2 font-medium text-slate-800 dark:text-slate-100">{{ on.username
+                                        }}
+                                    </td>
+                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">{{ on.nasipaddress
+                                        }}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6">
-                        <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">🔴 Cientes Fuera de Linea</h3>
+                        <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">🔴 Cientes Fuera de Linea
+                        </h3>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Hoy</p>
                     </div>
                     <div v-if="offline.length > 0" class="max-h-64 overflow-y-auto">
                         <table class="w-full text-sm">
                             <thead class="text-center bg-slate-100 dark:bg-slate-800">
-                                <tr>
-                                    <td class="px-2 py-2 font-semibold text-slate-700 dark:text-slate-200">Usuarios</td>
-                                    <td class="px-2 py-2 font-semibold text-slate-700 dark:text-slate-200">NAS</td>
-                                    <td class="px-2 py-2 font-semibold text-slate-700 dark:text-slate-200">Última Conexión</td>
+                                <tr class="bg-slate-100 uppercase tracking-wide text-slate-600 dark:text-white dark:bg-slate-800">
+                                    <td class="px-2 py-2 ">Usuarios</td>
+                                    <td class="px-2 py-2 ">NAS</td>
+                                    <td class="px-2 py-2 ">Última
+                                        Conexión
+                                    </td>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-rose-200 dark:divide-slate-700">
-                                <tr v-for="off in offline" :key="off.username" class="hover:bg-rose-50 dark:hover:bg-slate-800/80">
-                                    <td class="px-2 py-2 font-medium text-slate-800 dark:text-slate-100">{{ off.username }}</td>
-                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">{{ off.nasipaddress }}</td>
-                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">{{ off.acctstoptime }}</td>
+                                <tr v-for="off in offline" :key="off.username"
+                                    class="hover:bg-rose-50 dark:hover:bg-slate-800/80">
+                                    <td class="px-2 py-2 font-medium text-slate-800 dark:text-slate-100">
+                                        {{ off.username }}
+                                        
+                                    </td>
+                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">
+                                        {{ off.nasipaddress }}
+                                        
+                                    </td>
+                                    <td class="px-2 py-2 text-xs text-slate-600 dark:text-slate-300">
+                                        {{ off.acctstoptime }}
+                                        
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -349,54 +439,72 @@ const successRate = computed(() => {
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6">
                         <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">Conexiones</h3>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Últimos 7 días</p>
                     </div>
-                    <Chart type="line" :data="dailyConnectionsData" :options="dailyConnectionsOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="line" :data="dailyConnectionsData" :options="dailyConnectionsOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6">
                         <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">Tasa de Éxito</h3>
-                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ successRate }}% de conexiones exitosas</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">{{ successRate }}% de conexiones
+                            exitosas
+                        </p>
                     </div>
                     <div class="flex flex-col items-center">
-                        <Chart type="doughnut" :data="connectionAttemptsData" :options="connectionAttemptsOptions" class="w-full" style="height: 280px;" />
+                        <Chart type="doughnut" :data="connectionAttemptsData" :options="connectionAttemptsOptions"
+                            class="w-full" style="height: 280px;" />
                         <div class="mt-6 w-full space-y-3">
-                            <div class="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-500/30 dark:bg-emerald-500/10">
+                            <div
+                                class="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-3 dark:border-emerald-500/30 dark:bg-emerald-500/10">
                                 <div class="flex items-center gap-2">
                                     <div class="h-3 w-3 rounded-full bg-emerald-500"></div>
                                     <span class="text-sm text-slate-700 dark:text-slate-200">Exitosas</span>
                                 </div>
-                                <span class="font-black text-emerald-600 dark:text-emerald-400">{{ props.successfulAttempts.toLocaleString() }}</span>
+                                <span class="font-black text-emerald-600 dark:text-emerald-400">{{
+                                    props.successfulAttempts.toLocaleString() }}</span>
                             </div>
-                            <div class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-500/30 dark:bg-red-500/10">
+                            <div
+                                class="flex items-center justify-between rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-500/30 dark:bg-red-500/10">
                                 <div class="flex items-center gap-2">
                                     <div class="h-3 w-3 rounded-full bg-red-500"></div>
                                     <span class="text-sm text-slate-700 dark:text-slate-200">Fallidas</span>
                                 </div>
-                                <span class="font-black text-red-600 dark:text-red-400">{{ props.failedAttempts.toLocaleString() }}</span>
+                                <span class="font-black text-red-600 dark:text-red-400">{{
+                                    props.failedAttempts.toLocaleString()
+                                    }}</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6">
                         <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">Clientes por Plan</h3>
-                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Distribución total: {{ props.totalClient }} clientes</p>
+                        <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Distribución total: {{
+                            props.totalClient
+                            }}
+                            clientes</p>
                     </div>
-                    <Chart type="pie" :data="usersByGroupData" :options="usersByGroupOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="pie" :data="usersByGroupData" :options="usersByGroupOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
 
-                <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm transition hover:shadow-md dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6">
                         <h3 class="text-2xl font-black text-slate-900 dark:text-slate-100">Usuarios por NAS</h3>
                         <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Total de usuarios por Dispositivo</p>
                     </div>
-                    <Chart type="bar" :data="usersByNASData" :options="usersByNASOptions" class="w-full" style="height: 320px;" />
+                    <Chart type="bar" :data="usersByNASData" :options="usersByNASOptions" class="w-full"
+                        style="height: 320px;" />
                 </div>
             </div>
 

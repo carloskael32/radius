@@ -343,7 +343,8 @@ onMounted(() => {
     <AuthenticatedLayout>
         <div class="space-y-6">
             <!-- Encabezado -->
-            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+            <div
+                class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                 <h1 class="text-4xl font-bold text-slate-900 dark:text-slate-100">Reportes RADIUS</h1>
                 <p class="mt-1 text-slate-600 dark:text-slate-300">Análisis completo de tu infraestructura de red</p>
             </div>
@@ -367,39 +368,55 @@ onMounted(() => {
 
             <!-- 📊 ANCHO DE BANDA -->
             <div v-if="activeTab === 'bandwidth'" class="space-y-4">
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <div
+                    class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                     <div class="mb-6 flex items-center justify-between">
                         <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Consumo de Ancho de Banda</h2>
                     </div>
 
                     <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                        <div class="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-6 dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
+                        <div
+                            class="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 p-6 dark:border-blue-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Descargado (Input)</p>
-                                    <p class="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{{ bandwidthData?.totalInput }}</p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Descargado (Input)
+                                    </p>
+                                    <p class="mt-2 text-3xl font-bold text-blue-600 dark:text-blue-400">{{
+                                        bandwidthData?.totalInput }}</p>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-blue-400 opacity-50"
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 dark:border-emerald-500/40 dark:from-slate-900 dark:to-slate-800">
+                        <div
+                            class="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 dark:border-emerald-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Subido (Output)</p>
-                                    <p class="mt-2 text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ bandwidthData?.totalOutput }}</p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Subido (Output)
+                                    </p>
+                                    <p class="mt-2 text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{
+                                        bandwidthData?.totalOutput }}</p>
                                 </div>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-400 opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-emerald-400 opacity-50"
+                                    fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 11-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </div>
                         </div>
-                        <div class="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 p-6 dark:border-violet-500/40 dark:from-slate-900 dark:to-slate-800">
+                        <div
+                            class="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-violet-100 p-6 dark:border-violet-500/40 dark:from-slate-900 dark:to-slate-800">
                             <div class="flex items-center justify-between">
                                 <div>
-                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Total Combinado</p>
-                                    <p class="mt-2 text-3xl font-bold text-violet-600 dark:text-violet-400">{{ bandwidthData?.combined }}</p>
+                                    <p class="text-sm font-medium text-slate-600 dark:text-slate-300">Total Combinado
+                                    </p>
+                                    <p class="mt-2 text-3xl font-bold text-violet-600 dark:text-violet-400">{{
+                                        bandwidthData?.combined }}</p>
                                 </div>
                             </div>
                         </div>
@@ -410,34 +427,44 @@ onMounted(() => {
 
                 <!-- Top Consumer y Comparativo -->
                 <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
-                        <h3 class="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">Top 10 Usuarios Semanal</h3>
+                    <div
+                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                        <h3 class="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">Top 10 Usuarios Semanal
+                        </h3>
                         <div v-if="topConsumers && topConsumers.length > 0" class="max-h-96 overflow-y-auto">
                             <table class="w-full text-sm">
                                 <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                    <tr v-for="user in topConsumers.slice(0, 10)" :key="user.username" class="hover:bg-slate-50 dark:hover:bg-slate-800/80">
+                                    <tr v-for="user in topConsumers.slice(0, 10)" :key="user.username"
+                                        class="hover:bg-slate-50 dark:hover:bg-slate-800/80">
                                         <td class="px-3 py-2">
                                             <span v-if="user.rank === 1" class="text-lg">🥇</span>
                                             <span v-else-if="user.rank === 2" class="text-lg">🥈</span>
                                             <span v-else-if="user.rank === 3" class="text-lg">🥉</span>
-                                            <span v-else class="font-medium text-slate-700 dark:text-slate-200">{{ user.rank }}</span>
+                                            <span v-else class="font-medium text-slate-700 dark:text-slate-200">{{
+                                                user.rank }}</span>
                                         </td>
-                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{ user.username }}</td>
-                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">{{ user.combined }}</td>
+                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{
+                                            user.username }}</td>
+                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">
+                                            {{ user.combined }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                    <div
+                        class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
                         <h3 class="mb-4 text-lg font-bold text-slate-900 dark:text-slate-100">Últimos 12 Meses</h3>
                         <div v-if="monthlyComparison && monthlyComparison.length > 0" class="max-h-96 overflow-y-auto">
                             <table class="w-full text-sm">
                                 <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
-                                    <tr v-for="(month, idx) in monthlyComparison.slice(0, 12)" :key="idx" :class="idx === 0 ? 'bg-amber-50 dark:bg-amber-500/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/80'">
-                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{ month.period }}</td>
-                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">{{ month.combined }}</td>
+                                    <tr v-for="(month, idx) in monthlyComparison.slice(0, 12)" :key="idx"
+                                        :class="idx === 0 ? 'bg-amber-50 dark:bg-amber-500/10' : 'hover:bg-slate-50 dark:hover:bg-slate-800/80'">
+                                        <td class="px-3 py-2 font-medium text-slate-800 dark:text-slate-100">{{
+                                            month.period }}</td>
+                                        <td class="px-3 py-2 text-right font-bold text-violet-600 dark:text-violet-400">
+                                            {{ month.combined }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -446,29 +473,31 @@ onMounted(() => {
                 </div>
 
                 <!-- REPORTE POR USUARIO CON FECHA INICIO Y FIN -->
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg border border-gray-100 dark:border-slate-700 dark:bg-slate-900">
                     <form @submit.prevent="fetchUserBandwidthStats">
                         <div class="grid grid-cols-1 xl:grid-cols-5 gap-4 mb-4">
                             <div class="xl:col-span-2 grid grid-cols-1 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
+                                    <label
+                                        class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Usuario</label>
                                     <input v-model="bandwidthUsername" type="text" placeholder="Buscar usuario..."
-                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                                        class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                 </div>
                             </div>
 
                             <div class="xl:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha inicio</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Fecha
+                                        inicio</label>
                                     <input v-model="bandwidthStartDate" type="date"
-                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                        required="" />
+                                        class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" required="" />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Fecha fin</label>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Fecha
+                                        fin</label>
                                     <input v-model="bandwidthEndDate" type="date"
-                                        class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                        required="" />
+                                       class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" required="" />
                                 </div>
                             </div>
                         </div>
@@ -489,15 +518,18 @@ onMounted(() => {
                     </form>
 
                     <div class="space-y-3">
-                        <div class="text-sm text-gray-600">Filtra por usuario y rango de fechas para ver consumo
+                        <div class="text-sm text-gray-600 dark:text-white">Filtra por usuario y rango de fechas para ver
+                            consumo
                             detallado. <b>Si no ingresa el usuario se obtendra el resultado de todos los usuarios, en
                                 las fechas establecidas.</b></div>
-                        <div v-if="bandwidthLoading" class="text-sm text-gray-600">Cargando resultados...</div>
+                        <div v-if="bandwidthLoading" class="text-sm text-gray-600 dark:text-white">Cargando
+                            resultados...</div>
                         <div v-else-if="bandwidthStats.length > 0"
                             class="overflow-x-auto rounded-lg border border-gray-200">
                             <table class="w-full text-sm">
-                                <thead>
-                                    <tr class="bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-600">
+                                <thead class="text-center bg-slate-100 dark:bg-slate-800">
+                                    <tr
+                                        class="bg-slate-100 uppercase tracking-wide text-slate-600 dark:text-white dark:bg-slate-800">
                                         <th class="px-4 py-3">Usuario</th>
                                         <th class="px-4 py-3">Descargado</th>
                                         <th class="px-4 py-3">Subido</th>
@@ -505,18 +537,20 @@ onMounted(() => {
                                         <th class="px-4 py-3">Sesiones</th>
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr v-for="item in bandwidthStats" :key="item.Usuario" class="hover:bg-gray-50">
-                                        <td class="px-4 py-3 font-medium text-slate-900">{{ item.username }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ item.input }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ item.output }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ item.combinedBytes }}</td>
-                                        <td class="px-4 py-3 text-slate-600">{{ item.sessions }}</td>
+                                <tbody class="divide-y divide-rose-200 dark:divide-slate-700">
+                                    <tr v-for="item in bandwidthStats" :key="item.Usuario"
+                                        class="hover:bg-rose-50 dark:hover:bg-slate-800/80 font-medium text-slate-800 dark:text-slate-300">
+                                        <td class="px-4 py-3">{{ item.username }}</td>
+                                        <td class="px-4 py-3">{{ item.input }}</td>
+                                        <td class="px-4 py-3">{{ item.output }}</td>
+                                        <td class="px-4 py-3">{{ item.combinedBytes }}</td>
+                                        <td class="px-4 py-3">{{ item.sessions }}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        <div v-else class="text-sm text-gray-500">No hay resultados con los filtros actuales. Ajusta
+                        <div v-else class="text-sm text-gray-500 dark:text-white">No hay resultados con los filtros
+                            actuales. Ajusta
                             usuario o fechas y vuelve a buscar.</div>
                     </div>
                 </div>
@@ -524,42 +558,46 @@ onMounted(() => {
 
             <!-- 🔌 DESCONEXIONES -->
             <div v-if="activeTab === 'disconnections'" class="space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg border border-gray-100  dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Análisis de Desconexiones</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Análisis de Desconexiones</h2>
                     </div>
 
 
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-2">
-                        <div class="bg-white border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-bold text-gray-900 mb-3">Causas de Corte (Hoy)</h4>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pb-2 ">
+                        <div
+                            class="bg-white border border-gray-200 rounded-lg p-4  dark:border-slate-700 dark:bg-slate-900">
+                            <h4 class="font-bold text-gray-900 mb-3 dark:text-white">Causas de Corte (Hoy)</h4>
                             <div v-if="disconnectionData?.disconnectReasons" class="space-y-2">
                                 <div v-for="reason in disconnectionData.disconnectReasons"
                                     :key="reason.acctterminatecause" class="flex justify-between text-sm">
-                                    <span class="text-gray-700">{{ reason.acctterminatecause }}</span>
+                                    <span class="text-gray-700 dark:text-white">{{ reason.acctterminatecause }}</span>
                                     <span class="font-bold text-red-600">{{ reason.count }}</span>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-bold text-gray-900 mb-3">Desconexiones (Hoy)</h4>
+                        <div
+                            class="bg-white border border-gray-200 rounded-lg p-4  dark:border-slate-700 dark:bg-slate-900">
+                            <h4 class="font-bold text-gray-900 mb-3 dark:text-white">Desconexiones (Hoy)</h4>
                             <div v-if="disconnectionData?.topDisconnectors" class="space-y-2 max-h-64 overflow-y-auto">
                                 <div v-for="user in disconnectionData.topDisconnectors.slice(0, 5)" :key="user.username"
                                     class="text-sm">
-                                    <p class="font-medium text-gray-900">{{ user.username }}</p>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ user.username }}</p>
                                     <p class="text-gray-600">{{ user.disconnections }} desconexiones</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-white border border-gray-200 rounded-lg p-4">
-                            <h4 class="font-bold text-gray-900 mb-3">Sesiones Largas (Hoy)</h4>
+                        <div
+                            class="bg-white border border-gray-200 rounded-lg p-4  dark:border-slate-700 dark:bg-slate-900">
+                            <h4 class="font-bold text-gray-900 mb-3 dark:text-white">Sesiones Largas (Hoy)</h4>
                             <div v-if="disconnectionData?.sessionStats" class="space-y-2 max-h-64 overflow-y-auto">
                                 <div v-for="stat in disconnectionData.sessionStats.slice(0, 5)" :key="stat.username"
                                     class="text-sm">
-                                    <p class="font-medium text-gray-900">{{ stat.username }}</p>
+                                    <p class="font-medium text-gray-900 dark:text-white">{{ stat.username }}</p>
                                     <p class="text-gray-600 text-xs">Prom: {{ stat.avgSessionTime }}</p>
                                 </div>
                             </div>
@@ -569,32 +607,36 @@ onMounted(() => {
 
 
                     <!-- Buscador de Desconexiones -->
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-                        <h3 class="text-lg font-bold text-gray-900 mb-4">Buscar Desconexiones</h3>
+                    <div
+                        class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6  dark:border-slate-700 dark:bg-slate-900">
+                        <h3 class="text-lg font-bold text-gray-900 mb-4 dark:text-white">Buscar Desconexiones</h3>
                         <form @submit.prevent="fetchDisconnectionStats">
                             <div class="grid grid-cols-1 xl:grid-cols-5 gap-4 mb-4">
                                 <div class="xl:col-span-2 grid grid-cols-1 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Usuario
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Usuario
                                             (opcional)</label>
                                         <input v-model="disconnectionUsername" type="text"
                                             placeholder="Buscar usuario o dejar vacío para todos..."
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                                     </div>
                                 </div>
 
                                 <div class="xl:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha inicio</label>
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Fecha
+                                            inicio</label>
                                         <input v-model="disconnectionStartDate" type="date"
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                            required="" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" required="" />
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Fecha fin</label>
+                                        <label
+                                            class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Fecha
+                                            fin</label>
                                         <input v-model="disconnectionEndDate" type="date"
-                                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
-                                            required="" />
+                                            class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" required="" />
                                     </div>
                                 </div>
                             </div>
@@ -616,16 +658,17 @@ onMounted(() => {
                         </form>
 
                         <div class="space-y-3">
-                            <div class="text-sm text-gray-600">Filtra por usuario y rango de fechas para ver consumo
+                            <div class="text-sm text-gray-600 dark:text-white">Filtra por usuario y rango de fechas para
+                                ver consumo
                                 detallado. <b>Si no ingresa el usuario se obtendra el resultado de todos los usuarios,
                                     en las fechas establecidas.</b></div>
                             <div v-if="disconnectionLoading" class="text-sm text-gray-600">Cargando resultados...</div>
                             <div v-else-if="disconnectionStats.length > 0"
                                 class="overflow-x-auto rounded-lg border border-gray-200">
                                 <table class="w-full text-sm">
-                                    <thead>
+                                    <thead class="text-center bg-slate-100 dark:bg-slate-800">
                                         <tr
-                                            class="bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-600">
+                                            class="bg-slate-100 uppercase tracking-wide text-slate-600 dark:text-white dark:bg-slate-800">
                                             <th class="px-4 py-3">Usuario</th>
                                             <th class="px-4 py-3">Fecha</th>
                                             <th class="px-4 py-3">Causa</th>
@@ -633,18 +676,20 @@ onMounted(() => {
                                             <th class="px-4 py-3">IP NAS</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-200">
-                                        <tr v-for="item in disconnectionStats" :key="item.id" class="hover:bg-gray-50">
-                                            <td class="px-4 py-3 font-medium text-slate-900">{{ item.username }}</td>
-                                            <td class="px-4 py-3 text-slate-600">{{ item.disconnect_time }}</td>
-                                            <td class="px-4 py-3 text-slate-600">{{ item.acctterminatecause }}</td>
-                                            <td class="px-4 py-3 text-slate-600">{{ item.session_time }}</td>
-                                            <td class="px-4 py-3 text-slate-600">{{ item.nasipaddress }}</td>
+                                    <tbody class="divide-y divide-rose-200 dark:divide-slate-700">
+                                        <tr v-for="item in disconnectionStats" :key="item.id"
+                                            class="hover:bg-rose-50 dark:hover:bg-slate-800/80 font-medium text-slate-800 dark:text-slate-300">
+                                            <td class="px-4 py-3">{{ item.username }}</td>
+                                            <td class="px-4 py-3">{{ item.disconnect_time }}</td>
+                                            <td class="px-4 py-3">{{ item.acctterminatecause }}</td>
+                                            <td class="px-4 py-3">{{ item.session_time }}</td>
+                                            <td class="px-4 py-3">{{ item.nasipaddress }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <div v-else class="text-sm text-gray-500">No hay resultados con los filtros actuales. Ajusta
+                            <div v-else class="text-sm text-gray-500 dark:text-white">No hay resultados con los filtros
+                                actuales. Ajusta
                                 usuario o fechas y vuelve a buscar.</div>
                         </div>
                     </div>
@@ -653,9 +698,10 @@ onMounted(() => {
             </div>
             <!-- 👥 CLIENTES -->
             <div v-if="activeTab === 'clients'" class="space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg border border-gray-100 dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900">Gestión de Clientes</h2>
+                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Gestión de Clientes</h2>
                     </div>
 
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
@@ -731,8 +777,9 @@ onMounted(() => {
                         </div>
                     </div>
                     <!-- tabla de todos los clientes -->
-                    <div class="w-full overflow-hidden border border-gray-200 rounder-lg p-2 mt-4">
-                        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                    <div class="w-full overflow-hidden mt-4">
+                        <div
+                            class="relative overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-950">
                             <DataTable :value="clients" v-model:filters="filters" ref="dt" selectionMode="single"
                                 :globalFilterFields="['username', 'nombre_completo', 'email', 'telefono', 'direccion', 'estado', 'plan']"
                                 paginator :rows="5" :rowsPerPageOptions="[5, 10, 20, 50]"
@@ -741,14 +788,16 @@ onMounted(() => {
                                 <template #header>
                                     <!-- Filtro de búsqueda -->
                                     <div
-                                        class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                                        class="flex flex-col gap-4 border-b border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/80 md:flex-row md:items-center md:justify-between">
                                         <div class="w-full md:w-auto">
                                             <IconField iconPosition="left" class="w-full md:w-64">
                                                 <InputIcon>
                                                     <i class="pi pi-search" />
                                                 </InputIcon>
                                                 <InputText v-model="filters['global'].value"
-                                                    placeholder="Buscar cliente..." class="w-full pl-8 rounded-lg" />
+                                                    placeholder="Buscar cliente..."
+                                                    class="w-full rounded-xl border-slate-300 bg-white pl-9 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
+
                                             </IconField>
                                         </div>
                                         <!-- Botones de exportación -->
@@ -761,31 +810,29 @@ onMounted(() => {
                                 </template>
 
                                 <Column field="username" sortable header="username"
-                                    headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                 </Column>
                                 <Column field="nombre_completo" sortable header="Nombre completo"
-                                   style="min-width: 250px;"
-                                    headerClass=" border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                    style="min-width: 250px;"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                 </Column>
                                 <Column field="email" sortable header="correo"
-                                    headerClass="bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                 </Column>
                                 <Column field="telefono" sortable header="telefono"
-                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                 </Column>
-                                <Column field="direccion" sortable header="direccion"
-                                    style="min-width: 250px;"
-                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                                    bodyClass="border border-gray-300 whitespace-normal break-words">
+                                <Column field="direccion" sortable header="direccion" style="min-width: 250px;"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
+                                    bodyClass="border border-gray-300">
                                 </Column>
 
-
                                 <Column field="plan" sortable header="plan"
-                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                     <template #body="{ data }">
                                         <span v-if="data.plan"
@@ -799,9 +846,9 @@ onMounted(() => {
                                     </template>
                                 </Column>
 
-                                 <Column field="estado" sortable header="estado"
-                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
-                                    bodyClass="border border-gray-300 text-center">
+                                <Column field="estado" sortable header="estado"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
+                                    bodyClass="border border-gray-300">
                                     <template #body="{ data }">
                                         <span v-if="data.estado == 'activo'"
                                             class="bg-green-600 text-white inline-block px-3 rounded-xl font-semibold">
@@ -814,9 +861,8 @@ onMounted(() => {
                                     </template>
                                 </Column>
 
-                                <Column field="observaciones" sortable header="observacion"
-                                   style="min-width: 250px;"
-                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider"
+                                <Column field="observaciones" sortable header="observacion" style="min-width: 250px;"
+                                    headerClass="border border-gray-300 bg-gray-100 text-xs font-medium text-black uppercase tracking-wider dark:border-white dark:bg-slate-800 dark:text-white"
                                     bodyClass="border border-gray-300">
                                 </Column>
 
@@ -900,13 +946,13 @@ onMounted(() => {
                                     class="flex justify-between items-center p-2 bg-white rounded border border-blue-200">
                                     <span class="text-sm text-gray-700">Auth. Fallidas (Hoy)</span>
                                     <span class="text-lg font-bold text-red-600">{{ failedAuthCount?.today || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div
                                     class="flex justify-between items-center p-2 bg-white rounded border border-blue-200">
                                     <span class="text-sm text-gray-700">Sesiones Múltiples</span>
                                     <span class="text-lg font-bold text-orange-600">{{ simultaneousSessions.length || 0
-                                        }}</span>
+                                    }}</span>
                                 </div>
                                 <div class="p-3 bg-green-100 rounded border border-green-300 text-sm text-green-800">
                                     ✓ Sistema funcionando correctamente
@@ -915,14 +961,15 @@ onMounted(() => {
                         </div>
                     </div>
                 </div>
-            </div> 
+            </div>
 
             <!-- 🏢 NAS/NODOS -->
             <div v-if="activeTab === 'nas'" class="space-y-4">
-                <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
+                <div
+                    class="bg-white p-6 rounded-lg shadow-lg border border-gray-100 dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex flex-col gap-4 lg:flex-row lg:justify-between lg:items-center mb-6">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">Infraestructura NAS/Nodos</h2>
+                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Infraestructura NAS/Nodos</h2>
                         </div>
                         <div class="flex gap-2 flex-wrap items-center">
                             <button @click="exportToFormat('nas_stats', 'excel')"
@@ -931,12 +978,14 @@ onMounted(() => {
                         </div>
                     </div>
 
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+                    <div
+                        class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 dark:border-slate-700 dark:bg-slate-900">
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Buscar usuario</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-2 dark:text-white">Buscar
+                                    usuario</label>
                                 <input v-model="nasSearchUsername" type="text" placeholder="Nombre de usuario"
-                                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" />
+                                    class="w-full rounded-xl border-slate-300 bg-white pl-4 text-slate-700 placeholder:text-slate-400 focus:border-indigo-500 focus:ring-indigo-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" />
                             </div>
                             <div class="md:col-span-2 flex flex-wrap gap-2">
                                 <button type="button" @click="fetchNasByUser"
@@ -954,49 +1003,53 @@ onMounted(() => {
                     <div v-if="nasSearchResults.length > 0"
                         class="overflow-x-auto rounded-lg border border-gray-200 mb-6">
                         <table class="w-full">
-                            <thead>
-                                <tr class="bg-indigo-100 border-b border-gray-200">
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">IP del NAS</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Usuario</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Descargado</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Subido</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Total</th>
+                            <thead class="text-center bg-slate-100 dark:bg-slate-800">
+                                <tr
+                                    class="bg-slate-100 uppercase tracking-wide text-slate-600 dark:text-white dark:bg-slate-800">
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">IP del NAS</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Usuario</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Descargado</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Subido</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Total</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
+                            <tbody class="divide-y divide-rose-200 dark:divide-slate-700">
                                 <tr v-for="result in nasSearchResults" :key="result.nasIp + result.username"
-                                    class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ result.nasIp }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ result.username || nasSearchUsername }}</td>
+                                    class="hover:bg-rose-50 dark:hover:bg-slate-800/80 font-medium text-slate-800 dark:text-slate-300">
+                                    <td class="px-6 py-4 text-sm font-medium ">{{ result.nasIp }}</td>
+                                    <td class="px-6 py-4 text-sm ">{{ result.username || nasSearchUsername
+                                        }}</td>
                                     <td class="px-6 py-4 text-sm text-blue-600 font-medium">{{ result.totalInput }}</td>
-                                    <td class="px-6 py-4 text-sm text-green-600 font-medium">{{ result.totalOutput }}</td>
+                                    <td class="px-6 py-4 text-sm text-green-600 font-medium">{{ result.totalOutput }}
+                                    </td>
                                     <td class="px-6 py-4 text-sm text-purple-600 font-medium">{{ result.combined }}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
 
-                    <div v-if="!nasSearchUsername"
-                        class="overflow-x-auto rounded-lg border border-gray-200">
+                    <div v-if="!nasSearchUsername" class="overflow-x-auto rounded-lg border border-gray-200">
                         <table class="w-full">
-                            <thead>
-                                <tr class="bg-indigo-100 border-b border-gray-200">
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">IP del NAS</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Sesiones Totales
+                            <thead class="text-center bg-slate-100 dark:bg-slate-800">
+                                <tr
+                                    class="bg-slate-100 uppercase tracking-wide text-slate-600 dark:text-white dark:bg-slate-800">
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">IP del NAS</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Sesiones Totales
                                     </th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Usuarios Únicos
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Usuarios Únicos
                                     </th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Descargado</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Subido</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Total</th>
-                                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Acciones</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Descargado</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Subido</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Total</th>
+                                    <th class="px-6 py-3 text-left text-sm font-semibold ">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200">
-                                <tr v-for="nas in nasStats.stats" :key="nas.nasIp" class="hover:bg-gray-50 transition">
-                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ nas.nasIp }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ nas.totalSessions }}</td>
-                                    <td class="px-6 py-4 text-sm text-gray-600">{{ nas.uniqueUsers }}</td>
+                            <tbody class="divide-y divide-rose-200 dark:divide-slate-700">
+                                <tr v-for="nas in nasStats.stats" :key="nas.nasIp"
+                                    class="hover:bg-rose-50 dark:hover:bg-slate-800/80 font-medium text-slate-800 dark:text-slate-300">
+                                    <td class="px-6 py-4 text-sm font-medium ">{{ nas.nasIp }}</td>
+                                    <td class="px-6 py-4 text-sm ">{{ nas.totalSessions }}</td>
+                                    <td class="px-6 py-4 text-sm ">{{ nas.uniqueUsers }}</td>
                                     <td class="px-6 py-4 text-sm text-blue-600 font-medium">{{ nas.totalInput }}</td>
                                     <td class="px-6 py-4 text-sm text-green-600 font-medium">{{ nas.totalOutput }}</td>
                                     <td class="px-6 py-4 text-sm text-purple-600 font-medium">{{ nas.combined }}</td>
@@ -1011,8 +1064,9 @@ onMounted(() => {
                     </div>
 
                     <div v-if="nasStats?.disconnections && nasStats.disconnections.length > 0" class="mt-6">
-                        <h4 class="font-bold text-gray-900 mb-3">NAS con Más Desconexiones Inesperadas</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <h4 class="font-bold text-gray-900 mb-3 dark:text-white">NAS con Más Desconexiones Inesperadas
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-5">
                             <div v-for="nas in nasStats.disconnections" :key="nas.nasipaddress"
                                 class="bg-red-50 border border-red-200 rounded-lg p-4">
                                 <p class="font-medium text-gray-900">{{ nas.nasipaddress }}</p>

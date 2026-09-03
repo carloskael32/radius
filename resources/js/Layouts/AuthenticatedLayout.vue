@@ -14,7 +14,7 @@ import Toast from 'primevue/toast';
 
             <main class="flex-1 overflow-y-auto overflow-x-hidden bg-slate-100 dark:bg-slate-950">
                 <div class="container mx-auto px-4 py-6 sm:px-6">
-                    <h3 class="mb-4 text-3xl font-bold text-slate-900 dark:text-slate-50">
+                    <h3 class="mb-1 text-3xl font-bold text-slate-900 dark:text-slate-50">
                         <slot name="header" />
                     </h3>
 

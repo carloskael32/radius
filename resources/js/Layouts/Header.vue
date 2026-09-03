@@ -4,7 +4,7 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <header class="flex items-center justify-between border-b border-slate-200 bg-white/90 px-6 py-3 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
+    <header class="flex items-center justify-between border-b border-slate-200  bg-indigo-50 shadow-slate-400 px-6 py-3 shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/90">
         <button @click="$page.props.showingMobileMenu = !$page.props.showingMobileMenu"
             class="rounded-lg p-2 text-slate-700 transition hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 lg:hidden dark:text-slate-200 dark:hover:bg-slate-700">
             <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
