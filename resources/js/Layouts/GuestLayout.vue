@@ -1,7 +1,7 @@
 <template>
-    <div class="flex h-screen items-center justify-center bg-slate-100 px-6 dark:bg-slate-950">
+    <div class="flex min-h-screen items-center justify-center overflow-y-auto bg-slate-100 px-4 py-6 sm:px-6 dark:bg-slate-950">
         <div class="w-full max-w-md">
-            <div class="rounded-2xl border border-slate-200 bg-white p-8 shadow-xl shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/40">
+            <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xl shadow-slate-200/60 sm:p-8 dark:border-slate-700 dark:bg-slate-900 dark:shadow-slate-950/40">
                 <slot />
             </div>
 

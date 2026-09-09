@@ -59,10 +59,11 @@ const submit = () => {
 
     <GuestLayout>
         <div class="mb-6 text-center">
-            <div class=" flex justify-center  items-center  text-black dark:text-white text-xl md:text-4xl font-serif ">
-                <img src="/images/fenix.png" alt="Logo" class="h-20 w-auto"> <b class="pl-2">FENIX TELECOM</b>
+            <div class="flex min-w-0 items-center justify-center gap-2 text-lg font-serif text-black dark:text-white sm:text-2xl md:text-4xl">
+                <img src="/images/fenix.png" alt="Logo de Fenix Telecom" class="h-12 w-auto shrink-0 sm:h-16 md:h-20">
+                <b class="shrink-0 whitespace-nowrap">FENIX TELECOM</b>
             </div>
-            <h1 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Portal ISP</h1>
+            <h1 class="mt-2 text-xl font-bold text-slate-900 dark:text-slate-100 sm:text-2xl">Portal ISP</h1>
             <p class="mt-2 text-sm text-slate-600 dark:text-slate-400">Accede a tu cuenta de cliente</p>
         </div>
 
@@ -106,7 +107,7 @@ const submit = () => {
                             <path d="m19 8.839-7.77 3.885a2.75 2.75 0 0 1-2.46 0L1 8.839V14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.839Z" />
                         </svg>
                     </div>
-                    <input type="text" id="username" autocomplete="username" class="w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-11 pr-4 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="jperez" v-model="form.username" required autofocus />
+                    <input type="text" id="username" autocomplete="username" class="w-full rounded-xl border border-slate-300 bg-white py-2.5 pl-11 pr-4 text-slate-900 placeholder:text-slate-400 shadow-sm transition focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500" placeholder="jperez" v-model="form.username" required autofocus="autofocus" />
                 </div>
             </div>
 
