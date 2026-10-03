@@ -47,7 +47,7 @@ class NasController extends Controller
             'port' => 'nullable|integer',
             // 'status' => 'required|string|max:10',
         ]);
-        
+
         Nas::create([
             'nasname' => $validate['nasname'],
             'shortname' => $validate['shortname'],
@@ -58,10 +58,10 @@ class NasController extends Controller
             'host' => $validate['nasname'],
             'user' => $validate['user'],
             'pass' => Crypt::encryptString($validate['pass']),
-            'port' => $request->port ?? '8622',
+            'port' => $request->port ?? '8728',
             'status' => $request->status ?? 'activo',
         ]);
-        
+
         // Reiniciar servicio FreeRADIUS para aplicar cambios
         // exec('sudo systemctl kill -s USR1 freeradius.service');
 
@@ -115,7 +115,7 @@ class NasController extends Controller
             'host' => $validate['nasname'],
             'user' => $validate['user'],
             'pass' => Crypt::encryptString($validate['pass']),
-            'port' => $request->port ?? '8622',
+            'port' => $request->port ?? '8728',
             'status' => $request->status ?? 'activo',
 
         ]);
@@ -132,13 +132,13 @@ class NasController extends Controller
     {
         $nas = Nas::findOrFail($id);
         $nas->delete();
-        
+
         // Reiniciar servicio FreeRADIUS para aplicar cambios
         // exec('sudo systemctl kill -s USR1 freeradius.service');
         // return redirect()->route('nas.index');
     }
 
-  
+
     public function toggle(Request $request, string $id)
     {
         try {
@@ -146,14 +146,14 @@ class NasController extends Controller
                 'status' => 'required|in:activo,inactivo',
             ]);
 
-            $nas = Nas::find($id);
-            $newEstado = $validated['status'];
+            // 1. UsarfindOrFail lanza un 404 automático si la IP/ID no existe
+            $nas = Nas::findOrFail($id);
 
-            $nas->status = $newEstado;
+            $nas->status = $validated['status'];
+
+            // 2. Al guardar, el NasObserver capturará el evento 'updated'
+            // y despachará el ReloadFreeRadiusJob por ti.
             $nas->save();
-            
-            // Reiniciar servicio de FreeRADIUS como en los demás métodos
-            //exec('sudo systemctl kill -s USR1 freeradius.service');
 
             return response()->json([
                 'success' => true,

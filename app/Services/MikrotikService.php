@@ -14,7 +14,7 @@ class MikrotikService
     /**
      * Método para obtener sesiones PPPoE activas
      */
-    public function getActiveSessions($host, $user, $pass, $port = 8728): array
+    public function getActiveSessions($host, $user, $pass, $port): array
     {
         // 1. Creamos el cliente (conexión al MikroTik)
         $client = new Client([
@@ -31,7 +31,7 @@ class MikrotikService
         return $client->query($query)->read();
     }
 
-    public function logoutUsers($host, $user, $pass, $username, $port = 8728): array
+    public function logoutUsers($host, $user, $pass, $username, $port): array
     {
         // 1. Creamos el cliente (conexión al MikroTik)
         $client = new Client([
