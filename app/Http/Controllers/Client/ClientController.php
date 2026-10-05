@@ -198,7 +198,7 @@ class ClientController extends Controller
         //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
         $nas = Radacct::where('username', $client->username)
             ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
-            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass', 'nas.port')
             ->orderBy('acctstarttime', 'desc')
             ->first();
 
@@ -215,6 +215,7 @@ class ClientController extends Controller
                 $nas->user,
                 $nas->pass,
                 $client->username,
+                $nas->port,
             );
 
             $results[$nasName] = $sessions;
@@ -294,7 +295,7 @@ class ClientController extends Controller
             //desconectar usuario temporalmente para poder actualizar el nuevo plan o estado
             $nas = Radacct::where('username', $client->username)
                 ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
-                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass', 'nas.port')
                 ->orderBy('acctstarttime', 'desc')
                 ->first();
 
@@ -311,6 +312,7 @@ class ClientController extends Controller
                     $nas->user,
                     $nas->pass,
                     $client->username,
+                    $nas->port,
                 );
                 $results[$nasName] = $sessions;
 

@@ -29,12 +29,12 @@ class ReloadFreeRadiusJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $result = Process::run ('sudo /usr/bin/systemctl reload freeradius');
+        $result = Process::run ('sudo -n /usr/bin/systemctl restart freeradius');
             
             if($result->successful()){
-                Log::info('FreeRADIUS reloaded successfully');
+                Log::info('FreeRADIUS restart successfully');
             } else{
-                Log::error('Failed to reload FreeRADIUS'.$result->errorOutput());
+                Log::error('Failed to restart FreeRADIUS'.$result->errorOutput());
             }
     }
 }

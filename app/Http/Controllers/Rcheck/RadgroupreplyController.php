@@ -240,7 +240,7 @@ class RadgroupreplyController extends Controller
             $client = Client::where('username', $username)->first();
             $nas = Radacct::where('username', $client->username)
                 ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
-                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+                ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass', 'nas.port')
                 ->orderBy('acctstarttime', 'desc')
                 ->first();
 
@@ -257,6 +257,7 @@ class RadgroupreplyController extends Controller
                     $nas->user,
                     $nas->pass,
                     $client->username,
+                    $nas->port,
                 );
 
                 $results[$nasName] = $sessions;
@@ -292,7 +293,7 @@ class RadgroupreplyController extends Controller
         $client = Client::where('username', $rgroup->username)->first();
         $nas = Radacct::where('username', $client->username)
             ->join('nas', 'radacct.nasipaddress', '=', 'nas.nasname')
-            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass')
+            ->select('radacct.username', 'nas.host', 'nas.user', 'nas.pass', 'nas.port')
             ->orderBy('acctstarttime', 'desc')
             ->first();
 
@@ -309,6 +310,7 @@ class RadgroupreplyController extends Controller
                 $nas->user,
                 $nas->pass,
                 $client->username,
+                $nas->port,
             );
 
             $results[$nasName] = $sessions;
