@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::table('nas', function (Blueprint $table) {
             // Agregar columnas faltantes si no existen
             if (!Schema::hasColumn('nas', 'host')) {
-                $table->string('host', 128)->nullable()->after('server');
+                $table->string('host', 50)->nullable()->after('server');
             }
             if (!Schema::hasColumn('nas', 'user')) {
-                $table->string('user', 128)->nullable()->after('host');
+                $table->string('user', 50)->nullable()->after('host');
             }
             if (!Schema::hasColumn('nas', 'pass')) {
                 $table->string('pass', 255)->nullable()->after('user');
@@ -26,7 +26,7 @@ return new class extends Migration
                 $table->integer('port')->nullable()->after('pass');
             }
             if (!Schema::hasColumn('nas', 'status')) {
-                $table->string('status', 20)->default('activo')->after('port');
+                $table->string('status', 10)->default('activo')->after('port');
             }
         });
     }
