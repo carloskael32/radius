@@ -8,6 +8,7 @@ use App\Models\Nas\Nas;
 use App\Models\Rdacct\Radacct;
 use App\Models\Rdacct\Radpostauth;
 use App\Models\Rcheck\Radcheck;
+use App\Models\Rcheck\Radgroupcheck;
 use App\Models\Rcheck\Radgroupreply;
 use App\Models\Rcheck\Radusergroup;
 use App\Models\User;
@@ -24,7 +25,7 @@ class DashboardController extends Controller
     {
 
         //para mostrar Clientes y planes
-        $planes = Radgroupreply::where('groupname', '!=', 'inactivo')
+        $planes = Radgroupcheck::where('groupname', '!=', 'inactivo')
             ->pluck('groupname')
             ->toArray();
         foreach ($planes as $plan) {
